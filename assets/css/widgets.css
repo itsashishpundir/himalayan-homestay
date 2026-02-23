@@ -1,0 +1,919 @@
+/**
+ * HimalayanMart Widget Styles
+ *
+ * Styles for all custom WordPress widgets with skins and animations.
+ *
+ * @package HimalayanMart
+ */
+
+/* ================================================
+   BASE WIDGET STYLES
+   ================================================ */
+
+.hm-widget {
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+.hm-widget ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hm-widget a {
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ================================================
+   LAYOUT SKINS
+   ================================================ */
+
+/* Minimal Skin */
+.hm-skin-minimal {
+    background: transparent;
+}
+
+/* Boxed Skin */
+.hm-skin-boxed {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* Gradient Skin */
+.hm-skin-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 20px;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.hm-skin-gradient a {
+    color: #ffffff;
+}
+
+.hm-skin-gradient .widget-title {
+    color: #ffffff;
+}
+
+/* Glass Skin */
+.hm-skin-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Dark Skin */
+.hm-skin-dark {
+    background: #1f2937;
+    border-radius: 12px;
+    padding: 20px;
+    color: #e5e7eb;
+    overflow: hidden;
+}
+
+.hm-skin-dark a {
+    color: #93c5fd;
+}
+
+.hm-skin-dark a:hover {
+    color: #60a5fa;
+}
+
+.hm-skin-dark .widget-title {
+    color: #ffffff;
+}
+
+/* ================================================
+   FAQ ACCORDION WIDGET
+   ================================================ */
+
+.hm-widget-faq .hm-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hm-widget-faq .hm-faq-item {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hm-widget-faq .hm-faq-question {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    background: #f9fafb;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-faq .hm-faq-question:hover {
+    background: #f3f4f6;
+}
+
+.hm-widget-faq .hm-faq-question-text {
+    flex: 1;
+}
+
+.hm-widget-faq .hm-faq-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.hm-widget-faq .hm-faq-icon svg {
+    color: #6b7280;
+}
+
+/* Icon position right (default) */
+.hm-widget-faq.hm-icon-right .hm-faq-question {
+    flex-direction: row;
+}
+
+/* Icon position left */
+.hm-widget-faq.hm-icon-left .hm-faq-question {
+    flex-direction: row-reverse;
+}
+
+/* FAQ Answer */
+.hm-widget-faq .hm-faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    background: #ffffff;
+    transition: max-height 0.35s ease-out;
+}
+
+.hm-widget-faq .hm-faq-answer-inner {
+    padding: 0 16px 16px;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.hm-widget-faq .hm-faq-answer-inner p:last-child {
+    margin-bottom: 0;
+}
+
+/* Open state */
+.hm-widget-faq .hm-faq-item.is-open .hm-faq-question {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+.hm-widget-faq .hm-faq-item.is-open .hm-faq-icon svg {
+    color: #ffffff;
+    transform: rotate(180deg);
+}
+
+.hm-widget-faq .hm-faq-item.is-open .hm-faq-answer {
+    max-height: 500px;
+}
+
+/* Slide Animation */
+.hm-widget-faq.hm-anim-slide .hm-faq-answer {
+    transition: max-height 0.35s ease-out;
+}
+
+/* Fade Animation */
+.hm-widget-faq.hm-anim-fade .hm-faq-answer {
+    opacity: 0;
+    transition: max-height 0.35s ease-out, opacity 0.3s ease;
+}
+
+.hm-widget-faq.hm-anim-fade .hm-faq-item.is-open .hm-faq-answer {
+    opacity: 1;
+}
+
+/* FAQ Skin Variations */
+.hm-widget-faq.hm-skin-boxed .hm-faq-item {
+    border: 1px solid #e5e7eb;
+}
+
+.hm-widget-faq.hm-skin-dark .hm-faq-question {
+    background: #374151;
+    color: #e5e7eb;
+}
+
+.hm-widget-faq.hm-skin-dark .hm-faq-question:hover {
+    background: #4b5563;
+}
+
+.hm-widget-faq.hm-skin-dark .hm-faq-answer {
+    background: #1f2937;
+}
+
+.hm-widget-faq.hm-skin-dark .hm-faq-answer-inner {
+    color: #d1d5db;
+}
+
+.hm-widget-faq.hm-skin-gradient .hm-faq-question {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.hm-widget-faq.hm-skin-gradient .hm-faq-question:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.hm-widget-faq.hm-skin-gradient .hm-faq-answer {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hm-widget-faq.hm-skin-gradient .hm-faq-answer-inner {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ================================================
+   FEATURED HOMESTAYS WIDGET
+   ================================================ */
+
+.hm-widget-homestays .hm-homestays-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hm-widget-homestays.hm-layout-grid .hm-homestays-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.hm-widget-homestays .hm-homestay-widget-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-homestays .hm-homestay-widget-item:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hm-widget-homestays.hm-layout-grid .hm-homestay-widget-item {
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hm-widget-homestays .hm-item-image {
+    flex-shrink: 0;
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hm-widget-homestays.hm-layout-grid .hm-item-image {
+    width: 100%;
+    height: 100px;
+}
+
+.hm-widget-homestays .hm-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hm-widget-homestays .hm-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.hm-widget-homestays .hm-item-title {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.hm-widget-homestays .hm-item-title a {
+    color: #1f2937;
+}
+
+.hm-widget-homestays .hm-item-title a:hover {
+    color: #3b82f6;
+}
+
+.hm-widget-homestays .hm-item-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.hm-widget-homestays .hm-item-location svg {
+    flex-shrink: 0;
+    color: #9ca3af;
+}
+
+.hm-widget-homestays .hm-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.hm-widget-homestays .hm-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.hm-widget-homestays .hm-item-price {
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.hm-widget-homestays .hm-item-price small {
+    font-weight: 400;
+    color: #6b7280;
+}
+
+/* Homestays Skin Variations */
+.hm-widget-homestays.hm-skin-dark .hm-homestay-widget-item {
+    background: #374151;
+}
+
+.hm-widget-homestays.hm-skin-dark .hm-item-title a {
+    color: #e5e7eb;
+}
+
+.hm-widget-homestays.hm-skin-dark .hm-item-price {
+    color: #ffffff;
+}
+
+/* ================================================
+   CONTACT INFO WIDGET
+   ================================================ */
+
+.hm-widget-contact .hm-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.hm-widget-contact.hm-layout-inline .hm-contact-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.hm-widget-contact .hm-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.hm-widget-contact .hm-contact-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.hm-widget-contact .hm-contact-icon svg {
+    color: var(--hm-icon-color, #3b82f6);
+}
+
+.hm-widget-contact .hm-contact-text {
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.hm-widget-contact a.hm-contact-text:hover {
+    color: #3b82f6;
+}
+
+/* Contact Skin Variations */
+.hm-widget-contact.hm-skin-dark .hm-contact-icon {
+    background: rgba(147, 197, 253, 0.15);
+}
+
+.hm-widget-contact.hm-skin-dark .hm-contact-text {
+    color: #d1d5db;
+}
+
+/* ================================================
+   SOCIAL LINKS WIDGET
+   ================================================ */
+
+.hm-widget-social .hm-social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.hm-widget-social .hm-social-item a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4b5563;
+}
+
+.hm-widget-social .hm-social-item a:hover {
+    color: #3b82f6;
+}
+
+.hm-widget-social .hm-social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-social .hm-social-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Icon Styles */
+.hm-widget-social.hm-icon-style-filled .hm-social-icon {
+    background: #f3f4f6;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-item a:hover .hm-social-icon {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+.hm-widget-social.hm-icon-style-outlined .hm-social-icon {
+    padding: 10px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.hm-widget-social.hm-icon-style-outlined .hm-social-item a:hover .hm-social-icon {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.hm-widget-social.hm-icon-style-circular .hm-social-icon {
+    background: #f3f4f6;
+    padding: 12px;
+    border-radius: 50%;
+}
+
+.hm-widget-social.hm-icon-style-circular .hm-social-item a:hover .hm-social-icon {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+.hm-widget-social.hm-icon-style-square .hm-social-icon {
+    background: #f3f4f6;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.hm-widget-social.hm-icon-style-square .hm-social-item a:hover .hm-social-icon {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+/* Brand Colors */
+.hm-widget-social .hm-social-facebook a:hover {
+    color: #1877f2;
+}
+
+.hm-widget-social .hm-social-instagram a:hover {
+    color: #e4405f;
+}
+
+.hm-widget-social .hm-social-twitter a:hover {
+    color: #1da1f2;
+}
+
+.hm-widget-social .hm-social-youtube a:hover {
+    color: #ff0000;
+}
+
+.hm-widget-social .hm-social-linkedin a:hover {
+    color: #0077b5;
+}
+
+.hm-widget-social .hm-social-pinterest a:hover {
+    color: #bd081c;
+}
+
+.hm-widget-social .hm-social-tiktok a:hover {
+    color: #000000;
+}
+
+.hm-widget-social .hm-social-whatsapp a:hover {
+    color: #25d366;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-facebook a:hover .hm-social-icon {
+    background: #1877f2;
+    color: #fff;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-instagram a:hover .hm-social-icon {
+    background: #e4405f;
+    color: #fff;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-twitter a:hover .hm-social-icon {
+    background: #1da1f2;
+    color: #fff;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-youtube a:hover .hm-social-icon {
+    background: #ff0000;
+    color: #fff;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-linkedin a:hover .hm-social-icon {
+    background: #0077b5;
+    color: #fff;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-pinterest a:hover .hm-social-icon {
+    background: #bd081c;
+    color: #fff;
+}
+
+.hm-widget-social.hm-icon-style-filled .hm-social-whatsapp a:hover .hm-social-icon {
+    background: #25d366;
+    color: #fff;
+}
+
+/* Social Animations */
+.hm-widget-social.hm-anim-bounce .hm-social-item a:hover .hm-social-icon {
+    animation: hm-bounce 0.4s ease;
+}
+
+.hm-widget-social.hm-anim-pulse .hm-social-item a:hover .hm-social-icon {
+    animation: hm-pulse 0.8s ease infinite;
+}
+
+.hm-widget-social.hm-anim-rotate .hm-social-item a:hover .hm-social-icon {
+    animation: hm-rotate 0.4s ease;
+}
+
+.hm-widget-social.hm-anim-slide .hm-social-item a:hover .hm-social-icon {
+    transform: translateY(-3px);
+}
+
+.hm-widget-social.hm-anim-fade .hm-social-item a:hover .hm-social-icon {
+    opacity: 0.7;
+}
+
+/* ================================================
+   NEWSLETTER WIDGET
+   ================================================ */
+
+.hm-widget-newsletter .hm-newsletter-description {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.hm-widget-newsletter .hm-newsletter-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hm-widget-newsletter.hm-layout-inline .hm-newsletter-fields {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* Force stacked layout in sidebar */
+/* Force stacked layout in sidebar */
+.sidebar-widget .hm-widget-newsletter .hm-newsletter-form {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sidebar-widget .hm-widget-newsletter .hm-newsletter-fields {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+}
+
+.sidebar-widget .hm-widget-newsletter .hm-newsletter-input-wrap {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.sidebar-widget .hm-widget-newsletter .hm-newsletter-button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.hm-widget-newsletter .hm-newsletter-input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-newsletter .hm-newsletter-input-wrap:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.hm-widget-newsletter .hm-newsletter-input-wrap svg {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.hm-widget-newsletter .hm-newsletter-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #1f2937;
+    outline: none;
+}
+
+.hm-widget-newsletter .hm-newsletter-input::placeholder {
+    color: #9ca3af;
+}
+
+.hm-widget-newsletter .hm-newsletter-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-newsletter .hm-newsletter-button:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.hm-widget-newsletter .hm-newsletter-privacy {
+    margin: 12px 0 0;
+    color: #9ca3af;
+}
+
+/* Newsletter Skin Variations */
+.hm-widget-newsletter.hm-skin-dark .hm-newsletter-description {
+    color: #d1d5db;
+}
+
+.hm-widget-newsletter.hm-skin-dark .hm-newsletter-input-wrap {
+    background: #374151;
+    border-color: #4b5563;
+}
+
+.hm-widget-newsletter.hm-skin-dark .hm-newsletter-input {
+    color: #ffffff;
+}
+
+.hm-widget-newsletter.hm-skin-gradient .hm-newsletter-input-wrap {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hm-widget-newsletter.hm-skin-gradient .hm-newsletter-input {
+    color: #ffffff;
+}
+
+.hm-widget-newsletter.hm-skin-gradient .hm-newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.hm-widget-newsletter.hm-skin-gradient .hm-newsletter-button {
+    background: #ffffff;
+    color: #667eea;
+}
+
+/* ================================================
+   ANIMATIONS
+   ================================================ */
+
+@keyframes hm-bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes hm-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes hm-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+@media (max-width: 767px) {
+    .hm-widget-homestays.hm-layout-grid .hm-homestays-list {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-widget-newsletter.hm-layout-inline .hm-newsletter-fields {
+        flex-direction: column;
+    }
+
+    .hm-widget-contact.hm-layout-inline .hm-contact-list {
+        flex-direction: column;
+    }
+
+    .hm-widget-products.hm-layout-grid .hm-products-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================================================
+   FEATURED PRODUCTS WIDGET
+   ================================================ */
+
+.hm-widget-products .hm-products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hm-widget-products.hm-layout-grid .hm-products-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.hm-widget-products .hm-product-widget-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.hm-widget-products .hm-product-widget-item:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hm-widget-products.hm-layout-grid .hm-product-widget-item {
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hm-widget-products .hm-item-image {
+    flex-shrink: 0;
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hm-widget-products.hm-layout-grid .hm-item-image {
+    width: 100%;
+    height: 100px;
+}
+
+.hm-widget-products .hm-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hm-widget-products .hm-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.hm-widget-products .hm-item-title {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.hm-widget-products .hm-item-title a {
+    color: #1f2937;
+}
+
+.hm-widget-products .hm-item-title a:hover {
+    color: #3b82f6;
+}
+
+.hm-widget-products .hm-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: #f59e0b;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.hm-widget-products .hm-item-price {
+    color: #1f2937;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.hm-widget-products .hm-item-price del {
+    color: #9ca3af;
+    font-weight: 400;
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+.hm-widget-products .hm-item-price ins {
+    text-decoration: none;
+    color: #1f2937;
+}
+
+/* Products Skin Variations */
+.hm-widget-products.hm-skin-dark .hm-product-widget-item {
+    background: #374151;
+}
+
+.hm-widget-products.hm-skin-dark .hm-item-title a {
+    color: #e5e7eb;
+}
+
+.hm-widget-products.hm-skin-dark .hm-item-price {
+    color: #ffffff;
+}
+
+.hm-widget-products.hm-skin-dark .hm-item-price ins {
+    color: #ffffff;
+}

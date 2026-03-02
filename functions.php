@@ -218,7 +218,8 @@ add_action( 'phpmailer_init', function( $phpmailer ) {
         $phpmailer->Password   = $smtp_pass;
         $phpmailer->SMTPSecure = 'ssl';
         $phpmailer->From       = $smtp_email;
-        $phpmailer->FromName   = get_bloginfo('name') . ' (Local SMTP)';
+        $from_name = get_option( 'hhb_smtp_from_name' );
+        $phpmailer->FromName   = ! empty( $from_name ) ? $from_name : get_bloginfo( 'name' );
     }
 } );
 
@@ -366,12 +367,12 @@ add_action( 'send_headers', function () {
         $home        = esc_url( home_url() );
         $csp_parts   = [
             "default-src 'self' {$home}",
-            "script-src  'self' 'unsafe-inline' 'unsafe-eval' cdn.tailwindcss.com cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com {$home} blob:",
-            "style-src   'self' 'unsafe-inline' cdn.tailwindcss.com cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com {$home}",
-            "font-src    'self' fonts.gstatic.com cdnjs.cloudflare.com data:",
-            "img-src     'self' data: blob: *.unsplash.com *.gravatar.com secure.gravatar.com {$home}",
-            "connect-src 'self' {$home}",
-            "frame-src   'self' *.google.com *.google.co.in",
+            "script-src  'self' 'unsafe-inline' 'unsafe-eval' cdn.tailwindcss.com cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com {$home} blob: https://www.paypal.com https://www.paypalobjects.com https://checkout.razorpay.com",
+            "style-src   'self' 'unsafe-inline' cdn.tailwindcss.com cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com {$home} https://www.paypalobjects.com",
+            "font-src    'self' fonts.gstatic.com cdnjs.cloudflare.com data: https://www.paypalobjects.com",
+            "img-src     'self' data: blob: *.unsplash.com *.gravatar.com secure.gravatar.com {$home} https://www.paypalobjects.com https://checkout.razorpay.com",
+            "connect-src 'self' {$home} https://api.razorpay.com https://lumberjack.razorpay.com https://api.paypal.com https://www.paypal.com https://www.sandbox.paypal.com",
+            "frame-src   'self' *.google.com *.google.co.in https://www.paypal.com https://www.sandbox.paypal.com https://api.razorpay.com https://checkout.razorpay.com",
             "frame-ancestors 'self'",
             "worker-src  'self' blob:",
         ];

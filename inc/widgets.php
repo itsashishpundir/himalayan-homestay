@@ -23,6 +23,7 @@ require_once get_template_directory() . '/inc/widgets/class-widget-featured-prod
 require_once get_template_directory() . '/inc/widgets/class-widget-contact-info.php';
 require_once get_template_directory() . '/inc/widgets/class-widget-social-links.php';
 require_once get_template_directory() . '/inc/widgets/class-widget-newsletter.php';
+require_once get_template_directory() . '/inc/widgets/class-widget-homestay-carousel.php';
 
 /**
  * Register widget areas
@@ -90,6 +91,7 @@ function himalayanmart_widgets_init() {
     register_widget( 'HM_Widget_Contact_Info' );
     register_widget( 'HM_Widget_Social_Links' );
     register_widget( 'HM_Widget_Newsletter' );
+    register_widget( 'HM_Widget_Homestay_Carousel' );
 }
 add_action( 'widgets_init', 'himalayanmart_widgets_init' );
 

@@ -6,10 +6,13 @@
 /* CSS Variables */
 :root {
     /* Colors */
-    --color-primary: #3b82f6;
-    --color-primary-dark: #2563eb;
-    --color-secondary: #10b981;
-    --color-secondary-dark: #059669;
+    --color-primary: #e85e30;
+    /* Theme brand color (orange) */
+    --color-primary-dark: #c94b22;
+    /* Darker shade of brand color */
+    --color-secondary: #211511;
+    /* Theme dark color */
+    --color-secondary-dark: #1a100d;
     --color-accent: #f59e0b;
     --color-danger: #ef4444;
 
@@ -214,7 +217,7 @@ a {
 
 a:hover {
     color: var(--color-primary-dark);
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 a:focus {
@@ -378,7 +381,7 @@ textarea:focus,
 select:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(232, 94, 48, 0.1);
 }
 
 ::placeholder {

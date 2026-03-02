@@ -22,6 +22,7 @@ function himalayanmart_get_header_layouts() {
     return apply_filters('himalayanmart_header_layouts', array(
         '3-tier'       => __('3-Tier Header (Top Bar + Logo + Navigation)', 'himalayanmart'),
         'modern-glass' => __('Modern Glass Header (Glassmorphism + Sticky)', 'himalayanmart'),
+        'futura-glass' => __('FuturaStays Glass (Mega Menu + Search)', 'himalayanmart'),
     ));
 }
 
@@ -32,8 +33,9 @@ function himalayanmart_get_header_layouts() {
  */
 function himalayanmart_get_footer_layouts() {
     return apply_filters('himalayanmart_footer_layouts', array(
-        '4-column'          => __('4-Column Footer (About + 2 Menus + Contact)', 'himalayanmart'),
-        'modern-multicolumn' => __('Modern Multi-Column Footer (Tabs + Newsletter)', 'himalayanmart'),
+        '4-column'            => __('4-Column Footer (About + 2 Menus + Contact)', 'himalayanmart'),
+        'modern-multicolumn'  => __('Modern Multi-Column Footer (Tabs + Newsletter)', 'himalayanmart'),
+        'futura-newsletter'   => __('FuturaStays Newsletter (4-Col + Social)', 'himalayanmart'),
     ));
 }
 
@@ -1405,6 +1407,188 @@ function himalayanmart_customizer_header_footer($wp_customize) {
         'section'   => 'himalayanmart_modern_header_section',
         'mime_type' => 'image',
     )));
+
+    // ==============================================
+    // FUTURASTAYS GLASS HEADER SETTINGS
+    // ==============================================
+    $wp_customize->add_section('hm_futura_header_section', array(
+        'title'       => __('FuturaStays Header Settings', 'himalayanmart'),
+        'panel'       => 'himalayanmart_layouts_panel',
+        'priority'    => 36,
+        'description' => __('Customize the FuturaStays Glass Header (Mega Menu + Search).', 'himalayanmart'),
+    ));
+
+    // --- Announcement Bar ---
+    $futura_header_settings = array(
+        'hm_futura_header_show_announcement' => array('default' => true,  'type' => 'checkbox', 'label' => 'Show Announcement Bar'),
+        'hm_futura_header_announcement_text' => array('default' => 'New: Explore our Winter Collection in the Himalayas.', 'type' => 'textarea', 'label' => 'Announcement Text'),
+        'hm_futura_header_announcement_cta_text' => array('default' => 'Learn more', 'type' => 'text', 'label' => 'Announcement CTA Text'),
+        'hm_futura_header_announcement_cta_url'  => array('default' => '#', 'type' => 'url', 'label' => 'Announcement CTA URL'),
+        'hm_futura_header_show_search'       => array('default' => true,  'type' => 'checkbox', 'label' => 'Show Search Bar'),
+        'hm_futura_header_search_placeholder' => array('default' => 'Where are you going?', 'type' => 'text', 'label' => 'Search Placeholder'),
+        'hm_futura_header_show_cta'          => array('default' => true,  'type' => 'checkbox', 'label' => 'Show CTA Button'),
+        'hm_futura_header_cta_text'          => array('default' => 'List your home', 'type' => 'text', 'label' => 'CTA Button Text'),
+        'hm_futura_header_cta_url'           => array('default' => '#', 'type' => 'url', 'label' => 'CTA Button URL'),
+        'hm_futura_header_show_avatar'       => array('default' => true,  'type' => 'checkbox', 'label' => 'Show User Avatar / Login'),
+        'hm_futura_header_glass_opacity'     => array('default' => 70, 'type' => 'range', 'label' => 'Glass Opacity (%)', 'input_attrs' => array('min' => 0, 'max' => 100, 'step' => 5)),
+    );
+
+    foreach ($futura_header_settings as $id => $args) {
+        $sanitize = 'sanitize_text_field';
+        if ($args['type'] === 'checkbox') $sanitize = 'wp_validate_boolean';
+        if ($args['type'] === 'textarea') $sanitize = 'wp_kses_post';
+        if ($args['type'] === 'url') $sanitize = 'esc_url_raw';
+        if ($args['type'] === 'range') $sanitize = 'absint';
+
+        $wp_customize->add_setting($id, array(
+            'default'           => $args['default'],
+            'sanitize_callback' => $sanitize,
+            'transport'         => 'refresh',
+        ));
+
+        $control_args = array(
+            'label'   => __($args['label'], 'himalayanmart'),
+            'section' => 'hm_futura_header_section',
+            'type'    => $args['type'],
+        );
+        if (isset($args['input_attrs'])) {
+            $control_args['input_attrs'] = $args['input_attrs'];
+        }
+        $wp_customize->add_control($id, $control_args);
+    }
+
+    // Announcement BG Color
+    $wp_customize->add_setting('hm_futura_header_announcement_bg', array(
+        'default' => '#e85e30', 'sanitize_callback' => 'sanitize_hex_color', 'transport' => 'refresh',
+    ));
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'hm_futura_header_announcement_bg', array(
+        'label' => __('Announcement BG Color', 'himalayanmart'), 'section' => 'hm_futura_header_section',
+    )));
+
+    // Announcement Text Color
+    $wp_customize->add_setting('hm_futura_header_announcement_text_color', array(
+        'default' => '#ffffff', 'sanitize_callback' => 'sanitize_hex_color', 'transport' => 'refresh',
+    ));
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'hm_futura_header_announcement_text_color', array(
+        'label' => __('Announcement Text Color', 'himalayanmart'), 'section' => 'hm_futura_header_section',
+    )));
+
+    // Nav Text Color
+    $wp_customize->add_setting('hm_futura_header_nav_text_color', array(
+        'default' => '#334155', 'sanitize_callback' => 'sanitize_hex_color', 'transport' => 'refresh',
+    ));
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'hm_futura_header_nav_text_color', array(
+        'label' => __('Navigation Text Color', 'himalayanmart'), 'section' => 'hm_futura_header_section',
+    )));
+
+    // ==============================================
+    // FUTURASTAYS NEWSLETTER FOOTER SETTINGS
+    // ==============================================
+    $wp_customize->add_section('hm_futura_footer_section', array(
+        'title'       => __('FuturaStays Footer Settings', 'himalayanmart'),
+        'panel'       => 'himalayanmart_layouts_panel',
+        'priority'    => 45,
+        'description' => __('Customize the FuturaStays Newsletter Footer.', 'himalayanmart'),
+    ));
+
+    $futura_footer_settings = array(
+        'hm_futura_footer_show_newsletter'    => array('default' => true, 'type' => 'checkbox', 'label' => 'Show Newsletter Section'),
+        'hm_futura_footer_newsletter_heading' => array('default' => 'Stay ahead of the curve', 'type' => 'text', 'label' => 'Newsletter Heading'),
+        'hm_futura_footer_newsletter_desc'    => array('default' => 'Join 50,000+ travelers and get the latest on exclusive offers and unique experiences.', 'type' => 'textarea', 'label' => 'Newsletter Description'),
+        'hm_futura_footer_newsletter_btn'     => array('default' => 'Sign Up Now', 'type' => 'text', 'label' => 'Newsletter Button Text'),
+        'hm_futura_footer_privacy_text'       => array('default' => 'privacy policy', 'type' => 'text', 'label' => 'Privacy Link Text'),
+        'hm_futura_footer_privacy_url'        => array('default' => '#', 'type' => 'url', 'label' => 'Privacy Link URL'),
+        'hm_futura_footer_col1_title'         => array('default' => 'Discover', 'type' => 'text', 'label' => 'Column 1 Title'),
+        'hm_futura_footer_col2_title'         => array('default' => 'Company', 'type' => 'text', 'label' => 'Column 2 Title'),
+        'hm_futura_footer_col3_title'         => array('default' => 'Support', 'type' => 'text', 'label' => 'Column 3 Title'),
+        'hm_futura_footer_col4_title'         => array('default' => 'Connect', 'type' => 'text', 'label' => 'Column 4 Title'),
+        'hm_futura_footer_twitter'            => array('default' => '', 'type' => 'url', 'label' => 'Twitter / X URL'),
+        'hm_futura_footer_facebook'           => array('default' => '', 'type' => 'url', 'label' => 'Facebook URL'),
+        'hm_futura_footer_instagram'          => array('default' => '', 'type' => 'url', 'label' => 'Instagram URL'),
+        'hm_futura_footer_youtube'            => array('default' => '', 'type' => 'url', 'label' => 'YouTube URL'),
+        'hm_futura_footer_show_language'      => array('default' => true, 'type' => 'checkbox', 'label' => 'Show Language Selector'),
+        'hm_futura_footer_copyright'          => array('default' => '© [year] [sitename]. All rights reserved.', 'type' => 'textarea', 'label' => 'Copyright Text'),
+    );
+
+    foreach ($futura_footer_settings as $id => $args) {
+        $sanitize = 'sanitize_text_field';
+        if ($args['type'] === 'checkbox') $sanitize = 'wp_validate_boolean';
+        if ($args['type'] === 'textarea') $sanitize = 'wp_kses_post';
+        if ($args['type'] === 'url') $sanitize = 'esc_url_raw';
+
+        $wp_customize->add_setting($id, array(
+            'default'           => $args['default'],
+            'sanitize_callback' => $sanitize,
+            'transport'         => 'refresh',
+        ));
+        $wp_customize->add_control($id, array(
+            'label'   => __($args['label'], 'himalayanmart'),
+            'section' => 'hm_futura_footer_section',
+            'type'    => $args['type'],
+        ));
+    }
+
+    // Footer Colors
+    $futura_footer_colors = array(
+        'hm_futura_footer_bg'            => array('default' => '#ffffff', 'label' => 'Footer Background'),
+        'hm_futura_footer_text_color'    => array('default' => '#475569', 'label' => 'Footer Text Color'),
+        'hm_futura_footer_heading_color' => array('default' => '#e85e30', 'label' => 'Column Heading Color'),
+    );
+    foreach ($futura_footer_colors as $id => $args) {
+        $wp_customize->add_setting($id, array(
+            'default' => $args['default'], 'sanitize_callback' => 'sanitize_hex_color', 'transport' => 'refresh',
+        ));
+        $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, $id, array(
+            'label' => __($args['label'], 'himalayanmart'), 'section' => 'hm_futura_footer_section',
+        )));
+    }
+    // ==============================================
+    // BECOME-A-HOST PAGE SETTINGS
+    // ==============================================
+    $wp_customize->add_section('hm_host_page_section', array(
+        'title'       => __('Become-a-Host Page', 'himalayanmart'),
+        'panel'       => 'himalayanmart_layouts_panel',
+        'priority'    => 50,
+        'description' => __('Customize the Become-a-Host landing page hero and content.', 'himalayanmart'),
+    ));
+
+    // Hero Image
+    $wp_customize->add_setting('hm_host_hero_image', array(
+        'default' => '', 'sanitize_callback' => 'absint',
+    ));
+    $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'hm_host_hero_image', array(
+        'label'     => __('Hero Background Image', 'himalayanmart'),
+        'section'   => 'hm_host_page_section',
+        'mime_type' => 'image',
+    )));
+
+    // Hero text fields
+    $host_text_fields = array(
+        'hm_host_hero_badge'    => array('default' => 'Host the Future', 'label' => 'Hero Badge Text'),
+        'hm_host_hero_title'    => array('default' => 'Share Your World.<br>Become a <span class="text-primary">Host.</span>', 'label' => 'Hero Title (HTML allowed)'),
+        'hm_host_hero_subtitle' => array('default' => 'Join our exclusive community of premium mountain retreats and unique homestays.', 'label' => 'Hero Subtitle'),
+        'hm_host_step1_title'   => array('default' => 'Apply Online', 'label' => 'Step 1 Title'),
+        'hm_host_step1_desc'    => array('default' => 'Submit your property details and photos through this form.', 'label' => 'Step 1 Description'),
+        'hm_host_step2_title'   => array('default' => 'Manual Review', 'label' => 'Step 2 Title'),
+        'hm_host_step2_desc'    => array('default' => 'Our team reviews every application within 48 hours.', 'label' => 'Step 2 Description'),
+        'hm_host_step3_title'   => array('default' => 'Onboarding', 'label' => 'Step 3 Title'),
+        'hm_host_step3_desc'    => array('default' => 'Once approved, we help you set up your profile.', 'label' => 'Step 3 Description'),
+        'hm_host_benefit1'      => array('default' => 'Reach thousands of verified travelers', 'label' => 'Benefit 1'),
+        'hm_host_benefit2'      => array('default' => 'Dedicated host support & assistance', 'label' => 'Benefit 2'),
+        'hm_host_benefit3'      => array('default' => '24/7 customer support for your guests', 'label' => 'Benefit 3'),
+    );
+
+    foreach ($host_text_fields as $id => $args) {
+        $sanitize = (strpos($id, 'title') !== false && strpos($id, 'step') === false) ? 'wp_kses_post' : 'sanitize_text_field';
+        $wp_customize->add_setting($id, array(
+            'default' => $args['default'], 'sanitize_callback' => $sanitize, 'transport' => 'refresh',
+        ));
+        $wp_customize->add_control($id, array(
+            'label'   => __($args['label'], 'himalayanmart'),
+            'section' => 'hm_host_page_section',
+            'type'    => (strpos($id, 'desc') !== false || strpos($id, 'subtitle') !== false) ? 'textarea' : 'text',
+        ));
+    }
 
 }
 add_action('customize_register', 'himalayanmart_customizer_header_footer');

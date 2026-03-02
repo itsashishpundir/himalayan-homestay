@@ -48,15 +48,18 @@
     gap: 8px;
     align-items: center;
 }
+
 .hhb-breadcrumb a {
     color: #1f2937;
     text-decoration: none;
     transition: color 0.2s;
 }
+
 .hhb-breadcrumb a:hover {
     color: #e04f67;
-    text-decoration: underline;
+    text-decoration: none;
 }
+
 .hhb-breadcrumb span.sep {
     color: #9ca3af;
 }
@@ -173,8 +176,13 @@
     flex-shrink: 0;
 }
 
-.hhb-rule-col.dos li svg { color: #10b981; }
-.hhb-rule-col.donts li svg { color: #ef4444; }
+.hhb-rule-col.dos li svg {
+    color: #10b981;
+}
+
+.hhb-rule-col.donts li svg {
+    color: #ef4444;
+}
 
 /* Sticky Sidebar */
 .hhb-sidebar {
@@ -223,6 +231,7 @@
     .hhb-main-layout {
         grid-template-columns: 1fr;
     }
+
     .hhb-sidebar {
         position: static;
         margin-top: 40px;
@@ -234,9 +243,11 @@
         grid-template-columns: 1fr;
         grid-template-rows: repeat(3, 200px);
     }
+
     .hhb-gallery-item.main {
         grid-row: auto;
     }
+
     .hhb-rules-grid {
         grid-template-columns: 1fr;
     }

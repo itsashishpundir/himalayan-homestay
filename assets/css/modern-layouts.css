@@ -15,18 +15,18 @@
     /* Header Variables */
     --hm-modern-header-bg: #ffffff;
     --hm-modern-header-text: #1f2937;
-    --hm-modern-header-accent: #3b82f6;
-    --hm-modern-header-gradient-from: #3b82f6;
-    --hm-modern-header-gradient-to: #8b5cf6;
+    --hm-modern-header-accent: #e85e30;
+    --hm-modern-header-gradient-from: #e85e30;
+    --hm-modern-header-gradient-to: #c94b22;
     --hm-modern-header-bg-rgb: 255, 255, 255;
     --hm-modern-header-bg-opacity: 0.85;
     --hm-modern-header-icon-opacity: 1;
 
     /* Announcement Variables */
-    --hm-modern-announcement-bg: #3b82f6;
+    --hm-modern-announcement-bg: #e85e30;
     --hm-modern-announcement-text: #ffffff;
-    --hm-modern-announcement-gradient-from: #3b82f6;
-    --hm-modern-announcement-gradient-to: #8b5cf6;
+    --hm-modern-announcement-gradient-from: #e85e30;
+    --hm-modern-announcement-gradient-to: #c94b22;
 
     /* Scroll State Variables */
     --hm-modern-header-scroll-bg: #ffffff;
@@ -47,10 +47,10 @@
     --hm-modern-footer-text: #9ca3af;
     --hm-modern-footer-heading: #ffffff;
     --hm-modern-footer-link: #9ca3af;
-    --hm-modern-footer-link-hover: #3b82f6;
+    --hm-modern-footer-link-hover: #e85e30;
     --hm-modern-footer-tabs-bg: #1f2937;
     --hm-modern-footer-newsletter-bg: #1f2937;
-    --hm-modern-footer-accent: #3b82f6;
+    --hm-modern-footer-accent: #e85e30;
     --hm-modern-footer-bottom-bg: #030712;
 
     /* Footer Border Variables */
@@ -108,7 +108,7 @@
 
 .hm-announcement-text a {
     color: inherit;
-    text-decoration: underline;
+    text-decoration: none;
     font-weight: 600;
 }
 

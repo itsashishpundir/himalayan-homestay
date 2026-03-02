@@ -1,0 +1,231 @@
+/**
+ * FuturaStays Layouts - CSS
+ *
+ * Glass navigation, mega menu, mobile panel, footer styles.
+ */
+
+/* ================================================
+   GLASS NAVIGATION
+   ================================================ */
+.futura-glass-nav {
+    background: rgba(255, 255, 255, var(--glass-opacity, 0.7));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(232, 94, 48, 0.1);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.futura-glass-nav.scrolled {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* ================================================
+   MEGA MENU
+   ================================================ */
+.futura-mega-menu {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: visibility 0.3s, opacity 0.3s, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.group:hover .futura-mega-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* ================================================
+   DESKTOP MENU (wp_nav_menu output)
+   ================================================ */
+.futura-desktop-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.futura-desktop-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+.futura-desktop-menu li a {
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.futura-desktop-menu li a:hover {
+    color: var(--color-primary, #e85e30);
+}
+
+/* ================================================
+   MOBILE OFF-CANVAS PANEL
+   ================================================ */
+.futura-mobile-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+}
+
+.futura-mobile-panel.hidden {
+    display: none;
+}
+
+.futura-mobile-panel-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: futura-fade-in 0.3s ease;
+}
+
+.futura-mobile-panel-content {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: min(380px, 90vw);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    animation: futura-slide-in 0.3s ease;
+    overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+    .futura-mobile-panel-content {
+        background: #1e293b;
+    }
+}
+
+.futura-mobile-panel-content .futura-mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.futura-mobile-panel-content .futura-mobile-nav-list li {
+    margin: 0;
+    padding: 0;
+}
+
+.futura-mobile-panel-content .futura-mobile-nav-list li a {
+    display: block;
+    padding: 1rem;
+    font-weight: 700;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: color 0.2s, background 0.2s;
+}
+
+.futura-mobile-panel-content .futura-mobile-nav-list li a:hover {
+    color: var(--color-primary, #e85e30);
+    background: rgba(232, 94, 48, 0.05);
+}
+
+/* Animations */
+@keyframes futura-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes futura-slide-in {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* ================================================
+   HEADER SPACER
+   ================================================ */
+.futura-header-spacer {
+    height: 110px;
+    /* announcement bar ~36px + nav ~60px + breathing room */
+}
+
+.futura-header-spacer.no-announcement {
+    height: 70px;
+}
+
+/* ================================================
+   ANNOUNCEMENT BAR
+   ================================================ */
+.futura-announcement {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.futura-announcement.dismissed {
+    transform: translateY(-100%);
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* ================================================
+   FOOTER STYLES
+   ================================================ */
+.futura-footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.futura-footer-links li {
+    margin: 0;
+    padding: 0;
+}
+
+.futura-footer-links li a {
+    color: #475569;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.futura-footer-links li a:hover {
+    color: var(--color-primary, #e85e30);
+}
+
+/* Custom Logo sizing within futura header */
+#futura-header .custom-logo-link {
+    display: flex;
+    align-items: center;
+}
+
+#futura-header .custom-logo {
+    max-height: 48px;
+    width: auto;
+}
+
+/* Remove default summary arrow */
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+details summary {
+    list-style-type: none;
+}

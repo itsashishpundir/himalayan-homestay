@@ -228,7 +228,7 @@ foreach ($header_data as $key => $value) {
 
                 // Default values if not set
                 if (empty($text) && $btn === 'btn1') $text = 'Shop';
-                if (empty($url) && $btn === 'btn1') $url = wc_get_page_id('shop') ? get_permalink(wc_get_page_id('shop')) : '/shop/';
+                if (empty($url) && $btn === 'btn1') $url = (function_exists('wc_get_page_id') && wc_get_page_id('shop')) ? get_permalink(wc_get_page_id('shop')) : '/shop/';
                 if (empty($icon) && $btn === 'btn1') $icon = 'shop';
 
                 if (empty($text) && $btn === 'btn2') $text = 'Homestays';

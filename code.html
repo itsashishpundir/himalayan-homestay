@@ -1,750 +1,275 @@
 <!DOCTYPE html>
+
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Uttarakhand Homestay Listings</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1392ec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101a22",
+                        "primary": "#e85e30",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211511",
                     },
                     fontFamily: {
-                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                        "display": ["Inter", "sans-serif"]
                     },
-                    backgroundImage: {
-                        'glass': 'linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6))',
-                        'glass-hover': 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
-                        'glass-dark': 'linear-gradient(135deg, rgba(16, 26, 34, 0.8), rgba(16, 26, 34, 0.6))',
-                    }
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
                 },
             },
         }
     </script>
 <style>
-        .glass-panel {
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(232, 94, 48, 0.1);
         }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        details summary::-webkit-details-marker {
-            display: none;
+        .mountain-texture {
+            background-image: radial-gradient(circle at 2px 2px, rgba(232, 94, 48, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
         }
     </style>
 </head>
-<body class="font-display antialiased text-slate-900 dark:text-slate-100 bg-fixed bg-cover bg-center min-h-screen relative" data-alt="Soft blurred mountain landscape background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAkW6H_qCNo_rM0EJAbVOWTo4QWaOkK9xcXIibPp7DvViMVnWeSEx2qxN4-dzhLurPJ6BE7ntx-auYlghVsum-RTouBCI0I1NoxV53UTLCoOSGMC6N4EIZYvb4YfCXfDLJWbM2XfbP0o4ly0YzmG6GFLXYLZbPtCUSMqGnfFe16DEWeUJZDjRJm0zJb62O1uZ33fP2oH0ksBwq69ZDGvOfQeHdnKsWGkvhg0MbQIt9R2JEE6uwS7a9GZONR9p5zBS6-J2YqEq4qEcs-');">
-<div class="fixed inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-[2px] z-0 pointer-events-none"></div>
-<div class="relative z-10 flex flex-col min-h-screen">
-<header class="sticky top-0 z-50 w-full glass-panel bg-glass dark:bg-glass-dark border-b border-white/20 dark:border-white/10">
-<div class="layout-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="flex items-center justify-between py-4 h-20">
-<div class="flex items-center gap-2 text-primary cursor-pointer shrink-0">
-<span class="material-symbols-outlined text-4xl">landscape</span>
-<h1 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight hidden sm:block">Himalayan<span class="text-primary">Stays</span></h1>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<header class="fixed top-0 left-0 right-0 z-50 glass-header px-6 md:px-20 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">landscape</span>
 </div>
-<div class="hidden md:flex items-center bg-white/80 dark:bg-black/40 rounded-full shadow-sm hover:shadow-md transition-shadow border border-slate-200/50 dark:border-slate-700/50 py-2 pl-6 pr-2 max-w-2xl w-full mx-4 divide-x divide-slate-300 dark:divide-slate-600">
-<button class="flex-1 text-left px-4 text-sm font-medium text-slate-900 dark:text-slate-100 truncate hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-full transition-colors">
-<div class="text-xs text-slate-500 dark:text-slate-400 font-bold">Where</div>
-                            Uttarakhand
-                        </button>
-<button class="flex-1 text-left px-4 text-sm font-medium text-slate-900 dark:text-slate-100 truncate hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-full transition-colors">
-<div class="text-xs text-slate-500 dark:text-slate-400 font-bold">Check in</div>
-                            Add dates
-                        </button>
-<button class="flex-1 text-left px-4 text-sm font-medium text-slate-900 dark:text-slate-100 truncate hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-full transition-colors">
-<div class="text-xs text-slate-500 dark:text-slate-400 font-bold">Who</div>
-                            Add guests
-                        </button>
-<button class="bg-primary text-white p-3 rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg shadow-primary/30">
-<span class="material-symbols-outlined text-[20px]">search</span>
-</button>
+<h1 class="text-xl font-bold tracking-tight text-slate-900">Manali Stays</h1>
 </div>
-<div class="flex items-center justify-end gap-4 shrink-0">
-<a class="text-sm font-medium hover:bg-black/5 dark:hover:bg-white/10 px-3 py-2 rounded-full transition-colors hidden lg:block" href="#">Host your home</a>
-<button class="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
-<span class="material-symbols-outlined">language</span>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Explore</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Experiences</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-600 hover:text-primary">
+<span class="material-symbols-outlined">search</span>
 </button>
-<button class="flex items-center gap-2 border border-slate-300 dark:border-slate-600 rounded-full p-1 pl-3 hover:shadow-md transition-shadow bg-white/80 dark:bg-black/40">
-<span class="material-symbols-outlined text-[20px]">menu</span>
-<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-[24px]">account_circle</span>
-</div>
-</button>
-</div>
-</div>
-<div class="flex items-center gap-8 overflow-x-auto hide-scrollbar pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 border-t border-slate-200/20 dark:border-slate-700/20 mt-2">
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-primary">
-<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">landscape</span>
-<span class="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">Mountain Views</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">cottage</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Cabins</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">agriculture</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Farms</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">home_work</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Tiny Homes</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">forest</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Treehouses</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">water_drop</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Lakefront</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">diamond</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Luxe</span>
-</button>
-<button class="group flex flex-col items-center gap-2 min-w-[64px] cursor-pointer pb-2 border-b-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 opacity-60 hover:opacity-100 transition-all">
-<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:scale-110 transition-transform">warehouse</span>
-<span class="text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">Domes</span>
-</button>
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
+                    Book Now
+                </button>
 </div>
 </div>
 </header>
-<main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-<section class="mb-10">
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-<div>
-<div class="flex items-center gap-2 mb-2">
-<span class="text-3xl font-bold text-slate-900 dark:text-white">Uttarakhand</span>
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<main class="relative">
+<section class="relative h-[85vh] flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Panoramic snow-capped Himalayan mountain range in Manali" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuBs1oLUAK5sn1szOcUcydNZ586_IP20JIHXCtHkHCNsArV5DOn8XZ5y7cqC-MzvbUADFGpZCi-K5p0j_IkPabgiEATp9L1BspinV6b0pS5rfKaqWuAhyr3K5FN_sNYtER2A8NP17prVM2hMuO4N1qg3Ab7ZB_9uNFlKfdL55VUviW3UkahhPPTKo9_ngNcgtYh8Wtzu3OZtdbr4NTPviR5bFMq3k6ylcVUMuflZuQZZB-L2BBJwnYCW9--Qq0of-1tQSoxZiHRfGGk')"></div>
+<div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+<h1 class="text-5xl md:text-7xl font-black text-white mb-6 drop-shadow-lg">
+                    Explore Homestays in Manali
+                </h1>
+<p class="text-lg md:text-xl text-white/90 leading-relaxed font-medium mb-10 max-w-3xl mx-auto">
+                    Experience the magic of the Himalayas in our handpicked cozy homestays. Nestled amidst snow-capped peaks and lush pine forests, Manali offers a perfect blend of adventure and tranquility. From riverside retreats to mountain-view cottages, find your perfect winter vibe and enjoy the warm hospitality of local hosts in India's favorite hill station.
+                </p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-4 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-2xl mx-auto">
+<div class="flex items-center gap-3 px-4 py-2 w-full">
+<span class="material-symbols-outlined text-white">calendar_month</span>
+<input class="bg-transparent border-none focus:ring-0 text-white placeholder-white/70 w-full text-sm" placeholder="Check-in dates" type="text"/>
 </div>
-<p class="text-slate-600 dark:text-slate-300 text-lg mb-1">The Land of Gods</p>
-<div class="flex items-center gap-2 text-sm">
-<div class="flex items-center">
-<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="font-bold ml-1">4.89</span>
-</div>
-<span class="w-1 h-1 rounded-full bg-slate-400"></span>
-<span class="underline cursor-pointer hover:text-primary">15,400 reviews</span>
-</div>
-</div>
-<div class="flex flex-wrap gap-3 md:justify-end">
-<button class="flex items-center gap-2 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 px-4 py-2 rounded-full border border-white/40 shadow-sm transition-all group">
-<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[20px]">location_on</span>
-<span class="text-sm font-semibold">Mussoorie</span>
-</button>
-<button class="flex items-center gap-2 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 px-4 py-2 rounded-full border border-white/40 shadow-sm transition-all group">
-<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[20px]">location_on</span>
-<span class="text-sm font-semibold">Nainital</span>
-</button>
-<button class="flex items-center gap-2 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 px-4 py-2 rounded-full border border-white/40 shadow-sm transition-all group">
-<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[20px]">location_on</span>
-<span class="text-sm font-semibold">Rishikesh</span>
-</button>
-<button class="flex items-center gap-2 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 px-4 py-2 rounded-full border border-white/40 shadow-sm transition-all group">
-<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[20px]">location_on</span>
-<span class="text-sm font-semibold">Auli</span>
-</button>
+<div class="h-8 w-[1px] bg-white/20 hidden md:block"></div>
+<button class="bg-primary text-white w-full md:w-auto px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform">
+                        Search
+                    </button>
 </div>
 </div>
 </section>
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-24">
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Cozy wooden cabin with glass windows nestled in pine forest" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Cozy wooden cabin with glass windows nestled in pine forest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5WzTtC3esoRwZCoTp-ZGXy6BmrymrLnnC68acdBeIf6duQqt8IjZrEQ7T1l6MV8i1L60QoYPFbHO8Pb72R3fesbqnr5XOtPnGYX-ZEHppksUzS8BelPVocmPMVDC9m7Fn76wGrd2PsvgcBZWf9PWvbUbBRrmQySk9ZRAV4Dx6fNP88oycmVMS_zI_AOUIdh7Oy3P0Vss6jHTYlYEDr8ITD2GHpO-e-_ErkfGj6SnG8Fbn-GzWa42tj6MKqkBSNcuYBZaABerFaIJ6"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-<div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-xs font-bold text-slate-900 shadow-sm">
-                            Guest favorite
-                        </div>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">The Apricot Tree Cottage</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.92</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Nainital, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">25 km to Himalayas base</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Oct 15 - 20</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹4,500</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Modern A-frame house with warm interior lighting at dusk" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Modern A-frame house with warm interior lighting at dusk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPkWycEVj5FTGVrbBtDHympQ9XVrszVtZxRpwSuiagTuWkPFG0tthgSc6bi_6NXqIR_ctsZI17yuSH50U5FyrM2bui9R6CQuffALh7Q5pYKMUdfPtlk2y0nW_OJTSkDH7V5D2jLkuxwtxINAbraO1jOzKRkLhsYB3v2CS6tdXIAUlzVaZ-YiVC-oC7Rw2w8pk9zN3GusGpILZJzj3d46S1DPrJ_LYoId3nmdiun83OYP8AJVMfZuXzr-fujuFOik0c85td9zhPJP_H"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-<div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-xs font-bold text-slate-900 shadow-sm">
-                            Superhost
-                        </div>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Cloud End Retreat</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.85</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Mussoorie, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Mountain views</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Nov 02 - 07</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹8,200</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Traditional stone cottage surrounded by lush green valley" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Traditional stone cottage surrounded by lush green valley" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8jE81A0C6pdp0humig4T9JgUSyTZ1KBgg7Rx3ttli00c6vgAaK5VtxLqKZAn7MoeNGQ_ctfWW4qxvJ0V7Agcoc9czyMt3fs-eLDG-Rq6tquVjMwTSJ1X44Uk8J79ElLFl4zXQKqMhJ0TDgSJ-GcDSZManRNDHoZuiRE5zj1StWkfcRrGoi0blYEQ8hbU_agt0X8S3Ld1Q4j3vmsSNJFXMSm9Jc_03-3fEykh1JExzh2BK9eFstM809-mn_7lp64AQY5C3qmpjaefs"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Eco-Stay in Rishikesh</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.98</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Rishikesh, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Near Ganges river</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Oct 22 - 27</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹3,100</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Snowy mountain chalet with warm glowing windows at night" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Snowy mountain chalet with warm glowing windows at night" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgdnm2Txc3Nm-s5fOtQfbagXJj5nAW7yDnqMy1PBhV7hJyMiXdCD3Pjc0v7kpRk9MT_T9sy3tijO6-KkaaQwrOvD0eS-hST4c__CAjtZeHFPi7V5i7LVURBoJ66W3L62h1WRUrAivw7zhPY0ZL2Ch9asLLLe5YytcKiaJTxMxdDAeG5V1nLaHz9u7nun1arz7Cko4Z72_ZH0AgGKqW5dnK9k0_qnhUn5ufc4zSy0Q_TWRI7W3WNjjzVEjeBIzhlfG6QCaDzemOXWvF"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Ski Lodge Auli</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.75</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Auli, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Ski-in/ski-out</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Dec 10 - 15</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹12,500</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Modern glass dome glamping site with forest view" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Modern glass dome glamping site with forest view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwG8yKLzPZc6qxklq0ailY36LuwQ1r4so05NhaBigqWEDpCQUemwuY7j6MWCjVASInirsqiVOZJsHq7ewDJ7AL8_OWkMRAp7o6D5CAdkQmRBsI71VmzHMLvE6VH6_rCHFEnaAxjtQ-hDMwoUGhvb6XpYJw9Z_dB3fwJFHGzkwdVzCaBUSA1nxb1acA52l34Yk4vc__suVCOe4km7PrFb5-7p1Ge0AaUJjHKV6cxvx3rps-zunRMO7z2n82C1OVr5iALjtHZbtFp5CB"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Starlight Dome</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">5.0</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Mukteshwar, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Glamping experience</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Nov 12 - 14</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹6,800</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Luxury villa with infinity pool overlooking mountains" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Luxury villa with infinity pool overlooking mountains" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0F4PrikJ1_1QDBG23rIrPQT-CaltJT1PZ5tYVaQbduV5Nt1yF4oRYLqEHwuHBp9aEQaUVn9c8S2lRuhUfuiPNkEzASLNWPPSdO-Vc9qRE03YboshA3LR84gsfymq1UDOSRVP2-ohbC7El4ZyNPV--wYH8FTZ3Fcy6wqpPDNk4nkHFWo7FHtxUKcclGmRWN7wZo3Y5efYlS71u7f07iX39QHBGe66cJ3CGrjZlMl-uaK8rxXceKbQPTe6-aghJudAob5mQqIV-r9Rp"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-<div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-xs font-bold text-slate-900 shadow-sm">
-                            Luxe
-                        </div>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">The Himalayan Villa</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.95</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Dehradun, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Private chef included</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Oct 28 - 30</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹15,000</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Secluded tiny house in the middle of a forest" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Secluded tiny house in the middle of a forest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6wMl7Tjxdpd2aeA_UUKYZH81K8NfL-Tj0Bh7X5a8Rx3wuPiEbT7cYZEPHwMgHEnS8wPJIIxKMbVYBKiWAvL0yWlf6SfAjVO_9Tv0DcncA06CmU7tbPAUR20ZFzMCaCATyMYZXq6YhXa-6mKXwR7jbYUAM42s_c1y3No_YqNwJrviZVTEA2R48Qb93o98EdYLLhsP4RDiCrHkKp4u2P8Djh87j17xsA7ABiovDNEt_LrX3LmVCKom0gf0cVYh_KuIBT6hwgEZPt1vO"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Forest Tiny Home</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.80</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Ranikhet, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Off-grid living</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Nov 05 - 10</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹3,800</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Organic farm stay with vegetable garden and mountain backdrop" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Organic farm stay with vegetable garden and mountain backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6iy1Rw8MuXpM2FmjetA-lhJMKGrLzCRrOV_P4ZZfGg_4Ymi4iI54b_IWs-bbfBA4uoVcTNaSFCbfbSHUsBVost58eHsQSpUbIql62UVNcpg75wHtusubDocJTuym0bAGebDN41_2rnMZtrxmfBtOIhN-o1XWttiVVhzGVmCDF8UkN1fNNuMIUT5NiYA09k1LaQGwZizPWP5D3lkho8zgWDuFstTF4VkIlNzdQ6bCrwze6dsAuypYcIAoiCp7b_uSUv_ZKjJayEZN1"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Organic Farm Stay</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.88</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Almora, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Farm-to-table meals</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Oct 18 - 25</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹2,900</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Serene lakeside cottage with mist rolling over the water" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHs0lN4RFLOGU2448JtvsH3O5ZKUC_ZpItWoMW1-yANGocQYU5dNq6TGUBuelucLfa9BVpNNQbuQYG3ZufdLNFyXeyyPs99dSpWg5VBj4bG9yNtSoi5rv73fc4U0vEocINEHyPjx-M3pYLEoTjjOUdrqil9EVJM6BR7FJkcaVgIBwkBPr_Ka46i1Fk0G95NKm631LO8NF6k3Nryy7bFdS31gTexVDKqfwA5bIEezAtPC2lgSXGWPsmaElqqxfbOUjDr2WPU1p-XOgN"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Lakeview Serenity</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.94</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Bhimtal, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Private dock access</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Dec 01 - 06</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹5,200</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Rustic stone house with fireplace in a snowy landscape" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD420CEaBxgJFRy-p0bDRhp2qpHNzOmDq6mbbv6AxKAgGZ4PTisLvpyenBAa_3HAyW4_LN3nODQHR6S7XRDHtHJbsuy36-fhH9-6VHIxPWKCS_yWkyMJBGosLKMGT3zghoGsRZDCvGJIjEDhwbPzs57peFkCXW9_dXdXYWXeatLNyDMNTxLKyKocckIgWOkEEQf4BQlOclJsd1OAl8nN-fVy4N8MnSZgfCLKvNpsNvE0v0sb0-vAcoKxE5y4EvdQK9naT8jnYen6bwR"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Himalayan Stone House</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.87</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Chopta, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Best for trekking</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Nov 15 - 20</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹3,500</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Modern boutique hotel room with panoramic window" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZDC2qK_KWplMnt7XLn9OmG6wXabkRm8Sb_7ieR67RzuxnQqvwnZwT-Bk0H8NSwKouEaI9iCUy73PJEcypoK1k4ewJfwKveodL1wR9xNn85yqZNFkiZX8MWxZFK4gOmypsMxoqnNP745qj4BxZgjNSDPHar96yVy5JznLN_cY6Yx_P_uZ3l5Cq1koKbjSc4N5JoloRX99rWH9sKEdRJGRf2iU78bX9NdQ1OQoWW1arzL4ax81zh-jsfvkXElzOu73OuJJoW8vUyI4n"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-<div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-xs font-bold text-slate-900 shadow-sm">
-                            Plus
-                        </div>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">The Panorama Suite</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.99</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Landour, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Iconic sunset views</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Dec 05 - 08</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹10,500</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Colorful bohemian tent in a meadow" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe_hTwCxOm1ImnxB0ofXXggrBsLQTywCHsJb79FLIMhFIWPf8ssDXyg0TRaavAF_c2grmX4zNT0nzPVcUquybfOnyKOV8Ns7wprfRcklV5cFnZmUBH3w6W45Ji-uf1FdlJU479PmNHCO55yQgsjYEqjat4GX4S85vW-HhyQDmlsgERjIcqhiBHZH-JepOCQJBnE8-9ygujfbpMJtqAb_UV_jdoB6rp17c11GUMWKtdQVhhhSnn2sg5p7y2N97HBajvXw2n_M5OYQ82"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Boho Valley Camp</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.78</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Kasar Devi, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Stargazing hotspot</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Oct 30 - Nov 02</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹2,400</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Heritage colonial bungalow with sprawling lawn" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEVMZmeaHeBNgV-SrHRjAR2IZXtXuocki2n6_1Ydmw6foWlbnNYiGmonJsdJs5XZ2W1GhYnCFuc2pEnvNjr5_5_h6MYMsnyKd0aLpf8ScW_3-_ZSGtUS0dpYsmfT7IWu4hug4wehMMsWeccrDw_mU9Y9Z-sYvmzOMcoByvgND8My5MkfRwx5imNTQbTUk2UH4BR-cqgGMXPEHmMvnyDd8-R-kQEUNqvNBYkZv14joH7prMLY_jL4oucvQ2gucQdvdi185xYydjBoQ5"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Colonial Heritage Stay</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.82</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Dehradun, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Historic property</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Nov 18 - 22</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹7,100</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Small wooden pod overlooking a tea garden" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiaAXzvln72fZa2w-vcyl6DKPN0jVyGHY6zl9u0-FmfL63OA7IBXVlLDj3L4BVshZ1b2r0-z0WfThK4dS5dO1l2-ANY2WGbTGFBGAAO3fULOYWzDoLegfxwwG_q1e3xS79S_CZNM1HSOJyBDAtfO--hpbgnmhtrJx4Q6ZT64f7JyzZBAvUvmwpaxbNC4z-Oz2uePwamWIoLykgMlLbwubyYYsuuFAidNbi5UHmGdhe9HYqbzAhQO4M7JwBuG2hGMNt5s7gr_8Gwz-3"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Tea Garden Pod</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.91</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Kausani, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Amidst tea estates</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Dec 12 - 15</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹4,000</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="High altitude trekking hut with snowy peaks" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBowVGIEJPIiskjpEV175RaKYoLTYKG69JXGWFGIYoB4Zd65kDcZX_a7aMzGJa5AxiZYVi9xzx3ZxtvxlVQr1iYDGJXt-JxRcyfW4EWZOvLmg7vX8qi2rUaGo7qZ4oCphDvHzjRj_byxXTo9HTm8-wpC89veZQ30-nytkVIL5BDoice9L-YdYzSXjCp0vy38bAVjO0gqPgvuggLgcMVOo6X2OAsL1G5vQHkxUjmJhT4tUIl5S9pn22SNtUKfkSq4XjIvb8YEjv_-AoN"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Basecamp Harsil</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">4.76</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Harsil Valley, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Remote adventure</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Oct 25 - 29</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹3,200</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-<div class="group relative flex flex-col gap-3">
-<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
-<img alt="Modern cottage with large windows overlooking valley" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgHK_mjlMGuPS8Ij3vxpfm3DGnmqY7fsFKNG-4ZvuVjUYI_VQIasZEOOOaGQH2mdr9qOfHiehiL-rDzPSW29QQex23PWYRvYzvUwkNABwUTbAdzwpdB5gxBgGebNxpln73bkwMjWialPwf99VSFSXqoEfGw-_mBGiXyfSEmhyVrSQnVcM8rpcKa3OI7wriaZiYHTYIJZ8mAPf9n0OeR8SYTq6A8xnFnh2Jk4fsDZ0I4eJtMhEcWWnYBvlUYM20IqZySG_JwoxozdwN"/>
-<button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm">
-<span class="material-symbols-outlined block text-[20px]">favorite</span>
-</button>
-<div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md text-xs font-bold text-slate-900 shadow-sm">
-                            New
-                        </div>
-</div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-<div class="flex justify-between items-start">
-<h3 class="font-bold text-slate-900 dark:text-white truncate pr-2">Valley View Loft</h3>
-<div class="flex items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[16px] text-slate-900 dark:text-white" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-sm font-medium">New</span>
-</div>
-</div>
-<p class="text-slate-600 dark:text-slate-300 text-sm mt-1">Pauri, India</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Sunrise balcony</p>
-<p class="text-slate-500 dark:text-slate-400 text-sm">Nov 10 - 15</p>
-<div class="mt-2 flex items-baseline gap-1">
-<span class="font-bold text-slate-900 dark:text-white">₹4,800</span>
-<span class="text-slate-600 dark:text-slate-300 text-sm">night</span>
-</div>
-</div>
-</div>
-</div>
-<section class="mb-20">
-<div class="flex items-center gap-3 mb-8">
-<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Top-rated Experiences</h2>
-<div class="h-px bg-slate-300 dark:bg-slate-700 flex-1 opacity-50"></div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-2xl p-6 relative">
-<span class="material-symbols-outlined text-4xl text-primary absolute top-4 right-4 opacity-20">format_quote</span>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
-<img alt="Reviewer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtXlLLbGpq1MId7XR5zM1S5-mBmh8ZsOIdK-qCIjLg_yKfVqjakfMCv4fNlHBUJgUCsff0QsdH5ScDdw1Cx-M-ld0aYMTYReYqXFTtyF0-1Xd5YSR6syPaCM-l1ssUZMBehJ49xhp8w2EuIgHb3baSWrAPjidOvQkhPyp1pv4raY7vsDhTsbI6So5IHxGg9z6W7upX71_Ol2wOUJwgcb-1g1XFNy_d1ddC8Pnlex8AUFj1V4UpAlFPIwxLoY-lRnuzqJdnh9dKw1Ay"/>
-</div>
+<section class="py-20 px-6 md:px-20 relative mountain-texture">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 <div>
-<h4 class="font-bold text-slate-900 dark:text-white">Arjun K.</h4>
-<p class="text-xs text-slate-500 dark:text-slate-400">Stayed in Rishikesh</p>
+<h2 class="text-3xl font-bold mb-2">Featured Winter Escapes</h2>
+<p class="text-slate-500">Handpicked stays for an unforgettable Himalayan experience</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+<span class="material-symbols-outlined">sort</span>
+</button>
 </div>
 </div>
-<div class="flex text-primary mb-2">
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-xl">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Cozy wooden cabin in snow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsoPoeVDtSu6PzYrxhsvp6rglRBOl167MK5opjiZ59G0OMrJ6P6fBDVZc-XP2IxvCw30wEQ1T55A5LmiW4HxCcf3ZUGEDeNf_oRV8qpHcD7hWrWaeVe3XElaGRfUL9vfB07GyFMsvWikf30Xon_rPzbrM-eneaDE0oZU86wuXmF1vfkZ2My7CU1Shsj5gqYttmYH1-WXdc2mHReRVWJdd5UqvAf8hLirLXPpbzM-lWc23Z_RosObS3Ldw0eFxF6u5p2X1iRAfmoAk"/>
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary">BEST SELLER</div>
 </div>
-<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                "Absolutely breathtaking views of the Ganges. The host was incredibly welcoming and the local food prepared by them was the highlight of our trip. Will definitely return!"
-            </p>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Snowy Peak Villa</h3>
+<p class="text-primary font-bold">₹4,500<span class="text-slate-400 text-xs font-normal">/night</span></p>
 </div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-2xl p-6 relative">
-<span class="material-symbols-outlined text-4xl text-primary absolute top-4 right-4 opacity-20">format_quote</span>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
-<img alt="Reviewer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBAp_SCl8E7zRA_Mgb_lPdqt-m2ZaetrAJjhNXe4LD2JQYIf78MJaw3W_0ZEdeDZHupdVfSYB6bYnmEx6Tz6S_SoiF78ozDjkObzgh5jqWTT_gL509nE2wfceUMpgZigcQBNDcEltHGCP092nEsVaCO04wFfLbruoiijCjA7GN5K7iPSNL9KzS_bIGx29xhSunY1BuXH3tfbke2ek34sdEVqK9cSpSWMONhJ0_tIanhx8BclM4MMv861X7YI23sc-PFJ0PjmdFvxra"/>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Mountain View</span>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Fireplace</span>
 </div>
-<div>
-<h4 class="font-bold text-slate-900 dark:text-white">Sarah M.</h4>
-<p class="text-xs text-slate-500 dark:text-slate-400">Stayed in Mussoorie</p>
+<button class="w-full py-3 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-primary hover:text-white transition-colors">View Details</button>
 </div>
 </div>
-<div class="flex text-primary mb-2">
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star_half</span>
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-xl">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Rustic riverside cottage with blue windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA43Kbbe6bW_x8DJPyKiP34KZJHYX0pyzDFUoF-mcMpdHxl46sLWKvBhuQHpNUMaxl_UXGZrBAMzuYTP7EHA9l1oAB69xmJEXPLeaoAnr_01i5mZdAnamLMyocgKWXqVESCr3bk6FIEUoDbhRi43wGL4gwj6fmasQYyJed4SFC9PLMPNRn6AsHDwzWCu6pSg_q1wK3jUqL8jGT9Qa2JGLRontvgYK06S9KCyWPPWOPmK89UJLodrSfNamU4lwhvABZSbwcBhghAl7Q"/>
 </div>
-<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                "The cottage was cozy and exactly as described. Waking up to the mist rolling over the mountains was magical. A perfect escape from city life."
-            </p>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Riverside Cottage</h3>
+<p class="text-primary font-bold">₹3,200<span class="text-slate-400 text-xs font-normal">/night</span></p>
 </div>
-<div class="glass-panel bg-glass dark:bg-glass-dark rounded-2xl p-6 relative">
-<span class="material-symbols-outlined text-4xl text-primary absolute top-4 right-4 opacity-20">format_quote</span>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
-<img alt="Reviewer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsb_t2tf-toX7ZXSrwQy_RqOHBlrx9K754xH1BU19658qO3PWdsnTOwt-6Y-j1unCfeLp9dmfzJfPlLT7n7srwtFZY3S42D35iMlJG60_BjTfcQ3YysP9bn_ND-u6N2hyj_xwxgyu_gNBrgt8HVw_JwLgyrGIOhBFQ-jVsESup9Z5-E9yYytxHLMXW2U0DAwRlhkwRQdCa0VhCXYWpldTAFU2QnqqPJpiXNq4_wakPwo6ucbC9CjDCeZMPT-RmsJVb2HI-1WvgwTT3"/>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Riverside</span>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Nature</span>
 </div>
-<div>
-<h4 class="font-bold text-slate-900 dark:text-white">Dev P.</h4>
-<p class="text-xs text-slate-500 dark:text-slate-400">Stayed in Auli</p>
+<button class="w-full py-3 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-primary hover:text-white transition-colors">View Details</button>
 </div>
 </div>
-<div class="flex text-primary mb-2">
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-xl">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Luxury mountain cabin with large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIFb3yFHFZmDUr17DVWILvttz93OBFOMoA5x-Hc658G_5sSAKgMQPST-0U0ELnc-aP8NHI_jkzKtDvZanzlxzOktK24lU5V-eio4zJVP_Gu9tpBf4Ov4BUZ5QBdar8pKJvk5Njlc4jmXEXSadhModHK-IHc4hCbhQV2K8NByZqMxHdl_MZcAPd18y9C740-6Hdvv50DdgX67yE_E6Qa6726HRu2qk9DO4kQPcPHfEWJraeYjDjnxkBFDrUM1UHrwnB5xMDyi0zIOc"/>
 </div>
-<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                "Incredible skiing experience! The lodge was warm, the fireplace was amazing, and it was right on the slopes. Highly recommended for adventure lovers."
-            </p>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Pine Wood Cabin</h3>
+<p class="text-primary font-bold">₹5,000<span class="text-slate-400 text-xs font-normal">/night</span></p>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Luxury</span>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Forest</span>
+</div>
+<button class="w-full py-3 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-primary hover:text-white transition-colors">View Details</button>
 </div>
 </div>
-</section>
-<section class="mb-24">
-<div class="glass-panel bg-glass/50 dark:bg-glass-dark/50 rounded-3xl p-8 md:p-12 backdrop-blur-xl">
-<div class="text-center mb-10">
-<h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Frequently Asked Questions</h2>
-<p class="text-slate-600 dark:text-slate-300">Everything you need to know about booking in the Himalayas</p>
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-xl">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Traditional stone mountain home" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrr3nCSi14A2nlJN-vcnHJuGriBHT-v7Pkt5v888r4ztzNT83Haq4W5cYTWqBqh-ODGbVQeNL4QCsTdk0IgiyFbGiRfSJvWZHEj2dUQnA8gsTFvlxCP9yHvnNfbQYa6hHxerpvVIidXY3mbycNO92skKrlv3CYEd34WbTn5xMkC7wkQL11ZFzh0WvEyZovEjCJl3RRDf1ksRssb1fUdTcPxCxaTQl5gPfLjIIzUSnWoq4qQWqxvNxqM5DzZjvvWsW_yIH09zGYy9M"/>
 </div>
-<div class="max-w-3xl mx-auto space-y-4">
-<details class="group glass-panel bg-white/40 dark:bg-black/20 rounded-xl open:bg-white/60 dark:open:bg-black/40 transition-all duration-300">
-<summary class="flex items-center justify-between p-4 cursor-pointer font-medium text-slate-900 dark:text-white">
-<span>What is the best time to visit Uttarakhand?</span>
-<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-</summary>
-<div class="px-4 pb-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    Uttarakhand is a year-round destination. For snow lovers, December to February is ideal. For pleasant weather and trekking, March to June and September to November are perfect.
-                </div>
-</details>
-<details class="group glass-panel bg-white/40 dark:bg-black/20 rounded-xl open:bg-white/60 dark:open:bg-black/40 transition-all duration-300">
-<summary class="flex items-center justify-between p-4 cursor-pointer font-medium text-slate-900 dark:text-white">
-<span>Are the homestays pet-friendly?</span>
-<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-</summary>
-<div class="px-4 pb-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    Many of our listed properties are pet-friendly! Look for the "Pet Friendly" tag on the property card or use our filters to find suitable accommodations for your furry friends.
-                </div>
-</details>
-<details class="group glass-panel bg-white/40 dark:bg-black/20 rounded-xl open:bg-white/60 dark:open:bg-black/40 transition-all duration-300">
-<summary class="flex items-center justify-between p-4 cursor-pointer font-medium text-slate-900 dark:text-white">
-<span>Is internet connectivity good in remote areas?</span>
-<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-</summary>
-<div class="px-4 pb-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    Most of our properties offer high-speed WiFi, making them great for workcations. However, some remote off-grid cabins might have limited connectivity. Please check the specific amenities listed for each property.
-                </div>
-</details>
-<details class="group glass-panel bg-white/40 dark:bg-black/20 rounded-xl open:bg-white/60 dark:open:bg-black/40 transition-all duration-300">
-<summary class="flex items-center justify-between p-4 cursor-pointer font-medium text-slate-900 dark:text-white">
-<span>What is the cancellation policy?</span>
-<span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-</summary>
-<div class="px-4 pb-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                    Cancellation policies vary by host. You can find flexible options that allow free cancellation up to 24 hours before check-in. Review the booking details carefully before confirming.
-                </div>
-</details>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Himalayan Homestay</h3>
+<p class="text-primary font-bold">₹2,800<span class="text-slate-400 text-xs font-normal">/night</span></p>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Authentic</span>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Local</span>
+</div>
+<button class="w-full py-3 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-primary hover:text-white transition-colors">View Details</button>
+</div>
+</div>
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-xl">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Apple orchard surrounding a cottage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN3LOpNFoDiO8Cvafq3HcEU1ly-0oPzjEoOBhIidvmMe7DmMUpRnP7aEcqAuB13gAvSaIimZQaJ4bEfpTbxdkAPlQHlGOkhDFqluh-nlE_AMtgFO_qS5mduX2crAEBZ2B3Hi5cTM5z9R8TE5TDT-gFaxbC25rp6reC-i2fVz2-P3Xikizf3Fi2BA9v1YciGsZc5rFoxiWltJaZWEjLWK4hySIOcLhvlVbRvqLexXofD0clHWkLjXJMCSbSwZzyXaz77f0O7eMMrMw"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">The Apple Orchard</h3>
+<p class="text-primary font-bold">₹3,500<span class="text-slate-400 text-xs font-normal">/night</span></p>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Orchard</span>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Quiet</span>
+</div>
+<button class="w-full py-3 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-primary hover:text-white transition-colors">View Details</button>
+</div>
+</div>
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-xl">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Modern cabin in misty mountains" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlBVnkDNsj-BbteHt_4l-_xQt2hsp5q_ePBCx4iheTxn8oBNxz0aLEmeukIrRsbb-NFYCCLarDQ1Iq5CqJUk3JuN9C4pG-AuEQ8MHHSXrU722UTEwvcU8A93VZ8uVHWYNhnPwJ9BMOB1JSM-GbFrSTb30f0rwBvaY7jCzFf6lYHkdPOD2-uJdI3NSiEqkSgOwSF5-OmTYDkt4snIyYZgOv7CHRJilf75jLzQ9BwjWdZ_VU6e0-l0yj34KhpzgeoZYHTYItcC2I9d0"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Mountain Mist</h3>
+<p class="text-primary font-bold">₹4,200<span class="text-slate-400 text-xs font-normal">/night</span></p>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Mist</span>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Scenic</span>
+</div>
+<button class="w-full py-3 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-primary hover:text-white transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<div class="mt-16 text-center">
+<button class="inline-flex items-center gap-2 px-10 py-4 bg-background-dark dark:bg-primary text-white rounded-xl font-bold hover:scale-105 transition-all shadow-lg">
+                        Browse All Stays
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
 </div>
 </div>
 </section>
 </main>
-<footer class="mt-auto glass-panel bg-glass dark:bg-glass-dark border-t border-white/20 dark:border-white/10 pt-16 pb-8">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-20 px-6 md:px-20">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
 <div class="col-span-1 md:col-span-1">
-<div class="flex items-center gap-2 text-primary cursor-pointer mb-4">
-<span class="material-symbols-outlined text-3xl">landscape</span>
-<h2 class="text-slate-900 dark:text-white text-lg font-bold tracking-tight">Himalayan<span class="text-primary">Stays</span></h2>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">landscape</span>
+<h2 class="text-2xl font-bold">Manali Stays</h2>
 </div>
-<p class="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                    Curating the finest homestays in the Himalayas. Experience authentic living with modern comforts.
-                </p>
+<p class="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+                        Providing curated mountain experiences since 2018. We connect you with the soul of Manali through authentic local hospitality.
+                    </p>
 <div class="flex gap-4">
-<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">social_leaderboard</span></a>
-<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">photo_camera</span></a> 
-<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">alternate_email</span></a> 
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">share</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">camera_alt</span>
+</a>
 </div>
 </div>
 <div>
-<h3 class="font-bold text-slate-900 dark:text-white mb-4">City Wise Stays</h3>
-<ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-<li><a class="hover:text-primary transition-colors" href="#">Homestays in Mussoorie</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Homestays in Nainital</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Homestays in Rishikesh</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Homestays in Mukteshwar</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Homestays in Ranikhet</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Homestays in Dehradun</a></li>
+<h3 class="font-bold mb-6 uppercase text-xs tracking-[0.2em]">Explore</h3>
+<ul class="space-y-4 text-slate-500 dark:text-slate-400 text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Old Manali</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Vashisht Village</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Solang Valley</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Rohtang Pass</a></li>
 </ul>
 </div>
 <div>
-<h3 class="font-bold text-slate-900 dark:text-white mb-4">Support</h3>
-<ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-<li><a class="hover:text-primary transition-colors" href="#">Help Center</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Safety Information</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Cancellation Options</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Report a Concern</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Our COVID-19 Response</a></li>
+<h3 class="font-bold mb-6 uppercase text-xs tracking-[0.2em]">Support</h3>
+<ul class="space-y-4 text-slate-500 dark:text-slate-400 text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Booking Guide</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Cancellation Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Travel Insurance</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact Us</a></li>
 </ul>
 </div>
 <div>
-<h3 class="font-bold text-slate-900 dark:text-white mb-4">Subscribe for Offers</h3>
-<p class="text-slate-600 dark:text-slate-400 text-sm mb-4">Get the latest updates on new properties and exclusive deals.</p>
-<div class="flex flex-col gap-3">
-<input class="w-full bg-white/50 dark:bg-black/30 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="Your email address" type="email"/>
-<button class="bg-primary text-white font-medium py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">Subscribe</button>
+<h3 class="font-bold mb-6 uppercase text-xs tracking-[0.2em]">Newsletter</h3>
+<p class="text-sm text-slate-500 mb-4">Get the latest winter deals directly in your inbox.</p>
+<div class="flex gap-2">
+<input class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-sm focus:ring-1 focus:ring-primary" placeholder="Email" type="email"/>
+<button class="bg-primary text-white p-2 rounded-xl">
+<span class="material-symbols-outlined">send</span>
+</button>
 </div>
 </div>
 </div>
-<div class="border-t border-slate-200/30 dark:border-slate-700/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-<p class="text-slate-500 dark:text-slate-400 text-xs">© 2023 HimalayanStays, Inc. All rights reserved.</p>
-<div class="flex gap-6 text-xs text-slate-500 dark:text-slate-400">
-<a class="hover:text-slate-800 dark:hover:text-slate-200" href="#">Privacy</a>
-<a class="hover:text-slate-800 dark:hover:text-slate-200" href="#">Terms</a>
-<a class="hover:text-slate-800 dark:hover:text-slate-200" href="#">Sitemap</a>
+<div class="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:row justify-between items-center gap-4 text-xs text-slate-400 uppercase tracking-widest">
+<p>© 2024 Manali Stays. All Himalayan Adventures Reserved.</p>
+<div class="flex gap-8">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
 </div>
 </div>
 </div>
 </footer>
-<div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-<button class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center gap-2 font-semibold">
-<span class="text-sm">Show map</span>
-<span class="material-symbols-outlined text-[18px]">map</span>
-</button>
-</div>
-</div>
 </body></html>

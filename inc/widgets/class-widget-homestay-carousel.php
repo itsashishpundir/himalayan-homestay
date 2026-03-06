@@ -105,14 +105,8 @@ class HM_Widget_Homestay_Carousel extends WP_Widget {
                         
                         <div style="position:absolute;top:12px;left:12px;display:flex;flex-wrap:wrap;gap:8px;pointer-events:none;z-index:20;">
                             <?php if ($types && !is_wp_error($types)) : foreach(array_slice($types, 0, 1) as $term) : ?>
-                                <a href="<?php echo esc_url(add_query_arg('type', $term->slug, get_post_type_archive_link('hhb_homestay'))); ?>" style="background:var(--color-primary);color:#fff;padding:4px 12px;border-radius:9999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;pointer-events:auto;text-decoration:none;">
+                                <a href="<?php echo esc_url(add_query_arg('type', $term->slug, get_post_type_archive_link('hhb_homestay'))); ?>" style="background:rgba(255,255,255,0.9);backdrop-filter:blur(4px);color:#334155;padding:4px 12px;border-radius:9999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;pointer-events:auto;text-decoration:none;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);">
                                     <?php echo esc_html($term->name); ?>
-                                </a>
-                            <?php endforeach; endif; ?>
-                            
-                            <?php if ($locations && !is_wp_error($locations)) : foreach(array_slice($locations, 0, 1) as $loc) : ?>
-                                <a href="<?php echo esc_url(add_query_arg('location', $loc->slug, get_post_type_archive_link('hhb_homestay'))); ?>" style="background:var(--color-primary);color:#fff;padding:4px 12px;border-radius:9999px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;pointer-events:auto;text-decoration:none;">
-                                    <?php echo esc_html($loc->name); ?>
                                 </a>
                             <?php endforeach; endif; ?>
                         </div>

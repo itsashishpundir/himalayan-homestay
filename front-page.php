@@ -76,6 +76,9 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    box-sizing: border-box;
     overflow: hidden;
 }
 .hhb-fp-hero-bg {
@@ -213,29 +216,29 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
     <div class="hhb-fp-hero-overlay"></div>
 
     <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
-        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 drop-shadow-lg leading-tight">
+        <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-6 drop-shadow-lg leading-tight">
             <?php echo esc_html( $hero_h1 ); ?>
         </h1>
-        <p class="text-base md:text-lg text-white/85 leading-relaxed font-medium mb-10 max-w-2xl mx-auto">
+        <p class="text-sm sm:text-base md:text-lg text-white/85 leading-relaxed font-medium mb-8 sm:mb-10 max-w-2xl mx-auto">
             <?php echo esc_html( $hero_sub ); ?>
         </p>
 
         <!-- Buttons -->
-        <div class="flex items-center justify-center gap-4 mb-10">
-            <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="px-8 py-3.5 bg-primary text-white font-bold rounded-xl text-sm hover:brightness-110 transition shadow-lg">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+            <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 bg-primary text-white font-bold rounded-xl text-sm hover:brightness-110 transition shadow-lg">
                 Browse Stays
             </a>
-            <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="px-8 py-3.5 bg-transparent border-2 border-white text-white font-bold rounded-xl text-sm hover:bg-white hover:text-slate-900 transition">
+            <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 bg-transparent border-2 border-white text-white font-bold rounded-xl text-sm hover:bg-white hover:text-slate-900 transition">
                 Check Availability
             </a>
         </div>
 
         <!-- Search Bar -->
-        <div class="hhb-fp-search-bar p-2.5 rounded-2xl max-w-3xl mx-auto">
-            <form method="get" action="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="flex flex-col md:flex-row items-center gap-2">
+        <div class="hhb-fp-search-bar p-2 rounded-2xl max-w-3xl mx-auto">
+            <form method="get" action="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="flex flex-col md:flex-row items-stretch md:items-center gap-1 md:gap-2">
                 <!-- Location -->
-                <div class="flex items-center gap-3 px-4 py-2.5 w-full">
-                    <span class="material-symbols-outlined text-white/70">location_on</span>
+                <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="material-symbols-outlined text-white/70 text-lg">location_on</span>
                     <select name="location">
                         <option value="">All Locations</option>
                         <?php if ( $locations && ! is_wp_error( $locations ) ) : foreach ( $locations as $loc ) : ?>
@@ -243,22 +246,22 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                         <?php endforeach; endif; ?>
                     </select>
                 </div>
-                <div class="h-6 w-[1px] bg-white/20 hidden md:block"></div>
+                <div class="h-[1px] w-full md:h-6 md:w-[1px] bg-white/20 md:block"></div>
                 <!-- Check-in -->
-                <div class="flex items-center gap-3 px-4 py-2.5 w-full">
-                    <span class="material-symbols-outlined text-white/70">calendar_today</span>
+                <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="material-symbols-outlined text-white/70 text-lg">calendar_today</span>
                     <input type="date" name="checkin" placeholder="Check-in">
                 </div>
-                <div class="h-6 w-[1px] bg-white/20 hidden md:block"></div>
+                <div class="h-[1px] w-full md:h-6 md:w-[1px] bg-white/20 md:block"></div>
                 <!-- Check-out -->
-                <div class="flex items-center gap-3 px-4 py-2.5 w-full">
-                    <span class="material-symbols-outlined text-white/70">event</span>
+                <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="material-symbols-outlined text-white/70 text-lg">event</span>
                     <input type="date" name="checkout" placeholder="Check-out">
                 </div>
-                <div class="h-6 w-[1px] bg-white/20 hidden md:block"></div>
+                <div class="h-[1px] w-full md:h-6 md:w-[1px] bg-white/20 md:block"></div>
                 <!-- Guests -->
-                <div class="flex items-center gap-3 px-4 py-2.5 w-full">
-                    <span class="material-symbols-outlined text-white/70">group</span>
+                <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="material-symbols-outlined text-white/70 text-lg">group</span>
                     <select name="guests">
                         <option value="">Guests</option>
                         <?php for ( $i = 1; $i <= 10; $i++ ) : ?>
@@ -267,7 +270,7 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                     </select>
                 </div>
                 <!-- Search button -->
-                <button type="submit" class="shrink-0 px-6 py-3 bg-primary text-white font-bold rounded-xl text-sm hover:brightness-110 transition flex items-center gap-2">
+                <button type="submit" class="w-full md:w-auto mt-2 md:mt-0 justify-center px-6 py-3 bg-primary text-white font-bold rounded-xl text-sm hover:brightness-110 transition flex items-center gap-2">
                     <span class="material-symbols-outlined text-lg">search</span>
                     Search
                 </button>
@@ -340,12 +343,11 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                             "SELECT AVG(rating) AS avg_r, COUNT(*) AS cnt FROM {$reviews_table} WHERE homestay_id = %d AND status = 'approved'",
                             get_the_ID()
                         ) );
-                        if ( $rating_row ) {
+                        if ( $rating_row && $rating_row->cnt > 0 ) {
                             $avg_rating   = round( (float) $rating_row->avg_r, 1 );
                             $review_count = (int) $rating_row->cnt;
                         }
                     }
-                    $display_rating = $avg_rating ?: '4.9';
                 ?>
                     <article class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-xl hover:-translate-y-1">
                         <!-- Image -->
@@ -363,13 +365,8 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                             <!-- Badges -->
                             <div class="absolute top-4 left-4 flex flex-wrap gap-2">
                                 <?php if ( $types && ! is_wp_error( $types ) ) : ?>
-                                    <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-primary uppercase tracking-widest shadow-sm">
-                                        <?php echo esc_html( $types[0]->name ); ?>
-                                    </span>
-                                <?php endif; ?>
-                                <?php if ( $display_loc ) : ?>
                                     <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-slate-700 uppercase tracking-widest shadow-sm">
-                                        <?php echo esc_html( $display_loc ); ?>
+                                        <?php echo esc_html( $types[0]->name ); ?>
                                     </span>
                                 <?php endif; ?>
                             </div>
@@ -403,7 +400,13 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                                 </div>
                                 <div class="flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-lg">star</span>
-                                    <span class="font-semibold text-xs"><?php echo esc_html( $display_rating ); ?></span>
+                                    <span class="font-semibold text-xs">
+                                        <?php if ( $review_count > 0 ) : ?>
+                                            <?php echo esc_html( $avg_rating ); ?> <span class="text-slate-400 font-medium">(<?php echo esc_html( $review_count ); ?>)</span>
+                                        <?php else : ?>
+                                            New
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
                             </div>
 

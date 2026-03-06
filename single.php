@@ -38,13 +38,9 @@ $share_title = urlencode( get_the_title() );
   .hhm-single { background:var(--bg); }
 
   /* ── HERO IMAGE ── */
-  .hhm-post-hero { position:relative; height:520px; overflow:hidden; }
+  .hhm-post-hero { position:relative; overflow:hidden; border-radius: 12px; margin-bottom: 32px; height: 300px; }
   .hhm-post-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
-  .hhm-post-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.25) 65%,transparent 100%); }
-  .hhm-post-hero-title { position:absolute; bottom:0; left:0; right:0; padding:36px 5% 36px; }
-  .hhm-post-hero-title .hhm-cat-badge { display:inline-block; background:var(--brand); color:#fff; border-radius:6px; padding:4px 14px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:14px; }
-  .hhm-post-hero-title h1 { font-size:clamp(24px,3.5vw,44px); font-weight:900; color:#fff; line-height:1.15; margin:0; max-width:780px; text-shadow:0 2px 16px rgba(0,0,0,0.2); }
-  @media(max-width:640px) { .hhm-post-hero { height:320px; } }
+  @media(min-width:768px) { .hhm-post-hero { height: 450px; } }
 
   /* ── BODY LAYOUT ── */
   .hhm-post-wrap { max-width:1280px; margin:0 auto; padding:0 24px; }
@@ -134,9 +130,8 @@ $share_title = urlencode( get_the_title() );
   .hhm-widget-title .material-symbols-outlined { color:var(--brand); font-size:17px; }
   .hhm-toc { list-style:none; padding:0; margin:0; }
   .hhm-toc li { margin-bottom:4px; }
-  .hhm-toc a { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:all 0.2s; border-left:2px solid transparent; }
+  .hhm-toc a { display:block; padding:7px 10px; border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:all 0.2s; border-left:2px solid transparent; }
   .hhm-toc a:hover, .hhm-toc a.active { background:var(--brand-light); color:var(--brand); border-left-color:var(--brand); font-weight:600; }
-  .hhm-toc a::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; opacity:0.5; }
   .hhm-sidebar-share { display:flex; flex-direction:column; gap:8px; }
   .hhm-sidebar-share a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.2s; }
   .hhm-sidebar-share .fb { background:#1877f2; color:#fff; }
@@ -157,34 +152,33 @@ $share_title = urlencode( get_the_title() );
   .hhm-popular-meta { font-size:11px; color:var(--muted); margin-top:2px; }
 </style>
 
-<div class="hhm-single">
+<div class="hhm-single bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
 
-  <!-- ── HERO ── -->
-  <div class="hhm-post-hero">
-    <img class="hhm-post-hero-img" src="<?php echo esc_url($thumbnail); ?>" alt="<?php the_title_attribute(); ?>">
-    <div class="hhm-post-hero-overlay"></div>
-    <div class="hhm-post-hero-title">
+  <main class="max-w-7xl mx-auto px-4 md:px-10 lg:px-20 py-6">
+
+    <!-- Breadcrumb & Category -->
+    <div class="mb-4 text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-2">
+      <a href="<?php echo home_url(); ?>" class="hover:text-primary transition">Home</a>
+      <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+      <a href="<?php echo get_permalink(get_option('page_for_posts')); ?>" class="hover:text-primary transition">Travel Stories</a>
       <?php if ($cat) : ?>
-        <a href="<?php echo get_category_link($cat->term_id); ?>" class="hhm-cat-badge"><?php echo esc_html($cat->name); ?></a>
+        <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+        <a href="<?php echo get_category_link($cat->term_id); ?>" class="hover:text-primary transition"><?php echo esc_html($cat->name); ?></a>
       <?php endif; ?>
-      <h1><?php the_title(); ?></h1>
     </div>
-  </div>
 
-  <div class="hhm-post-wrap">
+    <!-- Title -->
+    <div class="mb-6">
+      <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight"><?php the_title(); ?></h1>
+    </div>
 
-    <!-- Breadcrumb -->
-    <div class="hhm-post-breadcrumb">
-      <a href="<?php echo home_url(); ?>">Home</a> ›
-      <a href="<?php echo get_permalink(get_option('page_for_posts')); ?>">Travel Stories</a>
-      <?php if ($cat) : ?> ›
-        <a href="<?php echo get_category_link($cat->term_id); ?>"><?php echo esc_html($cat->name); ?></a>
-      <?php endif; ?> ›
-      <span><?php the_title(); ?></span>
+    <!-- ── FEATURED IMAGE ── -->
+    <div class="hhm-post-hero">
+      <img class="hhm-post-hero-img" src="<?php echo esc_url($thumbnail); ?>" alt="<?php the_title_attribute(); ?>">
     </div>
 
     <!-- ── BODY ── -->
-    <div class="hhm-post-body">
+    <div class="hhm-post-body mt-8">
 
       <!-- ARTICLE -->
       <article>
@@ -359,7 +353,7 @@ $share_title = urlencode( get_the_title() );
 
       </aside>
     </div>
-  </div>
+  </main>
 </div>
 
 <script>

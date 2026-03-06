@@ -301,29 +301,6 @@ get_header();
             </form>
         </div>
 
-        <!-- Helpful Links -->
-        <div class="hm-404-links">
-            <div class="hm-404-links-label"><?php esc_html_e( 'Popular pages', 'himalayanmart' ); ?></div>
-            <div class="hm-404-links-list">
-                <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-                    <span class="material-symbols-outlined">cottage</span>
-                    <?php esc_html_e( 'Homestays', 'himalayanmart' ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>">
-                    <span class="material-symbols-outlined">storefront</span>
-                    <?php esc_html_e( 'Shop', 'himalayanmart' ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/blog/' ) ); ?>">
-                    <span class="material-symbols-outlined">article</span>
-                    <?php esc_html_e( 'Blog', 'himalayanmart' ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>">
-                    <span class="material-symbols-outlined">person</span>
-                    <?php esc_html_e( 'My Account', 'himalayanmart' ); ?>
-                </a>
-            </div>
-        </div>
-
     </div>
 </div>
 

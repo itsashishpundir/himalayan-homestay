@@ -182,7 +182,13 @@ if ( $current_user->ID ) {
         <div class="futura-mobile-panel-overlay"></div>
         <div class="futura-mobile-panel-content">
             <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-                <span class="font-extrabold text-lg"><?php bloginfo( 'name' ); ?></span>
+                <div class="futura-mobile-logo h-8 [&>a>img]:h-full [&>a>img]:w-auto">
+                    <?php if ( has_custom_logo() ) : ?>
+                        <?php the_custom_logo(); ?>
+                    <?php else : ?>
+                        <span class="font-extrabold text-lg"><?php bloginfo( 'name' ); ?></span>
+                    <?php endif; ?>
+                </div>
                 <button id="futura-mobile-menu-close" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
                     <span class="material-symbols-outlined">close</span>
                 </button>

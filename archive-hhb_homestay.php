@@ -214,14 +214,17 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
                             $types       = get_the_terms( get_the_ID(), 'hhb_property_type' );
                             $locs        = get_the_terms( get_the_ID(), 'hhb_location' );
                             $arch_rating = 0;
+                            $arch_review_count = 0;
                             if ( $hhb_arch_rexist ) {
                                 $arch_rrow   = $wpdb->get_row( $wpdb->prepare(
-                                    "SELECT AVG(rating) AS avg_r FROM {$hhb_arch_rtable} WHERE homestay_id = %d AND status = 'approved'",
+                                    "SELECT AVG(rating) AS avg_r, COUNT(*) AS cnt FROM {$hhb_arch_rtable} WHERE homestay_id = %d AND status = 'approved'",
                                     get_the_ID()
                                 ) );
-                                $arch_rating = $arch_rrow ? round( (float) $arch_rrow->avg_r, 1 ) : 0;
+                                if ( $arch_rrow && $arch_rrow->cnt > 0 ) {
+                                    $arch_rating = round( (float) $arch_rrow->avg_r, 1 );
+                                    $arch_review_count = (int) $arch_rrow->cnt;
+                                }
                             }
-                            $arch_display_rating = $arch_rating ?: '4.9';
                         ?>
                             <article class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-xl hover:-translate-y-1">
                                 <div class="relative aspect-[4/3] overflow-hidden">
@@ -239,16 +242,8 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
                                         <?php if ($types && !is_wp_error($types)) : foreach(array_slice($types, 0, 1) as $term) : 
                                             $term_link = get_term_link($term);
                                         ?>
-                                            <a href="<?php echo esc_url(is_wp_error($term_link) ? '#' : $term_link); ?>" class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-primary uppercase tracking-widest shadow-sm pointer-events-auto hover:bg-primary hover:text-white transition-colors">
+                                            <a href="<?php echo esc_url(is_wp_error($term_link) ? '#' : $term_link); ?>" class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-slate-700 uppercase tracking-widest shadow-sm pointer-events-auto hover:bg-slate-100 transition-colors">
                                                 <?php echo esc_html($term->name); ?>
-                                            </a>
-                                        <?php endforeach; endif; ?>
-                                        
-                                        <?php if ($locs && !is_wp_error($locs)) : foreach(array_slice($locs, 0, 1) as $loc) : 
-                                            $loc_link = get_term_link($loc);
-                                        ?>
-                                            <a href="<?php echo esc_url(is_wp_error($loc_link) ? '#' : $loc_link); ?>" class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-primary uppercase tracking-widest shadow-sm pointer-events-auto hover:bg-primary hover:text-white transition-colors">
-                                                <?php echo esc_html($loc->name); ?>
                                             </a>
                                         <?php endforeach; endif; ?>
                                     </div>
@@ -299,7 +294,13 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
                                         </div>
                                         <div class="flex items-center gap-1.5">
                                             <span class="material-symbols-outlined text-lg">star</span>
-                                            <span class="font-semibold text-xs"><?php echo esc_html( $arch_display_rating ); ?></span>
+                                            <span class="font-semibold text-xs">
+                                                <?php if ( $arch_review_count > 0 ) : ?>
+                                                    <?php echo esc_html( $arch_rating ); ?> <span class="text-slate-400 font-medium">(<?php echo esc_html( $arch_review_count ); ?>)</span>
+                                                <?php else : ?>
+                                                    New
+                                                <?php endif; ?>
+                                            </span>
                                         </div>
                                     </div>
 

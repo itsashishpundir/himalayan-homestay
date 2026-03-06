@@ -74,14 +74,16 @@ while ( have_posts() ) :
     global $wpdb;
     $hhb_rtable     = $wpdb->prefix . 'hhb_reviews';
     $hhb_rexist     = $wpdb->get_var( "SHOW TABLES LIKE '{$hhb_rtable}'" );
-    $display_rating = '4.9';
+    $display_rating = 0;
+    $review_count   = 0;
     if ( $hhb_rexist ) {
         $rrow = $wpdb->get_row( $wpdb->prepare(
-            "SELECT AVG(rating) AS avg_r FROM {$hhb_rtable} WHERE homestay_id = %d AND status = 'approved'",
+            "SELECT AVG(rating) AS avg_r, COUNT(*) AS cnt FROM {$hhb_rtable} WHERE homestay_id = %d AND status = 'approved'",
             $post_id
         ) );
-        if ( $rrow && $rrow->avg_r ) {
+        if ( $rrow && $rrow->cnt ) {
             $display_rating = number_format( (float) $rrow->avg_r, 1 );
+            $review_count   = (int) $rrow->cnt;
         }
     }
 
@@ -190,8 +192,10 @@ while ( have_posts() ) :
                         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-slate-400 font-medium">
                             <div class="flex items-center gap-1">
                                 <span class="material-symbols-outlined text-primary text-sm">star</span>
-                                <span class="text-slate-900 dark:text-slate-100"><?php echo esc_html( $display_rating ); ?></span>
-                                <span>(Reviews)</span>
+                                <span class="text-slate-900 dark:text-slate-100"><?php echo $review_count > 0 ? esc_html( $display_rating ) : 'New'; ?></span>
+                                <?php if ( $review_count > 0 ) : ?>
+                                    <span>(<?php echo esc_html( $review_count ); ?> <?php echo $review_count === 1 ? 'Review' : 'Reviews'; ?>)</span>
+                                <?php endif; ?>
                             </div>
                             <span>·</span>
                             <div class="flex items-center gap-1">
@@ -252,10 +256,6 @@ while ( have_posts() ) :
                             }
                         });
                         </script>
-
-                        <button class="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition text-sm font-semibold">
-                            <span class="material-symbols-outlined text-lg">favorite</span> Save
-                        </button>
                     </div>
                 </div>
             </div>
@@ -263,9 +263,9 @@ while ( have_posts() ) :
             <!-- ============================================================= -->
             <!-- HERO GALLERY (1 large + 4 small) -->
             <!-- ============================================================= -->
-            <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-3 h-[300px] md:h-[500px] mb-10 overflow-hidden rounded-xl relative group">
+            <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 h-[250px] md:h-[500px] mb-10 overflow-hidden rounded-xl relative group">
                 <?php if (!empty($gallery_ids)) : ?>
-                    <div class="md:col-span-2 md:row-span-2 relative">
+                    <div class="col-span-1 md:col-span-2 row-span-1 md:row-span-2 relative w-full h-full">
                         <?php $main_img = wp_get_attachment_image_url($gallery_ids[0], 'full'); ?>
                         <img alt="<?php the_title_attribute(); ?>" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer glightbox" data-gallery="hhb-gallery" src="<?php echo esc_url($main_img); ?>" fetchpriority="high" />
                     </div>
@@ -630,7 +630,12 @@ while ( have_posts() ) :
                                 </div>
                             </div>
                             <div class="flex items-center gap-1 text-sm font-bold">
-                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span> <?php echo esc_html( $display_rating ); ?>
+                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span> 
+                                <?php if ($review_count > 0) : ?>
+                                    <span><?php echo esc_html( $display_rating ); ?> <span class="text-slate-500 font-medium font-normal">(<?php echo esc_html($review_count); ?>)</span></span>
+                                <?php else : ?>
+                                    <span>New</span>
+                                <?php endif; ?>
                             </div>
                         </div>
 

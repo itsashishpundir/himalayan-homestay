@@ -14,11 +14,72 @@ add_action( 'customize_register', function( $wp_customize ) {
 
     /* ── Panel: Front Page ──────────────────────────────────────── */
     $wp_customize->add_panel( 'hhb_frontpage_panel', [
-        'title'    => '🏠 Homepage Sections',
+        'title'    => 'Homepage Sections',
         'priority' => 25,
     ] );
 
-    // --- Hero Section ---
+    // --- Explore Destinations ---
+    $wp_customize->add_section( 'hhb_top_destinations_section', [
+        'title'    => __( 'Explore Destinations', 'himalayanmart' ),
+        'panel'    => 'hhb_frontpage_panel',
+        'priority' => 5,
+    ] );
+
+    $locations = get_terms( array(
+        'taxonomy'   => 'hhb_location',
+        'hide_empty' => false,
+    ) );
+    $location_choices = array( '' => __( '- None -', 'himalayanmart' ) );
+    if ( ! is_wp_error( $locations ) && ! empty( $locations ) ) {
+        foreach ( $locations as $loc ) {
+            $location_choices[ $loc->term_id ] = $loc->name;
+        }
+    }
+
+    $wp_customize->add_setting( 'hhb_dest_section_title', [
+        'default'           => 'Explore Destinations',
+        'sanitize_callback' => 'sanitize_text_field',
+    ] );
+    $wp_customize->add_control( 'hhb_dest_section_title', [
+        'label'   => __( 'Section Title', 'himalayanmart' ),
+        'section' => 'hhb_top_destinations_section',
+        'type'    => 'text',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_dest_section_subtitle', [
+        'default'           => 'Find your perfect mountain escape by location',
+        'sanitize_callback' => 'sanitize_text_field',
+    ] );
+    $wp_customize->add_control( 'hhb_dest_section_subtitle', [
+        'label'   => __( 'Section Subtitle', 'himalayanmart' ),
+        'section' => 'hhb_top_destinations_section',
+        'type'    => 'text',
+    ] );
+
+    for ( $i = 1; $i <= 8; $i++ ) {
+        $wp_customize->add_setting( 'hhb_featured_dest_' . $i, [
+            'default'           => '',
+            'sanitize_callback' => 'absint',
+        ] );
+        $wp_customize->add_control( 'hhb_featured_dest_' . $i, [
+            'label'   => sprintf( __( 'Destination %d', 'himalayanmart' ), $i ),
+            'section' => 'hhb_top_destinations_section',
+            'type'    => 'select',
+            'choices' => $location_choices,
+        ] );
+
+        $wp_customize->add_setting( 'hhb_featured_dest_image_' . $i, [
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ] );
+        $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'hhb_featured_dest_image_' . $i, [
+            'label'       => sprintf( __( 'Destination %d Custom Image', 'himalayanmart' ), $i ),
+            'description' => __( 'Optional: Upload an image to override the default location image.', 'himalayanmart' ),
+            'section'     => 'hhb_top_destinations_section',
+        ] ) );
+    }
+
+    /* ── Section: Hero ──────────────────────────────────────────── */
     $wp_customize->add_section( 'hhb_hero_section', [
         'title' => 'Hero Section',
         'panel' => 'hhb_frontpage_panel',
@@ -83,7 +144,7 @@ add_action( 'customize_register', function( $wp_customize ) {
 
     /* ── Panel: Contact Page ────────────────────────────────────── */
     $wp_customize->add_panel( 'hhb_contact_panel', [
-        'title'    => '📞 Contact Page',
+        'title'    => 'Contact Page',
         'priority' => 26,
     ] );
 
@@ -212,62 +273,4 @@ function hhb_handle_contact_form() {
     } else {
         wp_send_json_error( 'Something went wrong sending your message. Please try again or contact us directly.' );
     }
-}
-
-/* ══════════════════════════════════════════════════════════════════
- * LAZY LOAD REVIEWS AJAX HANDLER
- * ══════════════════════════════════════════════════════════════════ */
-add_action( 'wp_ajax_hhb_load_reviews',        'hhb_ajax_load_reviews' );
-add_action( 'wp_ajax_nopriv_hhb_load_reviews', 'hhb_ajax_load_reviews' );
-
-function hhb_ajax_load_reviews() {
-    global $wpdb;
-    $reviews_table = $wpdb->prefix . 'hhb_reviews';
-    $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
-    
-    if ( ! $table_exists ) {
-        wp_send_json_error( 'Reviews table not found.' );
-    }
-
-    $reviews = $wpdb->get_results(
-        "SELECT r.*, p.post_title AS homestay_name
-         FROM {$reviews_table} r
-         LEFT JOIN {$wpdb->posts} p ON r.homestay_id = p.ID
-         WHERE r.status = 'approved'
-         ORDER BY r.created_at DESC
-         LIMIT 6"
-    );
-
-    if ( empty( $reviews ) ) {
-        wp_send_json_error( 'No reviews found.' );
-    }
-
-    // Format output
-    ob_start();
-    foreach ( $reviews as $review ) : ?>
-        <div class="hhb-review-card opacity-0 translate-y-4 transition-all duration-700 ease-out">
-            <div class="hhb-review-stars mb-3">
-                <?php for ( $s = 1; $s <= 5; $s++ ) : ?>
-                    <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' <?php echo $s <= $review->rating ? '1' : '0'; ?>">star</span>
-                <?php endfor; ?>
-            </div>
-            <p class="text-slate-600 text-sm italic leading-relaxed mb-5">
-                "<?php echo esc_html( wp_trim_words( $review->comment, 30, '…' ) ); ?>"
-            </p>
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-                    <?php echo esc_html( strtoupper( substr( $review->guest_name, 0, 1 ) ) ); ?>
-                </div>
-                <div>
-                    <p class="text-sm font-bold text-slate-900"><?php echo esc_html( $review->guest_name ); ?></p>
-                    <?php if ( ! empty( $review->homestay_name ) ) : ?>
-                        <p class="text-[11px] text-slate-400"><?php echo esc_html( $review->homestay_name ); ?></p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    <?php endforeach;
-    $html = ob_get_clean();
-
-    wp_send_json_success( $html );
 }

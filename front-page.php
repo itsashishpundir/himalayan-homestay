@@ -429,33 +429,194 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
 
 
 <!-- ═══════════════════════════════════════════════════════════════
-     SECTION 4 — POPULAR DESTINATIONS (Live Taxonomy)
+     SECTION 4 — EXPLORE DESTINATIONS (Customizer Controlled)
      ═══════════════════════════════════════════════════════════════ -->
-<?php if ( $locations && ! is_wp_error( $locations ) && count( $locations ) > 0 ) : ?>
+<?php
+$dest_title    = get_theme_mod( 'hhb_dest_section_title', 'Explore Destinations' );
+$dest_subtitle = get_theme_mod( 'hhb_dest_section_subtitle', 'Find your perfect mountain escape by location' );
+
+$featured_destinations = [];
+for ( $i = 1; $i <= 8; $i++ ) {
+    $term_id = get_theme_mod( 'hhb_featured_dest_' . $i, '' );
+    $custom_image = get_theme_mod( 'hhb_featured_dest_image_' . $i, '' );
+    if ( $term_id ) {
+        $term = get_term( $term_id, 'hhb_location' );
+        if ( $term && ! is_wp_error( $term ) ) {
+            $term->custom_image = $custom_image; // Attach custom image
+            $featured_destinations[] = $term;
+        }
+    }
+}
+if ( empty( $featured_destinations ) && $locations && ! is_wp_error( $locations ) ) {
+    $featured_destinations = array_slice( $locations, 0, 8 );
+}
+?>
+<?php if ( ! empty( $featured_destinations ) ) : ?>
 <section class="hhb-fp-section hhb-fp-section-alt">
     <div class="max-w-7xl mx-auto">
         <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-3">Explore Destinations</h2>
-            <p class="text-slate-500">Find your perfect mountain escape by location</p>
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-3"><?php echo esc_html( $dest_title ); ?></h2>
+            <p class="text-slate-500"><?php echo esc_html( $dest_subtitle ); ?></p>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            <?php foreach ( array_slice( $locations, 0, 8 ) as $loc ) :
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+            <?php foreach ( $featured_destinations as $loc ) :
                 $loc_link  = get_term_link( $loc );
                 $image_id  = get_term_meta( $loc->term_id, 'hhb_term_image', true );
-                $loc_image = $image_id ? wp_get_attachment_image_url( $image_id, 'medium_large' ) : 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop';
+                $term_image = $image_id ? wp_get_attachment_image_url( $image_id, 'large' ) : 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=800&auto=format&fit=crop';
+                
+                // Use customizer image if available, else term image
+                $loc_image = ! empty( $loc->custom_image ) ? $loc->custom_image : $term_image;
                 $stay_count = $loc->count;
             ?>
-                <a href="<?php echo esc_url( is_wp_error( $loc_link ) ? '#' : $loc_link ); ?>" class="hhb-dest-card">
-                    <img src="<?php echo esc_url( $loc_image ); ?>" alt="<?php echo esc_attr( $loc->name ); ?>" loading="lazy">
-                    <div class="hhb-dest-card-overlay">
-                        <h3 class="text-white font-black text-lg leading-tight"><?php echo esc_html( $loc->name ); ?></h3>
-                        <span class="text-white/70 text-xs font-semibold mt-1">
+                <a href="<?php echo esc_url( is_wp_error( $loc_link ) ? '#' : $loc_link ); ?>" class="relative block rounded-2xl overflow-hidden aspect-[4/3] group shadow-sm bg-slate-900">
+                    <img src="<?php echo esc_url( $loc_image ); ?>" alt="<?php echo esc_attr( $loc->name ); ?>" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-5">
+                        <h3 class="text-white font-black text-xl leading-tight tracking-wide"><?php echo esc_html( $loc->name ); ?></h3>
+                        <span class="text-white/80 text-xs font-semibold mt-1 flex items-center gap-1">
                             <?php echo esc_html( $stay_count ); ?> stay<?php echo $stay_count !== 1 ? 's' : ''; ?>
                         </span>
                     </div>
                 </a>
             <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 4.1 — NEWLY LISTED HOMESTAYS
+     ═══════════════════════════════════════════════════════════════ -->
+<?php
+$new_homestays_query = new WP_Query( [
+    'post_type'      => 'hhb_homestay',
+    'posts_per_page' => 4,
+    'post_status'    => 'publish',
+    'orderby'        => 'date',
+    'order'          => 'DESC',
+] );
+?>
+<?php if ( $new_homestays_query->have_posts() ) : ?>
+<section class="hhb-fp-section bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-end justify-between mb-12">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-2">Newly Listed</h2>
+                <p class="text-slate-500">Fresh mountain retreats just added to our collection</p>
+            </div>
+            <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ) . '?orderby=date'; ?>" class="text-primary font-bold text-sm hover:underline hidden md:block">
+                View All New →
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <?php while ( $new_homestays_query->have_posts() ) : $new_homestays_query->the_post();
+                    $price_range = hhb_get_price_range( get_the_ID() );
+                    $max_guests  = get_post_meta( get_the_ID(), 'hhb_max_guests', true ) ?: '2';
+                    $bedrooms    = get_post_meta( get_the_ID(), 'hhb_total_bedrooms', true ) ?: '1';
+                    $locs        = get_the_terms( get_the_ID(), 'hhb_location' );
+                    $types       = get_the_terms( get_the_ID(), 'hhb_property_type' );
+                    $type_name   = ( $types && ! is_wp_error( $types ) ) ? $types[0]->name : 'Homestay';
+                    $city        = get_post_meta( get_the_ID(), 'hhb_city', true );
+                    $loc_name    = ( $locs && ! is_wp_error( $locs ) ) ? $locs[0]->name : '';
+                    $display_loc = $city ? $city . ', ' . $loc_name : $loc_name;
+            ?>
+                <a href="<?php the_permalink(); ?>" class="group block bg-[#f8f6f4] rounded-2xl overflow-hidden border border-slate-100/50 hover:shadow-xl transition-all hover:-translate-y-1">
+                    <!-- Image -->
+                    <div class="relative aspect-[4/3] overflow-hidden bg-slate-200">
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <?php the_post_thumbnail( 'large', [ 'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105' ] ); ?>
+                        <?php else : ?>
+                            <div class="w-full h-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-4xl text-slate-400">landscape</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded text-[10px] font-bold text-slate-700 uppercase tracking-widest shadow-sm">
+                            <?php echo esc_html( $type_name ); ?>
+                        </div>
+                    </div>
+                    <!-- Content -->
+                    <div class="p-5">
+                        <h3 class="font-bold text-slate-900 text-[17px] leading-snug mb-1 truncate"><?php the_title(); ?></h3>
+                        <p class="text-sm text-slate-500 mb-4 truncate"><?php echo esc_html( $display_loc ); ?></p>
+                        
+                        <div class="flex items-center gap-3 text-slate-500 text-xs font-medium mb-4">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base text-primary">group</span> <?php echo $max_guests; ?></span>
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base text-primary">bed</span> <?php echo $bedrooms; ?></span>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-slate-200 border-dashed flex justify-between items-end">
+                            <?php if ( $price_range ) : ?>
+                                <div>
+                                    <span class="text-lg font-black text-slate-900 block leading-none"><?php echo esc_html( $price_range['formatted'] ); ?></span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase">per night</span>
+                                </div>
+                            <?php else : ?>
+                                <span class="text-sm font-semibold text-slate-400">Price TBD</span>
+                            <?php endif; ?>
+                            <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-primary group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 4.2 — RECENT TRAVEL GUIDES (BLOG)
+     ═══════════════════════════════════════════════════════════════ -->
+<?php
+$recent_posts = new WP_Query( [
+    'post_type'      => 'post',
+    'posts_per_page' => 4,
+    'post_status'    => 'publish',
+] );
+?>
+<?php if ( $recent_posts->have_posts() ) : ?>
+<section class="hhb-fp-section hhb-fp-section-alt">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-end justify-between mb-12">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-2">Recent Travel Guides</h2>
+                <p class="text-slate-500">Stories, tips, and guides from the Himalayas</p>
+            </div>
+            <a href="<?php echo esc_url( get_permalink( get_option( 'page_for_posts' ) ) ); ?>" class="text-primary font-bold text-sm hover:underline hidden md:block">
+                Read Blog →
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <?php while ( $recent_posts->have_posts() ) : $recent_posts->the_post(); 
+                  $categories = get_the_category();
+                  $cat_name = !empty($categories) ? $categories[0]->name : 'Travel';
+            ?>
+                <a href="<?php the_permalink(); ?>" class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 h-full border border-slate-100">
+                    <div class="relative w-full aspect-[16/10] overflow-hidden bg-slate-100 shrink-0">
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <?php the_post_thumbnail( 'medium_large', [ 'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105' ] ); ?>
+                        <?php else : ?>
+                            <div class="w-full h-full flex items-center justify-center bg-[#fef3ee]">
+                                <span class="material-symbols-outlined text-4xl text-primary/40">auto_stories</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur text-primary text-[10px] font-black uppercase px-2.5 py-1 rounded shadow-sm">
+                            <?php echo esc_html($cat_name); ?>
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1">
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2 block"><?php echo get_the_date(); ?></span>
+                        <h3 class="font-bold text-slate-900 text-base leading-snug mb-4 group-hover:text-primary transition-colors"><?php the_title(); ?></h3>
+                        
+                        <div class="mt-auto flex items-center gap-1.5 text-primary text-xs font-black uppercase tracking-widest group-hover:gap-2 transition-all">
+                            Read More <span class="material-symbols-outlined text-sm">arrow_right_alt</span>
+                        </div>
+                    </div>
+                </a>
+            <?php endwhile; wp_reset_postdata(); ?>
         </div>
     </div>
 </section>

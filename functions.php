@@ -11,8 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define('HIMALAYANMART_VERSION', '1.0.0');
 
-// Homepage & Contact Page Customizer settings + AJAX handler.
+// Customizer Setings
 require_once get_template_directory() . '/inc/customizer-pages.php';
+require_once get_template_directory() . '/inc/customizer-global.php';
 
 /**
  * Setup Theme

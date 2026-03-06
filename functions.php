@@ -94,9 +94,16 @@ function himalayan_homestay_scripts() {
         wp_add_inline_script( 'tailwindcss', $tailwind_config, 'before' );
     }
 
-    // Material Symbols Outlined for homestay pages
-    if ( $is_homestay_page ) {
-        wp_enqueue_style( 'material-symbols-outlined', 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap', array(), null );
+    // Material Symbols Outlined — needed for homestay pages AND blog/post templates.
+    $needs_material_symbols = $is_homestay_page
+        || is_home()
+        || is_archive()
+        || is_singular( 'post' )
+        || is_category()
+        || is_tag()
+        || is_search();
+    if ( $needs_material_symbols ) {
+        wp_enqueue_style( 'material-symbols-outlined', 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block', array(), null );
     }
     // Google Fonts 
     wp_enqueue_style( 'himalayanmart-organic-fonts', 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap', array(), null );
@@ -146,20 +153,36 @@ function himalayan_homestay_scripts() {
 
     wp_enqueue_style( 'himalayan-homestay-style', get_stylesheet_uri(), array(), HIMALAYANMART_VERSION );
 
-    // Select2 (Used in Host Dashboard)
-    wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0' );
-    wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), '4.1.0', true );
-
-    // Native WP Media Uploader for Host Dashboard. 
-    if ( is_page_template( 'page-host-panel.php' ) || isset($_GET['view']) ) {
-        // WordPress native wp_enqueue_media() strictly requires the user to have 
-        // the 'upload_files' capability to print out the thickbox / backbone templates and JS.
-        $user = wp_get_current_user();
-        if ( $user->exists() && ! $user->has_cap( 'upload_files' ) ) {
-            $user->add_cap( 'upload_files' );
+    // Globally define Material Symbols Outlined CSS class.
+    // Google Fonts provides this via their CDN stylesheet, but adding it inline here
+    // ensures icons render correctly even if the external stylesheet is delayed/blocked.
+    wp_add_inline_style( 'himalayanmart-main', "
+        @font-face {
+            font-family: 'Material Symbols Outlined';
+            font-style: normal;
+            font-weight: 100 700;
+            src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v235/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1n-q_4MrImHCIJIZrDCvHOejbd5zrDAt.woff2) format('woff2');
         }
-        wp_enqueue_media();
-    }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined' !important;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            -webkit-font-feature-settings: 'liga';
+            font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    " );
+
+    // Note: Select2 and WP Media Uploader are enqueued by the plugin (TemplateLoader / BookingWidget) on pages that need them.
 }
 add_action( 'wp_enqueue_scripts', 'himalayan_homestay_scripts' );
 
@@ -201,27 +224,7 @@ add_action('after_setup_theme', function() {
     }
 });
 
-/**
- * Configure SMTP for Local Development/Testing
- * Pulls credentials from the Himalayan Homestays Settings -> SMTP Config tab.
- */
-add_action( 'phpmailer_init', function( $phpmailer ) {
-    $smtp_email = get_option( 'hhb_smtp_email' );
-    $smtp_pass  = get_option( 'hhb_smtp_pass' );
-    
-    if ( $smtp_email && $smtp_pass ) {
-        $phpmailer->isSMTP();
-        $phpmailer->Host       = 'smtp.gmail.com';
-        $phpmailer->SMTPAuth   = true;
-        $phpmailer->Port       = 465;
-        $phpmailer->Username   = $smtp_email;
-        $phpmailer->Password   = $smtp_pass;
-        $phpmailer->SMTPSecure = 'ssl';
-        $phpmailer->From       = $smtp_email;
-        $from_name = get_option( 'hhb_smtp_from_name' );
-        $phpmailer->FromName   = ! empty( $from_name ) ? $from_name : get_bloginfo( 'name' );
-    }
-} );
+// SMTP Configuration has been moved to the plugin's Infrastructure/Notifications layer.
 
 /**
  * Load helper functions and widgets.
@@ -230,39 +233,7 @@ require get_template_directory() . '/inc/helpers.php';
 require get_template_directory() . '/inc/widgets.php';
 
 
-add_action( 'init', function() {
-    if ( ! get_option( 'himalayan_homestay_mods_copied' ) ) {
-        $old_mods = get_option( 'theme_mods_himalayajunction' );
-        if ( $old_mods ) {
-            update_option( 'theme_mods_himalayan-homestay', $old_mods );
-            update_option( 'himalayan_homestay_mods_copied', true );
-        }
-    }
-});
-
-
-
-// Temporary migration script to move old homestays to the new plugin's post type
-add_action( 'init', function() {
-    if ( ! get_option( 'hhb_migrated_old_homestays' ) ) {
-        global $wpdb;
-        
-        // Update post type from 'homestay' to 'hhb_homestay'
-        $wpdb->query( "UPDATE {$wpdb->posts} SET post_type = 'hhb_homestay' WHERE post_type = 'homestay'" );
-        
-        // Map old meta keys to new meta keys if needed
-        // (Old ones used an underscore prefix e.g., _homestay_price_per_night)
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'base_price_per_night' WHERE meta_key = '_homestay_price_per_night'" );
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'max_guests' WHERE meta_key = '_homestay_max_guests'" );
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'room_count' WHERE meta_key = '_homestay_bedrooms'" );
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'hhb_gallery' WHERE meta_key = '_homestay_gallery'" );
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'cancellation_policy' WHERE meta_key = '_homestay_cancellation_policy'" );
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'lat' WHERE meta_key = '_homestay_google_map_embed'" ); // Just mapping arbitrarily for preservation
-        $wpdb->query( "UPDATE {$wpdb->postmeta} SET meta_key = 'hhb_amenities' WHERE meta_key = '_homestay_amenities'" );
-        
-        update_option( 'hhb_migrated_old_homestays', true );
-    }
-});
+// Data migrations have been moved to the plugin's Database layer.
 
 /**
  * Host Application form handlers and custom post type registration
@@ -270,72 +241,9 @@ add_action( 'init', function() {
  */
 
 
-/**
- * Auto-create the "Become a Host" page if it doesn't exist.
- */
-function hm_create_become_a_host_page() {
-    if ( get_option( 'hm_become_host_page_created' ) ) return;
+// hm_create_become_a_host_page() and hhb_archive_filter_query() have been moved to the plugin.
 
-    $existing = get_page_by_path( 'become-a-host' );
-    if ( ! $existing ) {
-        wp_insert_post( array(
-            'post_title'  => 'Become a Host',
-            'post_name'   => 'become-a-host',
-            'post_status' => 'publish',
-            'post_type'   => 'page',
-            'post_content'=> '',
-        ) );
-    }
-    update_option( 'hm_become_host_page_created', true );
-}
-add_action( 'init', 'hm_create_become_a_host_page' );
-
-/**
- * Filter the main query for the Homestay archive by ?location= and ?type= GET params.
- * This enables correct pagination when using GET-param based filtering.
- */
-add_action( 'pre_get_posts', 'hhb_archive_filter_query' );
-function hhb_archive_filter_query( $query ) {
-    if ( is_admin() || ! $query->is_main_query() ) {
-        return;
-    }
-
-    // Only apply on the hhb_homestay post-type archive
-    if ( ! $query->is_post_type_archive( 'hhb_homestay' ) ) {
-        return;
-    }
-
-    $tax_query = array();
-
-    $location = isset( $_GET['location'] ) ? sanitize_text_field( $_GET['location'] ) : '';
-    if ( $location ) {
-        $tax_query[] = array(
-            'taxonomy' => 'hhb_location',
-            'field'    => 'slug',
-            'terms'    => $location,
-        );
-    }
-
-    $type = isset( $_GET['type'] ) ? sanitize_text_field( $_GET['type'] ) : '';
-    if ( $type ) {
-        $tax_query[] = array(
-            'taxonomy' => 'hhb_property_type',
-            'field'    => 'slug',
-            'terms'    => $type,
-        );
-    }
-
-    if ( ! empty( $tax_query ) ) {
-        $query->set( 'tax_query', $tax_query );
-    }
-}
-
-/**
- * Include Customizer Settings
- */
-require get_template_directory() . '/inc/customizer/header-footer.php';
-require get_template_directory() . '/inc/customizer/blog.php';
-require get_template_directory() . '/inc/customizer/homestay.php';
+// Customizer includes removed — customizer settings are no longer used by this theme.
 
 /**
  * Security Headers
@@ -362,7 +270,8 @@ add_action( 'send_headers', function () {
     // Skip CSP entirely on the Host Dashboard: wp.media uses Backbone.js/underscore _.template()
     // which requires 'unsafe-eval', and the media uploader also loads scripts from admin URLs
     // that would be blocked. The dashboard is already behind a login + role check.
-    $is_host_dashboard = is_page_template( 'page-host-panel.php' );
+    // Host dashboard pages are now served by the plugin — check both old and plugin page templates
+    $is_host_dashboard = is_page_template( 'page-host-panel.php' ) || is_page_template( 'host-panel-template' );
     if ( ! is_admin() && ! $is_host_dashboard ) {
         $home        = esc_url( home_url() );
         $csp_parts   = [
@@ -370,7 +279,7 @@ add_action( 'send_headers', function () {
             "script-src  'self' 'unsafe-inline' 'unsafe-eval' cdn.tailwindcss.com cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com {$home} blob: https://www.paypal.com https://www.paypalobjects.com https://checkout.razorpay.com",
             "style-src   'self' 'unsafe-inline' cdn.tailwindcss.com cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com fonts.gstatic.com {$home} https://www.paypalobjects.com",
             "font-src    'self' fonts.gstatic.com cdnjs.cloudflare.com data: https://www.paypalobjects.com",
-            "img-src     'self' data: blob: *.unsplash.com *.gravatar.com secure.gravatar.com {$home} https://www.paypalobjects.com https://checkout.razorpay.com",
+            "img-src     'self' data: blob: *.unsplash.com *.gravatar.com secure.gravatar.com s.w.org *.wp.com {$home} https://www.paypalobjects.com https://checkout.razorpay.com",
             "connect-src 'self' {$home} https://api.razorpay.com https://lumberjack.razorpay.com https://api.paypal.com https://www.paypal.com https://www.sandbox.paypal.com",
             "frame-src   'self' *.google.com *.google.co.in https://www.paypal.com https://www.sandbox.paypal.com https://api.razorpay.com https://checkout.razorpay.com",
             "frame-ancestors 'self'",

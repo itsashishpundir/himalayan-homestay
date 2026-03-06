@@ -1,340 +1,404 @@
 <?php
 /**
- * Single Post Template — FuturaStays Design
+ * Single Blog Post Template
  *
- * Implements the exact structure and Tailwind classes from code.html
+ * Redesigned via Google Stitch — cinematic hero image, editorial content
+ * layout, sticky Table-of-Contents sidebar, author bio, related posts.
  *
  * @package HimalayanMart
  */
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 get_header();
+the_post();
 
-// Customizer settings
-$layout          = get_theme_mod( 'himalayanmart_single_post_layout', 'sidebar-right' );
-$show_author     = get_theme_mod( 'himalayanmart_single_show_author', true );
-$show_navigation = get_theme_mod( 'himalayanmart_single_show_navigation', true );
-$show_share      = get_theme_mod( 'himalayanmart_single_show_share', true );
-$show_related    = get_theme_mod( 'himalayanmart_single_show_related', true );
-$has_sidebar     = ( $layout !== 'no-sidebar' );
-
-// Determine main content and sidebar widths based on layout
-$main_class = 'lg:w-2/3';
-$side_class = 'lg:w-1/3 space-y-8';
-$flex_dir   = 'flex-col lg:flex-row';
-
-if ( $layout === 'sidebar-left' ) {
-    $flex_dir = 'flex-col lg:flex-row-reverse';
-} elseif ( $layout === 'no-sidebar' ) {
-    $main_class = 'w-full max-w-4xl mx-auto';
-}
+$post_id    = get_the_ID();
+$content    = get_the_content();
+$word_count = str_word_count( strip_tags( $content ) );
+$read_time  = max( 1, ceil( $word_count / 200 ) );
+$thumbnail  = get_the_post_thumbnail_url( $post_id, 'full' ) ?: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80';
+$cats       = get_the_category();
+$cat        = $cats ? $cats[0] : null;
+$author_id  = get_the_author_meta( 'ID' );
+$avatar     = get_avatar_url( $author_id, [ 'size' => 80 ] );
+$author_bio = get_the_author_meta( 'description' );
+$tags       = get_the_tags();
+$nonce      = wp_create_nonce( 'hhb_newsletter' );
+$share_url  = urlencode( get_permalink() );
+$share_title = urlencode( get_the_title() );
 ?>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+
 <style>
-    /* Specific styles from code.html that might not be in the global theme CSS */
-    .single-post-mountain-wrap {
-        background-color: #f8f6f6;
-        background-image: radial-gradient(circle at 2px 2px, rgba(232, 94, 48, 0.05) 1px, transparent 0);
-        background-size: 40px 40px;
-        min-height: 100vh;
-        width: 100%;
-    }
-    .fs-glass {
-        background: rgba(255, 255, 255, 0.7) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    }
+  :root { --brand:#e85e30; --brand-light:#fef1ec; --bg:#f8f6f6; --border:#e2e8f0; --text:#1a1a2e; --muted:#64748b; }
+  .hhm-single *:not(.material-symbols-outlined) { box-sizing:border-box; font-family:'Inter',sans-serif; }
+  .hhm-single * { box-sizing:border-box; }
+  .hhm-single { background:var(--bg); }
+
+  /* ── HERO IMAGE ── */
+  .hhm-post-hero { position:relative; height:520px; overflow:hidden; }
+  .hhm-post-hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .hhm-post-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.25) 65%,transparent 100%); }
+  .hhm-post-hero-title { position:absolute; bottom:0; left:0; right:0; padding:36px 5% 36px; }
+  .hhm-post-hero-title .hhm-cat-badge { display:inline-block; background:var(--brand); color:#fff; border-radius:6px; padding:4px 14px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:14px; }
+  .hhm-post-hero-title h1 { font-size:clamp(24px,3.5vw,44px); font-weight:900; color:#fff; line-height:1.15; margin:0; max-width:780px; text-shadow:0 2px 16px rgba(0,0,0,0.2); }
+  @media(max-width:640px) { .hhm-post-hero { height:320px; } }
+
+  /* ── BODY LAYOUT ── */
+  .hhm-post-wrap { max-width:1280px; margin:0 auto; padding:0 24px; }
+  .hhm-post-breadcrumb { padding:16px 0; font-size:13px; color:var(--muted); border-bottom:1px solid var(--border); margin-bottom:40px; }
+  .hhm-post-breadcrumb a { color:var(--muted); text-decoration:none; }
+  .hhm-post-breadcrumb a:hover { color:var(--brand); }
+  .hhm-post-body { display:grid; grid-template-columns:1fr 320px; gap:56px; align-items:start; padding-bottom:80px; }
+  @media(max-width:960px) { .hhm-post-body { grid-template-columns:1fr; } .hhm-post-sidebar { display:none; } }
+
+  /* ── ARTICLE ── */
+  .hhm-article-header { margin-bottom:32px; }
+  .hhm-author-card { display:flex; align-items:center; gap:14px; padding:16px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:28px; }
+  .hhm-author-avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-light); }
+  .hhm-author-name { font-size:15px; font-weight:700; color:var(--text); }
+  .hhm-author-meta { font-size:13px; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; margin-top:2px; }
+  .hhm-share-row { display:flex; align-items:center; gap:10px; margin-bottom:32px; flex-wrap:wrap; }
+  .hhm-share-label { font-size:13px; font-weight:600; color:var(--muted); margin-right:4px; }
+  .hhm-share-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+  .hhm-share-fb { background:#1877f2; color:#fff; }
+  .hhm-share-tw { background:#1da1f2; color:#fff; }
+  .hhm-share-wa { background:#25d366; color:#fff; }
+  .hhm-share-copy { background:var(--bg); color:var(--text); border:1px solid var(--border); cursor:pointer; border:none; }
+  .hhm-share-btn:hover { opacity:0.88; transform:translateY(-1px); }
+
+  /* ── POST CONTENT STYLES ── */
+  .hhm-post-content { font-size:17px; line-height:1.85; color:#374151; }
+  .hhm-post-content p { margin:0 0 24px; }
+  .hhm-post-content p:first-of-type::first-letter { font-size:80px; font-weight:900; color:var(--brand); float:left; line-height:0.68; margin:8px 12px -4px 0; font-family:'Inter',sans-serif; }
+  .hhm-post-content h2 { font-size:26px; font-weight:800; color:var(--text); margin:40px 0 18px; padding-bottom:10px; border-bottom:2px solid var(--brand-light); position:relative; }
+  .hhm-post-content h2::after { content:''; position:absolute; bottom:-2px; left:0; width:48px; height:2px; background:var(--brand); }
+  .hhm-post-content h3 { font-size:20px; font-weight:700; color:var(--text); margin:30px 0 14px; }
+  .hhm-post-content blockquote { margin:32px 0; padding:20px 24px 20px 28px; border-left:4px solid var(--brand); background:var(--brand-light); border-radius:0 12px 12px 0; font-size:18px; font-style:italic; color:var(--text); font-weight:500; }
+  .hhm-post-content blockquote cite { display:block; font-size:13px; font-style:normal; color:var(--muted); margin-top:10px; font-weight:600; }
+  .hhm-post-content img { max-width:100%; height:auto; border-radius:12px; margin:24px 0; display:block; }
+  .hhm-post-content figcaption { text-align:center; color:var(--muted); font-size:13px; margin-top:-16px; margin-bottom:24px; }
+  .hhm-post-content ul, .hhm-post-content ol { padding-left:24px; margin-bottom:24px; }
+  .hhm-post-content li { margin-bottom:8px; }
+  .hhm-post-content ul li::marker { color:var(--brand); }
+  .hhm-post-content a { color:var(--brand); text-decoration:underline; }
+  .hhm-post-content a:hover { color:#c94d22; }
+  .hhm-post-content code { background:#f1f5f9; border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:14px; font-family:monospace; color:#c94d22; }
+  .hhm-post-content pre { background:#1e293b; color:#e2e8f0; border-radius:12px; padding:24px; overflow-x:auto; margin:24px 0; font-size:14px; line-height:1.7; }
+  .hhm-post-content table { width:100%; border-collapse:collapse; margin:24px 0; font-size:14px; }
+  .hhm-post-content th { background:var(--brand); color:#fff; padding:12px 16px; text-align:left; }
+  .hhm-post-content td { padding:12px 16px; border-bottom:1px solid var(--border); }
+  .hhm-post-content tr:nth-child(even) td { background:#f8fafc; }
+
+  /* Tags */
+  .hhm-post-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:36px; padding-top:28px; border-top:1px solid var(--border); }
+  .hhm-post-tags a { background:var(--bg); border:1px solid var(--border); border-radius:50px; padding:5px 14px; font-size:12px; font-weight:600; color:var(--text); text-decoration:none; transition:all 0.2s; }
+  .hhm-post-tags a:hover { background:var(--brand); color:#fff; border-color:var(--brand); }
+
+  /* Author Bio */
+  .hhm-author-bio { margin:40px 0; background:#fff; border:1px solid var(--border); border-radius:20px; padding:28px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; gap:20px; align-items:flex-start; }
+  .hhm-author-bio-avatar { width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--brand); flex-shrink:0; }
+  .hhm-author-bio-name { font-size:18px; font-weight:800; color:var(--text); margin:0 0 4px; }
+  .hhm-author-bio-role { font-size:12px; font-weight:700; color:var(--brand); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px; }
+  .hhm-author-bio-text { font-size:14px; color:#374151; line-height:1.7; margin:0; }
+
+  /* Post Navigation */
+  .hhm-post-nav { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:40px 0; }
+  .hhm-post-nav a { background:#fff; border:1px solid var(--border); border-radius:14px; padding:20px; text-decoration:none; display:flex; align-items:center; gap:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:all 0.2s; }
+  .hhm-post-nav a:hover { border-color:var(--brand); box-shadow:0 6px 20px rgba(232,94,48,0.1); }
+  .hhm-post-nav .hhm-nav-next { justify-content:flex-end; text-align:right; }
+  .hhm-post-nav img { width:56px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+  .hhm-post-nav-direction { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px; }
+  .hhm-post-nav-title { font-size:14px; font-weight:700; color:var(--text); line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+  /* Related Posts */
+  .hhm-related { margin-top:40px; padding-top:40px; border-top:1px solid var(--border); }
+  .hhm-related h2 { font-size:22px; font-weight:800; color:var(--text); margin:0 0 24px; }
+  .hhm-related-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media(max-width:640px) { .hhm-related-grid { grid-template-columns:1fr; } .hhm-post-nav { grid-template-columns:1fr; } }
+  .hhm-rel-card { background:#fff; border-radius:14px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:all 0.3s; }
+  .hhm-rel-card:hover { transform:translateY(-4px); box-shadow:0 10px 28px rgba(0,0,0,0.09); }
+  .hhm-rel-card img { width:100%; height:160px; object-fit:cover; display:block; }
+  .hhm-rel-card-body { padding:16px; }
+  .hhm-rel-card-title { font-size:14px; font-weight:700; color:var(--text); margin:0 0 6px; line-height:1.4; }
+  .hhm-rel-card-title a { color:inherit; text-decoration:none; }
+  .hhm-rel-card-title a:hover { color:var(--brand); }
+  .hhm-rel-card-meta { font-size:12px; color:var(--muted); }
+
+  /* ── SIDEBAR ── */
+  .hhm-post-sidebar { position:sticky; top:24px; }
+  .hhm-sidebar-widget { background:#fff; border:1px solid var(--border); border-radius:16px; padding:22px; box-shadow:0 2px 10px rgba(0,0,0,0.04); margin-bottom:20px; }
+  .hhm-widget-title { font-size:14px; font-weight:800; color:var(--text); margin:0 0 16px; padding-bottom:10px; border-bottom:2px solid var(--brand-light); display:flex; align-items:center; gap:7px; text-transform:uppercase; letter-spacing:0.5px; }
+  .hhm-widget-title .material-symbols-outlined { color:var(--brand); font-size:17px; }
+  .hhm-toc { list-style:none; padding:0; margin:0; }
+  .hhm-toc li { margin-bottom:4px; }
+  .hhm-toc a { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:all 0.2s; border-left:2px solid transparent; }
+  .hhm-toc a:hover, .hhm-toc a.active { background:var(--brand-light); color:var(--brand); border-left-color:var(--brand); font-weight:600; }
+  .hhm-toc a::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; opacity:0.5; }
+  .hhm-sidebar-share { display:flex; flex-direction:column; gap:8px; }
+  .hhm-sidebar-share a { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+  .hhm-sidebar-share .fb { background:#1877f2; color:#fff; }
+  .hhm-sidebar-share .tw { background:#1da1f2; color:#fff; }
+  .hhm-sidebar-share .wa { background:#25d366; color:#fff; }
+  .hhm-sidebar-share a:hover { opacity:0.88; }
+  .hhm-newsletter-card { background:linear-gradient(135deg,#c94d22 0%,#e85e30 100%); border-radius:14px; padding:22px; text-align:center; }
+  .hhm-newsletter-card h4 { color:#fff; margin:0 0 6px; font-size:15px; font-weight:800; }
+  .hhm-newsletter-card p { color:rgba(255,255,255,0.85); font-size:12px; margin:0 0 14px; }
+  .hhm-newsletter-input { width:100%; padding:9px 12px; border-radius:8px; border:none; font-family:'Inter',sans-serif; font-size:13px; margin-bottom:7px; }
+  .hhm-newsletter-btn { width:100%; padding:9px; background:#1a1a2e; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .hhm-newsletter-btn:hover { background:#000; }
+  .hhm-popular-post { display:flex; gap:10px; align-items:flex-start; margin-bottom:13px; padding-bottom:13px; border-bottom:1px solid var(--border); }
+  .hhm-popular-post:last-child { margin-bottom:0; padding-bottom:0; border-bottom:none; }
+  .hhm-popular-img { width:52px; height:44px; border-radius:6px; object-fit:cover; flex-shrink:0; }
+  .hhm-popular-title a { font-size:12px; font-weight:600; color:var(--text); text-decoration:none; line-height:1.4; display:block; }
+  .hhm-popular-title a:hover { color:var(--brand); }
+  .hhm-popular-meta { font-size:11px; color:var(--muted); margin-top:2px; }
 </style>
 
-<div class="single-post-mountain-wrap font-display text-slate-900 dark:text-slate-100">
-    <main class="max-w-7xl mx-auto px-6 py-12">
-    <?php while ( have_posts() ) : the_post(); ?>
-    
-    <!-- Breadcrumbs -->
-    <nav class="flex items-center gap-2 text-sm text-slate-500 mb-8 font-medium">
-        <a class="hover:text-primary transition-colors" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'himalayanmart' ); ?></a>
-        <span class="material-symbols-outlined text-xs">chevron_right</span>
-        <a class="hover:text-primary transition-colors" href="<?php echo esc_url( get_permalink( get_option( 'page_for_posts' ) ) ); ?>"><?php esc_html_e( 'Journal', 'himalayanmart' ); ?></a>
-        <?php
-        $cats = get_the_category();
-        if ( $cats ) :
-        ?>
-        <span class="material-symbols-outlined text-xs">chevron_right</span>
-        <a class="hover:text-primary transition-colors" href="<?php echo esc_url( get_category_link( $cats[0]->term_id ) ); ?>"><?php echo esc_html( $cats[0]->name ); ?></a>
-        <?php endif; ?>
-        <span class="material-symbols-outlined text-xs">chevron_right</span>
-        <span class="text-primary font-bold"><?php echo esc_html( wp_trim_words( get_the_title(), 5, '...' ) ); ?></span>
-    </nav>
+<div class="hhm-single">
 
-    <div class="flex <?php echo esc_attr( $flex_dir ); ?> gap-12">
-        
-        <!-- Main Content -->
-        <article class="<?php echo esc_attr( $main_class ); ?>" id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-            
-            <?php if ( has_post_thumbnail() ) : ?>
-            <div class="relative rounded-3xl overflow-hidden mb-10 group shadow-2xl">
-                <?php the_post_thumbnail( 'full', array( 'class' => 'w-full aspect-[16/9] object-cover transition-transform duration-700 group-hover:scale-105' ) ); ?>
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent flex flex-col justify-end p-10">
-                    <?php if ( $cats ) : ?>
-                    <a href="<?php echo esc_url( get_category_link( $cats[0]->term_id ) ); ?>" class="bg-primary hover:bg-orange-600 transition-colors text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-4">
-                        <?php echo esc_html( $cats[0]->name ); ?>
-                    </a>
-                    <?php endif; ?>
-                    
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4"><?php the_title(); ?></h1>
-                    
-                    <div class="flex items-center gap-4 text-white/80 text-sm">
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> <?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></span>
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <?php 
-                            $word_count = str_word_count( wp_strip_all_tags( get_the_content() ) );
-                            echo esc_html( max( 1, ceil( $word_count / 200 ) ) . ' min read' );
-                        ?></span>
-                    </div>
-                </div>
-            </div>
-            <?php else : ?>
-            <header class="mb-10">
-                <?php if ( $cats ) : ?>
-                <a href="<?php echo esc_url( get_category_link( $cats[0]->term_id ) ); ?>" class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-4 inline-block hover:bg-primary hover:text-white transition-colors">
-                    <?php echo esc_html( $cats[0]->name ); ?>
-                </a>
-                <?php endif; ?>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-4"><?php the_title(); ?></h1>
-                <div class="flex items-center gap-4 text-slate-500 text-sm">
-                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> <?php echo esc_html( get_the_date( 'M j, Y' ) ); ?></span>
-                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> <?php 
-                        $word_count = str_word_count( wp_strip_all_tags( get_the_content() ) );
-                        echo esc_html( max( 1, ceil( $word_count / 200 ) ) . ' min read' );
-                    ?></span>
-                </div>
-            </header>
-            <?php endif; ?>
-
-            <div class="prose prose-slate bg-transparent lg:prose-xl dark:prose-invert max-w-none space-y-6 fs-content">
-                <!-- Apply code.html paragraph styles to inner paragraphs -->
-                <style>
-                    /* p class="text-lg leading-relaxed text-slate-700" */
-                    .fs-content p { font-size: 1.125rem !important; line-height: 1.625 !important; color: #334155 !important; margin-bottom: 1.5rem !important; margin-top: 0 !important; }
-                    
-                    /* h2 class="text-3xl font-bold text-slate-900 mt-12 mb-6" */
-                    .fs-content h2 { font-size: 1.875rem !important; line-height: 2.25rem !important; font-weight: 700 !important; color: #0f172a !important; margin-top: 3rem !important; margin-bottom: 1.5rem !important; }
-                    
-                    /* h3 class="text-xl font-bold mt-6 mb-3" */
-                    .fs-content h3 { font-size: 1.25rem !important; line-height: 1.75rem !important; font-weight: 700 !important; color: #0f172a !important; margin-top: 1.5rem !important; margin-bottom: 0.75rem !important; }
-                    
-                    /* ul class="list-disc ml-5 space-y-2 text-sm" */
-                    .fs-content ul { list-style-type: disc !important; margin-left: 1.25rem !important; font-size: 0.875rem !important; line-height: 1.25rem !important; color: #334155 !important; }
-                    .fs-content ul li { margin-top: 0.5rem !important; margin-bottom: 0 !important; }
-                    
-                    /* Blockquote matching code.html specific boxes */
-                    .fs-content blockquote, .wp-block-quote { 
-                        border-left: 4px solid #e85e30 !important; 
-                        background: rgba(232,94,48,0.05) !important; 
-                        padding: 1.5rem !important; 
-                        border-radius: 0 1rem 1rem 0 !important; 
-                        margin: 2rem 0 !important; 
-                        font-style: normal !important; 
-                        color: #0f172a !important;
-                    }
-                    
-                    .fs-content a { color: #e85e30 !important; font-weight: 600 !important; text-decoration: none !important; }
-                    .fs-content a:hover { text-decoration: underline !important; }
-                </style>
-                
-                <?php
-                the_content();
-                wp_link_pages( array(
-                    'before' => '<div class="page-links"><span class="page-links-title">' . esc_html__( 'Pages:', 'himalayanmart' ) . '</span>',
-                    'after'  => '</div>',
-                ) );
-                ?>
-            </div>
-
-            <!-- Tags -->
-            <?php if ( has_tag() ) : ?>
-            <div class="flex flex-wrap gap-2 mt-12 mb-8">
-                <?php
-                $tags = get_the_tags();
-                foreach ( $tags as $tag ) {
-                    echo '<a href="' . esc_url( get_tag_link( $tag->term_id ) ) . '" class="bg-primary/5 text-primary border border-primary/20 hover:bg-primary hover:text-white transition-colors text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">' . esc_html( $tag->name ) . '</a>';
-                }
-                ?>
-            </div>
-            <?php endif; ?>
-
-            <!-- Share Buttons -->
-            <?php if ( $show_share ) : ?>
-            <div class="flex items-center gap-3 py-6 border-t border-b border-primary/10 my-8">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mr-2"><?php esc_html_e( 'Share Layout', 'himalayanmart' ); ?></span>
-                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo esc_url( get_permalink() ); ?>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                </a>
-                <a href="https://twitter.com/intent/tweet?url=<?php echo esc_url( get_permalink() ); ?>&text=<?php echo esc_attr( get_the_title() ); ?>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
-                </a>
-                <a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo esc_url( get_permalink() ); ?>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                </a>
-            </div>
-            <?php endif; ?>
-
-            <!-- Post Navigation -->
-            <?php if ( $show_navigation ) :
-                $prev_post = get_previous_post();
-                $next_post = get_next_post();
-                if ( $prev_post || $next_post ) :
-            ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                <?php if ( $prev_post ) : ?>
-                <a href="<?php echo esc_url( get_permalink( $prev_post ) ); ?>" class="group p-6 rounded-2xl border border-primary/10 hover:border-primary/30 hover:shadow-lg transition-all bg-white dark:bg-slate-800">
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]">arrow_back</span> <?php esc_html_e( 'Previous', 'himalayanmart' ); ?>
-                    </div>
-                    <div class="font-bold text-slate-800 dark:text-white group-hover:text-primary transition-colors leading-snug">
-                        <?php echo esc_html( wp_trim_words( get_the_title( $prev_post ), 8 ) ); ?>
-                    </div>
-                </a>
-                <?php else : ?><div></div><?php endif; ?>
-
-                <?php if ( $next_post ) : ?>
-                <a href="<?php echo esc_url( get_permalink( $next_post ) ); ?>" class="group p-6 rounded-2xl border border-primary/10 hover:border-primary/30 hover:shadow-lg transition-all bg-white dark:bg-slate-800 text-right">
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2 flex items-center justify-end gap-1">
-                        <?php esc_html_e( 'Next', 'himalayanmart' ); ?> <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                    </div>
-                    <div class="font-bold text-slate-800 dark:text-white group-hover:text-primary transition-colors leading-snug">
-                        <?php echo esc_html( wp_trim_words( get_the_title( $next_post ), 8 ) ); ?>
-                    </div>
-                </a>
-                <?php else : ?><div></div><?php endif; ?>
-            </div>
-            <?php endif; endif; ?>
-
-            <!-- Author Box (Mobile / Bottom of content) -->
-            <?php if ( $show_author && ! $has_sidebar ) : // Only show here if no sidebar ?>
-            <div class="fs-glass p-8 rounded-3xl shadow-sm border border-primary/10 mb-10">
-                <div class="flex items-center gap-4 mb-4">
-                    <?php echo get_avatar( get_the_author_meta( 'ID' ), 64, '', '', array( 'class' => 'w-16 h-16 rounded-full border-2 border-primary' ) ); ?>
-                    <div>
-                        <h4 class="font-bold text-lg text-slate-900"><?php the_author(); ?></h4>
-                        <p class="text-xs text-slate-500 uppercase font-bold tracking-tight"><?php echo esc_html( get_the_author_meta( 'user_url' ) ? 'Writer' : 'Author' ); ?></p>
-                    </div>
-                </div>
-                <?php if ( get_the_author_meta( 'description' ) ) : ?>
-                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-                    <?php echo esc_html( get_the_author_meta( 'description' ) ); ?>
-                </p>
-                <?php endif; ?>
-                <div class="flex gap-4">
-                    <?php if ( get_the_author_meta( 'user_url' ) ) : ?>
-                    <a href="<?php echo esc_url( get_the_author_meta( 'user_url' ) ); ?>" class="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined text-sm">public</span></a>
-                    <?php endif; ?>
-                    <a href="mailto:<?php echo esc_attr( get_the_author_meta( 'user_email' ) ); ?>" class="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined text-sm">alternate_email</span></a>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- Related Posts -->
-            <?php if ( $show_related ) : ?>
-                <?php get_template_part( 'template-parts/blog/related', 'posts' ); ?>
-            <?php endif; ?>
-
-            <!-- Comments -->
-            <?php
-            if ( comments_open() || get_comments_number() ) :
-                echo '<div class="mt-12">';
-                comments_template();
-                echo '</div>';
-            endif;
-            ?>
-        </article>
-
-        <?php if ( $has_sidebar ) : ?>
-        <!-- Sidebar: Right (1/3) -->
-        <aside class="<?php echo esc_attr( $side_class ); ?>">
-            
-            <!-- 1. Author Widget -->
-            <?php if ( $show_author ) : ?>
-            <div class="fs-glass p-8 rounded-3xl shadow-sm border border-primary/10">
-                <h3 class="text-sm font-bold text-primary uppercase tracking-widest mb-6"><?php esc_html_e( 'The Author', 'himalayanmart' ); ?></h3>
-                <div class="flex items-center gap-4 mb-4">
-                    <?php echo get_avatar( get_the_author_meta( 'ID' ), 64, '', '', array( 'class' => 'w-16 h-16 rounded-full border-2 border-primary object-cover' ) ); ?>
-                    <div>
-                        <h4 class="font-bold text-lg text-slate-900"><?php the_author(); ?></h4>
-                        <p class="text-xs text-slate-500 uppercase font-bold tracking-tight"><?php echo esc_html( get_the_author_meta( 'user_url' ) ? 'Writer' : 'Author' ); ?></p>
-                    </div>
-                </div>
-                <?php if ( get_the_author_meta( 'description' ) ) : ?>
-                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-                    <?php echo esc_html( get_the_author_meta( 'description' ) ); ?>
-                </p>
-                <?php endif; ?>
-                <div class="flex gap-4">
-                    <?php if ( get_the_author_meta( 'user_url' ) ) : ?>
-                    <a href="<?php echo esc_url( get_the_author_meta( 'user_url' ) ); ?>" target="_blank" class="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined text-sm">public</span></a>
-                    <?php endif; ?>
-                    <a href="mailto:<?php echo esc_attr( get_the_author_meta( 'user_email' ) ); ?>" class="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined text-sm">alternate_email</span></a>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <!-- 2. Trending Destinations (Categories) -->
-            <div class="fs-glass p-8 rounded-3xl shadow-sm border border-primary/10">
-                <h3 class="text-sm font-bold text-primary uppercase tracking-widest mb-6"><?php esc_html_e( 'Trending Near You', 'himalayanmart' ); ?></h3>
-                <ul class="space-y-4">
-                    <?php
-                    $top_cats = get_categories( array( 'orderby' => 'count', 'order' => 'DESC', 'number' => 4, 'hide_empty' => true ) );
-                    foreach ( $top_cats as $cat ) :
-                    ?>
-                    <li>
-                        <a href="<?php echo esc_url( get_category_link( $cat->term_id ) ); ?>" class="group flex justify-between items-center py-2 border-b border-primary/5 hover:border-primary/20 transition-all">
-                            <span class="font-medium text-slate-700 group-hover:text-primary transition-colors"><?php echo esc_html( $cat->name ); ?></span>
-                            <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-lg"><?php echo esc_html( str_pad( $cat->count, 2, '0', STR_PAD_LEFT ) ); ?></span>
-                        </a>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-
-            <!-- 3. Dynamic Sidebar (Featured Homestay Carousel + others) -->
-            <?php if ( is_active_sidebar( 'sidebar-blog' ) ) : ?>
-                <style>
-                    /* Make Dynamic Widgets match the code.html glass card style */
-                    .fs-sidebar-widget { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(232, 94, 48, 0.1); padding: 2rem; border-radius: 1.5rem; margin-bottom: 2rem; }
-                    .fs-sidebar-widget .widget-title { font-size: 0.875rem; font-weight: 700; color: #e85e30; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
-                    
-                    /* Specific styling for the actual carousel to match the Featured Homestay card from code.html */
-                    .widget_hm_homestay_carousel { padding: 0 !important; border: 1px solid rgba(232, 94, 48, 0.1); border-radius: 1.5rem; background: rgba(255,255,255,0.7); overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-                    .widget_hm_homestay_carousel .widget-title { margin: 1.5rem 1.5rem 0.5rem; display: none; } /* Hide the basic title, use the carousel's internal one if desired, or let it rip */
-                    .hm-carousel-wrap { border-radius: 1.5rem; }
-                    .hm-card-body { padding: 1.5rem; background: transparent; border: none; }
-                    .hm-card-img { border-radius: 0; aspect-ratio: auto; height: 16rem; }
-                    .hm-card-badge { top: 1rem; right: 1rem; background: rgba(255,255,255,0.9); color: #e85e30; padding: 0.25rem 0.75rem; }
-                    .hm-card-title { font-size: 1.25rem; }
-                    .hm-card-price .price-amount { font-size: 1.5rem; }
-                    .hm-card-cta { border-radius: 1rem; padding: 1rem; }
-                </style>
-                <?php dynamic_sidebar( 'sidebar-blog' ); ?>
-            <?php endif; ?>
-
-            <!-- 4. Newsletter Signup (if not heavily using the widget) -->
-            <!-- We include a hardcoded version here as requested by code.html, but the user may prefer their widget. 
-                 We will render the one from code.html since they wanted EXACT match. -->
-            <div class="bg-primary p-8 rounded-3xl shadow-lg text-white">
-                <h3 class="text-lg font-bold mb-2"><?php esc_html_e( 'Join the Expedition', 'himalayanmart' ); ?></h3>
-                <p class="text-sm text-white/80 mb-6 leading-relaxed"><?php esc_html_e( 'Weekly dispatches from the world\'s most remote corners. No fluff, just exploration.', 'himalayanmart' ); ?></p>
-                <form class="space-y-3" onsubmit="event.preventDefault();">
-                    <input class="w-full bg-white/10 border-white/20 rounded-xl px-4 py-3 placeholder:text-white/40 focus:ring-white/50 focus:border-white text-sm text-white outline-none" placeholder="<?php esc_attr_e( 'Your satellite email...', 'himalayanmart' ); ?>" type="email" required/>
-                    <button class="w-full bg-white text-primary py-3 rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-background-light transition-all" type="submit"><?php esc_html_e( 'Subscribe', 'himalayanmart' ); ?></button>
-                </form>
-                <p class="text-[10px] text-white/50 mt-4 text-center uppercase tracking-widest"><?php esc_html_e( 'Privacy encrypted. 2026 Secured.', 'himalayanmart' ); ?></p>
-            </div>
-
-        </aside>
-        <?php endif; ?>
-
+  <!-- ── HERO ── -->
+  <div class="hhm-post-hero">
+    <img class="hhm-post-hero-img" src="<?php echo esc_url($thumbnail); ?>" alt="<?php the_title_attribute(); ?>">
+    <div class="hhm-post-hero-overlay"></div>
+    <div class="hhm-post-hero-title">
+      <?php if ($cat) : ?>
+        <a href="<?php echo get_category_link($cat->term_id); ?>" class="hhm-cat-badge"><?php echo esc_html($cat->name); ?></a>
+      <?php endif; ?>
+      <h1><?php the_title(); ?></h1>
     </div>
-    <?php endwhile; ?>
-    </main>
+  </div>
+
+  <div class="hhm-post-wrap">
+
+    <!-- Breadcrumb -->
+    <div class="hhm-post-breadcrumb">
+      <a href="<?php echo home_url(); ?>">Home</a> ›
+      <a href="<?php echo get_permalink(get_option('page_for_posts')); ?>">Travel Stories</a>
+      <?php if ($cat) : ?> ›
+        <a href="<?php echo get_category_link($cat->term_id); ?>"><?php echo esc_html($cat->name); ?></a>
+      <?php endif; ?> ›
+      <span><?php the_title(); ?></span>
+    </div>
+
+    <!-- ── BODY ── -->
+    <div class="hhm-post-body">
+
+      <!-- ARTICLE -->
+      <article>
+
+        <!-- Author card + share -->
+        <div class="hhm-article-header">
+          <div class="hhm-author-card">
+            <img class="hhm-author-avatar" src="<?php echo esc_url($avatar); ?>" alt="<?php the_author(); ?>">
+            <div>
+              <div class="hhm-author-name"><?php the_author(); ?></div>
+              <div class="hhm-author-meta">
+                <span><?php echo get_the_date('M j, Y'); ?></span>
+                <span>·</span>
+                <span><?php echo $read_time; ?> min read</span>
+                <span>·</span>
+                <span><?php echo number_format($word_count); ?> words</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hhm-share-row">
+            <span class="hhm-share-label">Share:</span>
+            <a class="hhm-share-btn hhm-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined" style="font-size:16px;">share</span> Facebook
+            </a>
+            <a class="hhm-share-btn hhm-share-tw" href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined" style="font-size:16px;">chat_bubble</span> Twitter
+            </a>
+            <a class="hhm-share-btn hhm-share-wa" href="https://wa.me/?text=<?php echo $share_title; ?>%20<?php echo $share_url; ?>" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined" style="font-size:16px;">forum</span> WhatsApp
+            </a>
+            <button class="hhm-share-btn hhm-share-copy" onclick="navigator.clipboard.writeText('<?php echo get_permalink(); ?>');this.textContent='✓ Copied!'">
+              <span class="material-symbols-outlined" style="font-size:16px;">link</span> Copy Link
+            </button>
+          </div>
+        </div>
+
+        <!-- Post Content -->
+        <div class="hhm-post-content" id="hhm-post-content">
+          <?php the_content(); ?>
+        </div>
+
+        <!-- Tags -->
+        <?php if ($tags) : ?>
+          <div class="hhm-post-tags">
+            <?php foreach ($tags as $tag) : ?>
+              <a href="<?php echo get_tag_link($tag->term_id); ?>">#<?php echo esc_html($tag->name); ?></a>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
+        <!-- Author Bio -->
+        <div class="hhm-author-bio">
+          <img class="hhm-author-bio-avatar" src="<?php echo esc_url(get_avatar_url($author_id,['size'=>80])); ?>" alt="<?php the_author(); ?>">
+          <div>
+            <div class="hhm-author-bio-name"><?php the_author(); ?></div>
+            <div class="hhm-author-bio-role">Travel Writer &amp; Host</div>
+            <p class="hhm-author-bio-text"><?php echo $author_bio ?: 'Passionate traveler and storyteller exploring the beauty of the Himalayas, sharing authentic homestay experiences and travel guides.'; ?></p>
+          </div>
+        </div>
+
+        <!-- Post Navigation -->
+        <div class="hhm-post-nav">
+          <?php $prev = get_previous_post(); if ($prev) : ?>
+            <a href="<?php echo get_permalink($prev->ID); ?>">
+              <span class="material-symbols-outlined" style="font-size:24px;color:var(--muted);">chevron_left</span>
+              <?php $pi = get_the_post_thumbnail_url($prev->ID,'thumbnail'); if($pi): ?><img src="<?php echo esc_url($pi); ?>" alt=""><?php endif; ?>
+              <div>
+                <div class="hhm-post-nav-direction">← Previous</div>
+                <div class="hhm-post-nav-title"><?php echo esc_html($prev->post_title); ?></div>
+              </div>
+            </a>
+          <?php else: ?>
+            <div></div>
+          <?php endif; ?>
+          <?php $next = get_next_post(); if ($next) : ?>
+            <a href="<?php echo get_permalink($next->ID); ?>" class="hhm-nav-next">
+              <div>
+                <div class="hhm-post-nav-direction">Next →</div>
+                <div class="hhm-post-nav-title"><?php echo esc_html($next->post_title); ?></div>
+              </div>
+              <?php $ni = get_the_post_thumbnail_url($next->ID,'thumbnail'); if($ni): ?><img src="<?php echo esc_url($ni); ?>" alt=""><?php endif; ?>
+              <span class="material-symbols-outlined" style="font-size:24px;color:var(--muted);">chevron_right</span>
+            </a>
+          <?php endif; ?>
+        </div>
+
+        <!-- Related Posts -->
+        <?php
+        $related_args = ['post_type'=>'post','posts_per_page'=>3,'post__not_in'=>[$post_id],'ignore_sticky_posts'=>true];
+        if ($cat) $related_args['category__in'] = [$cat->term_id];
+        $related = new WP_Query($related_args);
+        if ($related->have_posts()) : ?>
+          <div class="hhm-related">
+            <h2>You Might Also Enjoy</h2>
+            <div class="hhm-related-grid">
+              <?php while ($related->have_posts()) : $related->the_post();
+                $rt = get_the_post_thumbnail_url(null,'medium') ?: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=80';
+              ?>
+                <div class="hhm-rel-card">
+                  <img src="<?php echo esc_url($rt); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
+                  <div class="hhm-rel-card-body">
+                    <h3 class="hhm-rel-card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                    <div class="hhm-rel-card-meta"><?php the_author(); ?> · <?php echo get_the_date('M j, Y'); ?></div>
+                  </div>
+                </div>
+              <?php endwhile; wp_reset_postdata(); ?>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <!-- Comments -->
+        <?php if (comments_open() || get_comments_number()) : ?>
+          <div style="margin-top:40px;padding-top:32px;border-top:1px solid var(--border);">
+            <?php comments_template(); ?>
+          </div>
+        <?php endif; ?>
+
+      </article>
+
+      <!-- ── SIDEBAR ── -->
+      <aside class="hhm-post-sidebar">
+
+        <!-- Table of Contents -->
+        <div class="hhm-sidebar-widget">
+          <h3 class="hhm-widget-title"><span class="material-symbols-outlined">menu_book</span>In This Article</h3>
+          <ul class="hhm-toc" id="hhm-toc"></ul>
+        </div>
+
+        <!-- Share -->
+        <div class="hhm-sidebar-widget">
+          <h3 class="hhm-widget-title"><span class="material-symbols-outlined">share</span>Share This Story</h3>
+          <div class="hhm-sidebar-share">
+            <a class="fb" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank">
+              <span class="material-symbols-outlined" style="font-size:18px;">share</span> Share on Facebook
+            </a>
+            <a class="tw" href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank">
+              <span class="material-symbols-outlined" style="font-size:18px;">chat_bubble</span> Share on Twitter
+            </a>
+            <a class="wa" href="https://wa.me/?text=<?php echo $share_title; ?>%20<?php echo $share_url; ?>" target="_blank">
+              <span class="material-symbols-outlined" style="font-size:18px;">forum</span> Share on WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- Popular Posts -->
+        <div class="hhm-sidebar-widget">
+          <h3 class="hhm-widget-title"><span class="material-symbols-outlined">trending_up</span>Popular Stories</h3>
+          <?php $popular = new WP_Query(['post_type'=>'post','posts_per_page'=>4,'orderby'=>'comment_count','order'=>'DESC','post__not_in'=>[$post_id],'ignore_sticky_posts'=>true]);
+          while ($popular->have_posts()) : $popular->the_post();
+            $pp = get_the_post_thumbnail_url(null,'thumbnail') ?: 'https://images.unsplash.com/photo-1432408806534-c14a64d1bce9?w=120&q=80';
+          ?>
+            <div class="hhm-popular-post">
+              <img class="hhm-popular-img" src="<?php echo esc_url($pp); ?>" alt="">
+              <div>
+                <div class="hhm-popular-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></div>
+                <div class="hhm-popular-meta"><?php echo get_the_date('M j, Y'); ?></div>
+              </div>
+            </div>
+          <?php endwhile; wp_reset_postdata(); ?>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="hhm-newsletter-card">
+          <h4>✈️ Travel Inspiration</h4>
+          <p>Get stories delivered to your inbox.</p>
+          <form>
+            <input type="email" class="hhm-newsletter-input" placeholder="your@email.com">
+            <button type="submit" class="hhm-newsletter-btn">Subscribe Free</button>
+          </form>
+        </div>
+
+      </aside>
+    </div>
+  </div>
 </div>
+
+<script>
+(function() {
+  // ── Auto-build Table of Contents from H2 headings ─────────────────────────
+  const content = document.getElementById('hhm-post-content');
+  const toc     = document.getElementById('hhm-toc');
+  const headings = content ? content.querySelectorAll('h2, h3') : [];
+
+  headings.forEach((h, i) => {
+    const id = 'hhm-h-' + i;
+    h.id = id;
+    const li = document.createElement('li');
+    li.style.paddingLeft = h.tagName === 'H3' ? '16px' : '0';
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    toc.appendChild(li);
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      h.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  });
+
+  // ── Highlight active ToC item on scroll ───────────────────────────────────
+  const tocLinks = toc.querySelectorAll('a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('active'));
+        const active = toc.querySelector(`a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-20% 0px -70% 0px' });
+
+  headings.forEach(h => observer.observe(h));
+})();
+</script>
 
 <?php get_footer(); ?>

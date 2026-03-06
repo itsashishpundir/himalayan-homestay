@@ -202,12 +202,26 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
                     </div>
                 </div>
 
+                <?php
+                global $wpdb;
+                $hhb_arch_rtable = $wpdb->prefix . 'hhb_reviews';
+                $hhb_arch_rexist = $wpdb->get_var( "SHOW TABLES LIKE '{$hhb_arch_rtable}'" );
+                ?>
                 <?php if ( have_posts() ) : ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <?php while ( have_posts() ) : the_post(); 
-                            $price = get_post_meta(get_the_ID(), 'base_price_per_night', true);
-                            $types = get_the_terms(get_the_ID(), 'hhb_property_type');
-                            $locs  = get_the_terms(get_the_ID(), 'hhb_location');
+                        <?php while ( have_posts() ) : the_post();
+                            $price_range = hhb_get_price_range( get_the_ID() );
+                            $types       = get_the_terms( get_the_ID(), 'hhb_property_type' );
+                            $locs        = get_the_terms( get_the_ID(), 'hhb_location' );
+                            $arch_rating = 0;
+                            if ( $hhb_arch_rexist ) {
+                                $arch_rrow   = $wpdb->get_row( $wpdb->prepare(
+                                    "SELECT AVG(rating) AS avg_r FROM {$hhb_arch_rtable} WHERE homestay_id = %d AND status = 'approved'",
+                                    get_the_ID()
+                                ) );
+                                $arch_rating = $arch_rrow ? round( (float) $arch_rrow->avg_r, 1 ) : 0;
+                            }
+                            $arch_display_rating = $arch_rating ?: '4.9';
                         ?>
                             <article class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 transition-all hover:shadow-xl hover:-translate-y-1">
                                 <div class="relative aspect-[4/3] overflow-hidden">
@@ -265,25 +279,27 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
                                             <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                                         </h3>
                                         <div class="text-right shrink-0">
-                                            <p class="text-primary font-black text-xl leading-none">
-                                                ₹<?php echo number_format($price ?: 0); ?>
-                                            </p>
-                                            <span class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">per night</span>
+                                            <?php if ( $price_range ) : ?>
+                                                <p class="text-primary font-black text-xl leading-none"><?php echo esc_html( $price_range['formatted'] ); ?></p>
+                                                <span class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">per night</span>
+                                            <?php else : ?>
+                                                <p class="text-slate-400 text-sm font-medium">Price TBD</p>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
 
                                     <div class="flex items-center gap-4 text-slate-500 text-sm mb-6 pb-6 border-b border-slate-50">
                                         <div class="flex items-center gap-1.5">
                                             <span class="material-symbols-outlined text-lg">group</span>
-                                            <span class="font-semibold text-xs"><?php echo get_post_meta(get_the_ID(), 'max_guests', true) ?: '2'; ?> Guest</span>
+                                            <span class="font-semibold text-xs"><?php echo get_post_meta(get_the_ID(), 'hhb_max_guests', true) ?: '2'; ?> Guest</span>
                                         </div>
                                         <div class="flex items-center gap-1.5">
                                             <span class="material-symbols-outlined text-lg">bed</span>
-                                            <span class="font-semibold text-xs"><?php echo get_post_meta(get_the_ID(), 'room_count', true) ?: '1'; ?> BR</span>
+                                            <span class="font-semibold text-xs"><?php echo get_post_meta(get_the_ID(), 'hhb_total_bedrooms', true) ?: '1'; ?> BR</span>
                                         </div>
                                         <div class="flex items-center gap-1.5">
                                             <span class="material-symbols-outlined text-lg">star</span>
-                                            <span class="font-semibold text-xs">4.9</span>
+                                            <span class="font-semibold text-xs"><?php echo esc_html( $arch_display_rating ); ?></span>
                                         </div>
                                     </div>
 

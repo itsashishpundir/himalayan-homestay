@@ -73,10 +73,7 @@ $properties = get_posts([
                     $location = 'Location not set';
                 }
                 
-                $price = get_post_meta( $post->ID, 'base_price_per_night', true );
-                $currency = get_post_meta( $post->ID, 'currency', true ) ?: 'INR';
-                $currency_symbols = [ 'USD' => '$', 'INR' => '₹', 'EUR' => '€', 'GBP' => '£', 'NPR' => 'रु' ];
-                $sym = $currency_symbols[ strtoupper($currency) ] ?? $currency;
+                $price_range = hhb_get_price_range( $post->ID );
                 
                 $status_class = 'hhb-status-' . $post->post_status;
                 $status_label = ucwords( $post->post_status );
@@ -102,7 +99,7 @@ $properties = get_posts([
                     </span>
                 </td>
                 <td style="font-weight: 600;">
-                    <?php echo $price ? esc_html( $sym . ' ' . $price ) . ' <span style="font-size:12px;color:#94a3b8;font-weight:400;">/night</span>' : 'Not set'; ?>
+                    <?php echo $price_range ? esc_html( $price_range['formatted'] ) . ' <span style="font-size:12px;color:#94a3b8;font-weight:400;">/night</span>' : 'Not set'; ?>
                 </td>
                 <td style="text-align: right;">
                     <a href="<?php echo esc_url( add_query_arg( ['view' => 'edit-property', 'id' => $post->ID], $dashboard_url ) ); ?>" class="button button-secondary" style="display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; color: #334155; text-decoration: none; font-size: 13px; font-weight: 600; margin-right: 8px;">

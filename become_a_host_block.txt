@@ -1,0 +1,50 @@
+
+    // ==============================================
+    // BECOME-A-HOST PAGE SETTINGS
+    // ==============================================
+    $wp_customize->add_section('hm_host_page_section', array(
+        'title'       => __('Become-a-Host Page', 'himalayanmart'),
+        'panel'       => 'himalayanmart_layouts_panel',
+        'priority'    => 50,
+        'description' => __('Customize the Become-a-Host landing page hero and content.', 'himalayanmart'),
+    ));
+
+    // Hero Image
+    $wp_customize->add_setting('hm_host_hero_image', array(
+        'default' => '', 'sanitize_callback' => 'absint',
+    ));
+    $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'hm_host_hero_image', array(
+        'label'     => __('Hero Background Image', 'himalayanmart'),
+        'section'   => 'hm_host_page_section',
+        'mime_type' => 'image',
+    )));
+
+    // Hero text fields
+    $host_text_fields = array(
+        'hm_host_hero_badge'    => array('default' => 'Host the Future', 'label' => 'Hero Badge Text'),
+        'hm_host_hero_title'    => array('default' => 'Share Your World.<br>Become a <span class="text-primary">Host.</span>', 'label' => 'Hero Title (HTML allowed)'),
+        'hm_host_hero_subtitle' => array('default' => 'Join our exclusive community of premium mountain retreats and unique homestays.', 'label' => 'Hero Subtitle'),
+        'hm_host_step1_title'   => array('default' => 'Apply Online', 'label' => 'Step 1 Title'),
+        'hm_host_step1_desc'    => array('default' => 'Submit your property details and photos through this form.', 'label' => 'Step 1 Description'),
+        'hm_host_step2_title'   => array('default' => 'Manual Review', 'label' => 'Step 2 Title'),
+        'hm_host_step2_desc'    => array('default' => 'Our team reviews every application within 48 hours.', 'label' => 'Step 2 Description'),
+        'hm_host_step3_title'   => array('default' => 'Onboarding', 'label' => 'Step 3 Title'),
+        'hm_host_step3_desc'    => array('default' => 'Once approved, we help you set up your profile.', 'label' => 'Step 3 Description'),
+        'hm_host_benefit1'      => array('default' => 'Reach thousands of verified travelers', 'label' => 'Benefit 1'),
+        'hm_host_benefit2'      => array('default' => 'Dedicated host support & assistance', 'label' => 'Benefit 2'),
+        'hm_host_benefit3'      => array('default' => '24/7 customer support for your guests', 'label' => 'Benefit 3'),
+    );
+
+    foreach ($host_text_fields as $id => $args) {
+        $sanitize = (strpos($id, 'title') !== false && strpos($id, 'step') === false) ? 'wp_kses_post' : 'sanitize_text_field';
+        $wp_customize->add_setting($id, array(
+            'default' => $args['default'], 'sanitize_callback' => $sanitize, 'transport' => 'refresh',
+        ));
+        $wp_customize->add_control($id, array(
+            'label'   => __($args['label'], 'himalayanmart'),
+            'section' => 'hm_host_page_section',
+            'type'    => (strpos($id, 'desc') !== false || strpos($id, 'subtitle') !== false) ? 'textarea' : 'text',
+        ));
+    }
+
+}

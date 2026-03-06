@@ -323,10 +323,9 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
         <?php if ( $featured_query->have_posts() ) : ?>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php while ( $featured_query->have_posts() ) : $featured_query->the_post();
-                    $price       = get_post_meta( get_the_ID(), 'base_price_per_night', true );
-                    $offer_price = get_post_meta( get_the_ID(), 'offer_price_per_night', true );
-                    $max_guests  = get_post_meta( get_the_ID(), 'max_guests', true ) ?: '2';
-                    $bedrooms    = get_post_meta( get_the_ID(), 'hhb_bedrooms', true ) ?: '1';
+                    $price_range = hhb_get_price_range( get_the_ID() );
+                    $max_guests  = get_post_meta( get_the_ID(), 'hhb_max_guests', true ) ?: '2';
+                    $bedrooms    = get_post_meta( get_the_ID(), 'hhb_total_bedrooms', true ) ?: '1';
                     $locs        = get_the_terms( get_the_ID(), 'hhb_location' );
                     $types       = get_the_terms( get_the_ID(), 'hhb_property_type' );
                     $loc_name    = ( $locs && ! is_wp_error( $locs ) ) ? $locs[0]->name : '';
@@ -375,11 +374,6 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                                 <?php endif; ?>
                             </div>
 
-                            <?php if ( $offer_price && $offer_price < $price ) : ?>
-                                <div class="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                    <?php echo round( ( ( $price - $offer_price ) / $price ) * 100 ); ?>% OFF
-                                </div>
-                            <?php endif; ?>
                         </div>
 
                         <!-- Content -->
@@ -389,13 +383,12 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                                     <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                                 </h3>
                                 <div class="text-right shrink-0">
-                                    <?php if ( $offer_price && $offer_price < $price ) : ?>
-                                        <p class="text-slate-400 text-xs line-through">₹<?php echo number_format( $price ); ?></p>
+                                    <?php if ( $price_range ) : ?>
+                                        <p class="text-primary font-black text-xl leading-none"><?php echo esc_html( $price_range['formatted'] ); ?></p>
+                                        <span class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">per night</span>
+                                    <?php else : ?>
+                                        <p class="text-slate-400 text-sm font-medium">Price TBD</p>
                                     <?php endif; ?>
-                                    <p class="text-primary font-black text-xl leading-none">
-                                        ₹<?php echo number_format( $offer_price && $offer_price < $price ? $offer_price : ( $price ?: 0 ) ); ?>
-                                    </p>
-                                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">per night</span>
                                 </div>
                             </div>
 

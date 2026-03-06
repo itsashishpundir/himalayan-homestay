@@ -18,28 +18,72 @@ while ( have_posts() ) :
     // =========================================================================
     $gallery_ids     = get_post_meta($post_id, 'hhb_gallery', true);
     $gallery_ids     = $gallery_ids ? explode(',', $gallery_ids) : array();
-    $base_price      = get_post_meta($post_id, 'base_price_per_night', true);
-    $offer_price     = get_post_meta($post_id, 'offer_price_per_night', true);
-    $currency        = get_post_meta($post_id, 'currency', true) ?: '₹';
-    $max_guests      = get_post_meta($post_id, 'max_guests', true) ?: 6;
+    $price_range     = hhb_get_price_range( $post_id );
+    $max_guests      = get_post_meta($post_id, 'hhb_max_guests', true) ?: 6;
     $dos             = get_post_meta($post_id, 'hhb_dos', true);
     $donts           = get_post_meta($post_id, 'hhb_donts', true);
     $attractions     = get_post_meta($post_id, 'hhb_attractions', true) ?: array();
     $amenity_keys    = get_post_meta($post_id, 'hhb_amenities', true) ?: array();
-    $lat             = get_post_meta($post_id, 'lat', true);
-    $lng             = get_post_meta($post_id, 'lng', true);
+    $lat             = '';
+    $lng             = '';
     $min_nights      = get_post_meta($post_id, 'hhb_min_nights', true) ?: 1;
     $max_nights      = get_post_meta($post_id, 'hhb_max_nights', true) ?: 30;
     $buffer_days     = get_post_meta($post_id, 'hhb_buffer_days', true) ?: 0;
     $deposit_percent = get_post_meta($post_id, 'hhb_deposit_percent', true) ?: 0;
-    $extra_guest_fee = get_post_meta($post_id, 'hhb_extra_guest_fee', true) ?: 0;
+    $extra_guest_fee  = get_post_meta($post_id, 'hhb_extra_guest_fee', true) ?: 0;
+
+    // Address & Property Details
+    $hhb_address      = get_post_meta($post_id, 'hhb_address', true);
+    $hhb_city         = get_post_meta($post_id, 'hhb_city', true);
+    $hhb_state        = get_post_meta($post_id, 'hhb_state', true);
+    $hhb_country      = get_post_meta($post_id, 'hhb_country', true) ?: 'India';
+    $hhb_postal_code  = get_post_meta($post_id, 'hhb_postal_code', true);
+    $total_bedrooms   = get_post_meta($post_id, 'hhb_total_bedrooms', true);
+    $total_bathrooms  = get_post_meta($post_id, 'hhb_total_bathrooms', true);
+    $property_size    = get_post_meta($post_id, 'hhb_property_size', true);
+    $year_established = get_post_meta($post_id, 'hhb_year_established', true);
+    $checkin_time     = get_post_meta($post_id, 'hhb_checkin_time', true) ?: '14:00';
+    $checkout_time    = get_post_meta($post_id, 'hhb_checkout_time', true) ?: '11:00';
+    $early_checkin    = get_post_meta($post_id, 'hhb_early_checkin', true);
+    $late_checkout    = get_post_meta($post_id, 'hhb_late_checkout', true);
+    $contact_phone    = get_post_meta($post_id, 'hhb_contact_phone', true);
+    $contact_email    = get_post_meta($post_id, 'hhb_contact_email', true);
+    $website_url      = get_post_meta($post_id, 'hhb_website_url', true);
+    $host_bio         = get_post_meta($post_id, 'hhb_host_bio', true);
+
+    // Map address (replaces old lat/lng)
+    $map_address = implode(', ', array_filter([$hhb_address, $hhb_city, $hhb_state, $hhb_country]));
+
+    // Rooms
+    $rooms = get_children([
+        'post_parent' => $post_id,
+        'post_type'   => 'hhb_room',
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby'     => 'title',
+        'order'       => 'ASC',
+    ]);
 
     // Taxonomies
     $locations  = get_the_terms($post_id, 'hhb_location');
     $prop_types = get_the_terms($post_id, 'hhb_property_type');
 
-    $display_price = ($offer_price && $offer_price < $base_price) ? $offer_price : $base_price;
     $location_name = ($locations && !is_wp_error($locations)) ? $locations[0]->name : '';
+
+    // Live rating from reviews DB
+    global $wpdb;
+    $hhb_rtable     = $wpdb->prefix . 'hhb_reviews';
+    $hhb_rexist     = $wpdb->get_var( "SHOW TABLES LIKE '{$hhb_rtable}'" );
+    $display_rating = '4.9';
+    if ( $hhb_rexist ) {
+        $rrow = $wpdb->get_row( $wpdb->prepare(
+            "SELECT AVG(rating) AS avg_r FROM {$hhb_rtable} WHERE homestay_id = %d AND status = 'approved'",
+            $post_id
+        ) );
+        if ( $rrow && $rrow->avg_r ) {
+            $display_rating = number_format( (float) $rrow->avg_r, 1 );
+        }
+    }
 
     // Amenity map
     $all_amenities = array(
@@ -67,7 +111,15 @@ while ( have_posts() ) :
         'description' => wp_trim_words( strip_shortcodes( wp_strip_all_tags( get_the_content() ) ), 40 ),
         'url'         => get_permalink(),
         'image'       => has_post_thumbnail() ? get_the_post_thumbnail_url( $post_id, 'full' ) : ( isset($gallery_ids[0]) ? wp_get_attachment_image_url($gallery_ids[0], 'full') : '' ),
-        'priceRange'  => $currency . $display_price,
+        'priceRange'  => $price_range ? $price_range['formatted'] : '',
+        'address'     => [
+            '@type'           => 'PostalAddress',
+            'streetAddress'   => $hhb_address,
+            'addressLocality' => $hhb_city,
+            'addressRegion'   => $hhb_state,
+            'postalCode'      => $hhb_postal_code,
+            'addressCountry'  => $hhb_country,
+        ],
         'location'    => [
             '@type' => 'Place',
             'name'  => $location_name,
@@ -127,11 +179,18 @@ while ( have_posts() ) :
             <div class="mb-6">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold mb-2"><?php the_title(); ?></h1>
+                        <h1 class="text-2xl md:text-3xl font-bold mb-1"><?php the_title(); ?></h1>
+                        <?php if ($hhb_city || $hhb_state) : ?>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[15px]">location_on</span>
+                            <?php echo esc_html(implode(', ', array_filter([$hhb_city, $hhb_state, $hhb_country]))); ?>
+                            <?php if ($hhb_postal_code) echo ' ' . esc_html($hhb_postal_code); ?>
+                        </p>
+                        <?php endif; ?>
                         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-slate-400 font-medium">
                             <div class="flex items-center gap-1">
                                 <span class="material-symbols-outlined text-primary text-sm">star</span>
-                                <span class="text-slate-900 dark:text-slate-100">4.92</span>
+                                <span class="text-slate-900 dark:text-slate-100"><?php echo esc_html( $display_rating ); ?></span>
                                 <span>(Reviews)</span>
                             </div>
                             <span>·</span>
@@ -305,13 +364,101 @@ while ( have_posts() ) :
                             <div class="flex items-center gap-3">
                                 <span class="material-symbols-outlined text-slate-400">person_add</span>
                                 <div>
-                                    <p class="text-sm font-bold"><?php echo esc_html($currency . ' ' . number_format($extra_guest_fee)); ?></p>
+                                    <p class="text-sm font-bold">₹<?php echo esc_html( number_format( $extra_guest_fee ) ); ?></p>
                                     <p class="text-xs text-slate-500">Extra guest / night</p>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($total_bedrooms) : ?>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-slate-400">bed</span>
+                                <div>
+                                    <p class="text-sm font-bold"><?php echo esc_html($total_bedrooms); ?> Bedroom<?php echo $total_bedrooms > 1 ? 's' : ''; ?></p>
+                                    <p class="text-xs text-slate-500">Total bedrooms</p>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($total_bathrooms) : ?>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-slate-400">bathroom</span>
+                                <div>
+                                    <p class="text-sm font-bold"><?php echo esc_html($total_bathrooms); ?> Bathroom<?php echo $total_bathrooms > 1 ? 's' : ''; ?></p>
+                                    <p class="text-xs text-slate-500">Total bathrooms</p>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($property_size) : ?>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-slate-400">crop_square</span>
+                                <div>
+                                    <p class="text-sm font-bold"><?php echo esc_html(number_format($property_size)); ?> sq.ft</p>
+                                    <p class="text-xs text-slate-500">Property size</p>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($year_established) : ?>
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-slate-400">history_edu</span>
+                                <div>
+                                    <p class="text-sm font-bold">Est. <?php echo esc_html($year_established); ?></p>
+                                    <p class="text-xs text-slate-500">Year established</p>
                                 </div>
                             </div>
                             <?php endif; ?>
                         </div>
                     </div>
+
+                    <!-- Rooms -->
+                    <?php if (!empty($rooms)) : ?>
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <h3 class="text-lg font-bold mb-5">Available Rooms</h3>
+                        <div class="space-y-4">
+                            <?php foreach ($rooms as $room) :
+                                $r_base    = get_post_meta($room->ID, 'room_base_price', true);
+                                $r_weekend = get_post_meta($room->ID, 'room_weekend_price', true);
+                                $r_guests  = get_post_meta($room->ID, 'room_max_guests', true) ?: 2;
+                                $r_qty     = get_post_meta($room->ID, 'room_quantity', true) ?: 1;
+                                $r_bed     = get_post_meta($room->ID, 'room_bed_type', true);
+                                $r_size    = get_post_meta($room->ID, 'room_size_sqft', true);
+                                $r_min     = get_post_meta($room->ID, 'room_min_nights', true) ?: 1;
+                                $r_xfee    = get_post_meta($room->ID, 'room_extra_guest_fee', true);
+                            ?>
+                            <div class="flex flex-col sm:flex-row items-start gap-4 pb-4 border-b border-slate-100 dark:border-slate-800 last:border-0 last:pb-0">
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-900 dark:text-white text-sm"><?php echo esc_html($room->post_title); ?></h4>
+                                    <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1.5">
+                                        <?php if ($r_bed) : ?>
+                                        <span class="text-xs text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">king_bed</span><?php echo esc_html($r_bed); ?></span>
+                                        <?php endif; ?>
+                                        <span class="text-xs text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span>Up to <?php echo esc_html($r_guests); ?> guests</span>
+                                        <?php if ($r_size) : ?>
+                                        <span class="text-xs text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">crop_square</span><?php echo esc_html($r_size); ?> sq.ft</span>
+                                        <?php endif; ?>
+                                        <?php if ($r_qty > 1) : ?>
+                                        <span class="text-xs text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">content_copy</span><?php echo esc_html($r_qty); ?> available</span>
+                                        <?php endif; ?>
+                                        <?php if ($r_min > 1) : ?>
+                                        <span class="text-xs text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span>Min <?php echo esc_html($r_min); ?> nights</span>
+                                        <?php endif; ?>
+                                        <?php if ($r_xfee > 0) : ?>
+                                        <span class="text-xs text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">person_add</span>₹<?php echo esc_html(number_format($r_xfee)); ?> extra guest/night</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <?php if ($r_base) : ?>
+                                        <p class="text-primary font-black text-base">₹<?php echo esc_html(number_format($r_base)); ?></p>
+                                        <span class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">per night</span>
+                                        <?php if ($r_weekend && $r_weekend != $r_base) : ?>
+                                        <p class="text-xs text-slate-400 mt-0.5">₹<?php echo esc_html(number_format($r_weekend)); ?> weekends</p>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
 
                     <!-- Row 2: Things To Do & House Rules -->
                     <?php if ($dos || $donts) : ?>
@@ -352,8 +499,59 @@ while ( have_posts() ) :
                     </div>
                     <?php endif; ?>
 
+                    <!-- Check-in / Check-out Policy -->
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <h3 class="text-lg font-bold mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">schedule</span> Check-in &amp; Check-out
+                        </h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div class="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                <span class="material-symbols-outlined text-slate-400 text-2xl block mb-1">login</span>
+                                <p class="text-xs text-slate-500 mb-0.5">Check-in from</p>
+                                <p class="text-sm font-bold"><?php echo esc_html($checkin_time); ?></p>
+                            </div>
+                            <div class="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                <span class="material-symbols-outlined text-slate-400 text-2xl block mb-1">logout</span>
+                                <p class="text-xs text-slate-500 mb-0.5">Check-out by</p>
+                                <p class="text-sm font-bold"><?php echo esc_html($checkout_time); ?></p>
+                            </div>
+                            <div class="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                <span class="material-symbols-outlined text-2xl block mb-1 <?php echo $early_checkin === 'yes' ? 'text-green-500' : 'text-slate-300'; ?>">alarm</span>
+                                <p class="text-xs text-slate-500 mb-0.5">Early Check-in</p>
+                                <p class="text-sm font-bold <?php echo $early_checkin === 'yes' ? 'text-green-600' : 'text-slate-400'; ?>"><?php echo $early_checkin === 'yes' ? 'Available' : 'On request'; ?></p>
+                            </div>
+                            <div class="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                <span class="material-symbols-outlined text-2xl block mb-1 <?php echo $late_checkout === 'yes' ? 'text-green-500' : 'text-slate-300'; ?>">alarm_on</span>
+                                <p class="text-xs text-slate-500 mb-0.5">Late Check-out</p>
+                                <p class="text-sm font-bold <?php echo $late_checkout === 'yes' ? 'text-green-600' : 'text-slate-400'; ?>"><?php echo $late_checkout === 'yes' ? 'Available' : 'On request'; ?></p>
+                            </div>
+                        </div>
+                        <?php if ($contact_phone || $contact_email || $website_url) : ?>
+                        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Property Contact</p>
+                            <div class="flex flex-wrap gap-4">
+                                <?php if ($contact_phone) : ?>
+                                <a href="tel:<?php echo esc_attr($contact_phone); ?>" class="flex items-center gap-2 text-sm text-slate-600 hover:text-primary transition-colors font-medium">
+                                    <span class="material-symbols-outlined text-[16px]">call</span><?php echo esc_html($contact_phone); ?>
+                                </a>
+                                <?php endif; ?>
+                                <?php if ($contact_email) : ?>
+                                <a href="mailto:<?php echo esc_attr($contact_email); ?>" class="flex items-center gap-2 text-sm text-slate-600 hover:text-primary transition-colors font-medium">
+                                    <span class="material-symbols-outlined text-[16px]">mail</span><?php echo esc_html($contact_email); ?>
+                                </a>
+                                <?php endif; ?>
+                                <?php if ($website_url) : ?>
+                                <a href="<?php echo esc_url($website_url); ?>" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-slate-600 hover:text-primary transition-colors font-medium">
+                                    <span class="material-symbols-outlined text-[16px]">language</span>Website
+                                </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
                     <!-- Row 3: Attractions & Location Map -->
-                    <?php if (!empty($attractions) || ($lat && $lng)) : ?>
+                    <?php if (!empty($attractions) || $map_address) : ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <?php if (!empty($attractions)) : ?>
                         <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -371,23 +569,20 @@ while ( have_posts() ) :
                         </div>
                         <?php endif; ?>
 
-                        <?php if ($lat && $lng) : ?>
+                        <?php if ($map_address) : ?>
                         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-full">
                             <div class="flex-1 relative min-h-[200px]">
                                 <iframe
                                     class="w-full h-full min-h-[200px]"
                                     style="border:0"
                                     loading="lazy"
-                                    src="https://maps.google.com/maps?q=<?php echo esc_attr($lat); ?>,<?php echo esc_attr($lng); ?>&z=14&output=embed"
+                                    src="https://maps.google.com/maps?q=<?php echo urlencode($map_address); ?>&z=14&output=embed"
                                     allowfullscreen>
                                 </iframe>
                             </div>
                             <div class="p-4">
                                 <h3 class="text-sm font-bold mb-1">Where you'll be</h3>
-                                <p class="text-xs text-slate-500 leading-relaxed">
-                                    <?php echo esc_html($location_name); ?>
-                                    · <?php echo esc_html($lat); ?>, <?php echo esc_html($lng); ?>
-                                </p>
+                                <p class="text-xs text-slate-500 leading-relaxed"><?php echo esc_html($map_address); ?><?php if ($hhb_postal_code) echo ' – ' . esc_html($hhb_postal_code); ?></p>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -425,16 +620,17 @@ while ( have_posts() ) :
                         <!-- Price Header -->
                         <div class="flex justify-between items-end">
                             <div class="flex flex-col">
-                                <?php if ($offer_price && $offer_price < $base_price) : ?>
-                                    <span class="text-slate-400 line-through text-sm font-medium"><?php echo esc_html($currency . ' ' . number_format($base_price)); ?></span>
-                                <?php endif; ?>
                                 <div class="flex items-baseline gap-1">
-                                    <span class="text-2xl font-black"><?php echo esc_html($currency . ' ' . number_format($display_price)); ?></span>
+                                    <?php if ( $price_range ) : ?>
+                                        <span class="text-2xl font-black"><?php echo esc_html( $price_range['formatted'] ); ?></span>
+                                    <?php else : ?>
+                                        <span class="text-2xl font-black">—</span>
+                                    <?php endif; ?>
                                     <span class="text-slate-500 font-medium">Night</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-1 text-sm font-bold">
-                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span> 4.92
+                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span> <?php echo esc_html( $display_rating ); ?>
                             </div>
                         </div>
 
@@ -504,6 +700,11 @@ while ( have_posts() ) :
                                 <?php endif; ?>
                             </div>
                         </div>
+                        <?php if ( ! empty( $host_bio ) ) : ?>
+                        <p class="text-xs text-slate-500 leading-relaxed mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <?php echo esc_html( $host_bio ); ?>
+                        </p>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -529,12 +730,9 @@ while ( have_posts() ) :
                 <h2 class="text-2xl font-bold mb-8">Similar Properties You May Like</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     <?php while ($related->have_posts()) : $related->the_post();
-                        $r_id    = get_the_ID();
-                        $r_base  = get_post_meta($r_id, 'base_price_per_night', true);
-                        $r_offer = get_post_meta($r_id, 'offer_price_per_night', true);
-                        $r_price = $r_offer ? $r_offer : $r_base;
-                        $r_cur   = get_post_meta($r_id, 'currency', true) ?: '₹';
-                        $r_max   = get_post_meta($r_id, 'max_guests', true);
+                        $r_id          = get_the_ID();
+                        $r_price_range = hhb_get_price_range( $r_id );
+                        $r_max         = get_post_meta( $r_id, 'hhb_max_guests', true );
                         $r_locs  = get_the_terms($r_id, 'hhb_location');
                         $r_loc   = ($r_locs && !is_wp_error($r_locs)) ? $r_locs[0]->name : 'India';
                         $r_types = get_the_terms($r_id, 'hhb_property_type');
@@ -568,11 +766,6 @@ while ( have_posts() ) :
                                 <?php endforeach; endif; ?>
                             </div>
 
-                            <?php if ($r_offer): ?>
-                            <div class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold shadow-sm z-10">
-                                Special Offer
-                            </div>
-                            <?php endif; ?>
                         </a>
                         <div class="glass-panel bg-white border border-slate-200 dark:border-slate-800 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
                             <div class="flex justify-between items-start">
@@ -589,11 +782,10 @@ while ( have_posts() ) :
                             </div>
                             
                             <div class="mt-3 pt-3 border-t border-slate-200/50 flex items-baseline gap-1">
-                                <?php if ($r_offer): ?>
-                                    <span class="font-bold text-slate-900 dark:text-white"><?php echo esc_html($r_cur . ' ' . $r_offer); ?></span>
-                                    <span class="text-slate-500 text-xs line-through ml-1"><?php echo esc_html($r_cur . ' ' . $r_base); ?></span>
-                                <?php else: ?>
-                                    <span class="font-bold text-slate-900 dark:text-white"><?php echo esc_html($r_cur . ' ' . $r_base); ?></span>
+                                <?php if ( $r_price_range ) : ?>
+                                    <span class="font-bold text-slate-900 dark:text-white"><?php echo esc_html( $r_price_range['formatted'] ); ?></span>
+                                <?php else : ?>
+                                    <span class="text-slate-400 text-sm">Price TBD</span>
                                 <?php endif; ?>
                                 <span class="text-slate-600 dark:text-slate-300 text-sm ml-1">Night</span>
                             </div>

@@ -1,154 +1,147 @@
 <?php
 /**
- * The template for displaying archive pages (Category, Tag, Author)
+ * Archive Template (Author, Date, Custom Post Type fallback)
  *
- * Implements the full-width grid layout from code.html
+ * Redesigned via Google Stitch — consistent with blog archive aesthetic.
+ * WordPress Template Hierarchy: archive.php (used for author, date, CPT archives
+ * that don't have a specific template. home.php overrides for posts index).
  *
  * @package HimalayanMart
  */
-
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 get_header();
+
+$archive_title = get_the_archive_title();
+$archive_desc  = get_the_archive_description();
 ?>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+
 <style>
-    /* Add the same mountain wrapper */
-    .archive-mountain-wrap {
-        background-color: #f8f6f6;
-        background-image: radial-gradient(circle at 2px 2px, rgba(232, 94, 48, 0.05) 1px, transparent 0);
-        background-size: 40px 40px;
-        min-height: 100vh;
-        width: 100%;
-    }
-    
-    /* Apply Tailwind classes to default WP pagination */
-    .hm-tailwind-pagination .navigation { margin-top: 4rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
-    .hm-tailwind-pagination .nav-links { display: flex; gap: 0.75rem; align-items: center; }
-    .hm-tailwind-pagination .page-numbers {
-        width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center;
-        border-radius: 0.75rem; background: white; border: 1px solid #e2e8f0; color: #475569;
-        font-weight: 700; font-size: 0.875rem; transition: all 0.2s; text-decoration: none;
-    }
-    .hm-tailwind-pagination .page-numbers:hover { border-color: #e85e30; color: #e85e30; }
-    .hm-tailwind-pagination .page-numbers.current { background: #e85e30; color: white; border-color: #e85e30; outline: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-    .hm-tailwind-pagination .page-numbers.dots { border: none; background: transparent; pointer-events: none; width: auto; color: #94a3b8; }
-    
-    /* Clean up the default archive title output from WordPress */
-    .archive-header-title { font-size: inherit; font-weight: inherit; margin: 0; }
+  :root { --brand:#e85e30; --brand-light:#fef1ec; --bg:#f8f6f6; --border:#e2e8f0; --text:#1a1a2e; --muted:#64748b; }
+  .hhm-arch *:not(.material-symbols-outlined) { box-sizing:border-box; font-family:'Inter',sans-serif; }
+  .hhm-arch * { box-sizing:border-box; }
+  .hhm-arch { background:var(--bg); }
+  .hhm-arch-hero { background:linear-gradient(135deg,#141414 0%,#1a1a2e 100%); padding:52px 24px; text-align:center; }
+  .hhm-arch-hero h1 { font-size:clamp(24px,4vw,48px); font-weight:900; color:#fff; margin:0 0 10px; }
+  .hhm-arch-hero p { color:rgba(255,255,255,0.7); font-size:16px; margin:0 0 16px; }
+  .hhm-arch-breadcrumb { color:rgba(255,255,255,0.5); font-size:13px; }
+  .hhm-arch-breadcrumb a { color:rgba(255,255,255,0.7); text-decoration:none; }
+  .hhm-arch-body { max-width:1280px; margin:0 auto; padding:48px 24px 80px; display:grid; grid-template-columns:1fr 320px; gap:48px; align-items:start; }
+  @media(max-width:960px) { .hhm-arch-body { grid-template-columns:1fr; } }
+  .hhm-cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  @media(max-width:780px) { .hhm-cards-grid { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:480px) { .hhm-cards-grid { grid-template-columns:1fr; } }
+  .hhm-card { background:#fff; border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.04); transition:all 0.3s; }
+  .hhm-card:hover { transform:translateY(-5px); box-shadow:0 12px 36px rgba(0,0,0,0.1); }
+  .hhm-card-img-wrap { position:relative; height:190px; overflow:hidden; }
+  .hhm-card-img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+  .hhm-card:hover .hhm-card-img { transform:scale(1.06); }
+  .hhm-card-cat { position:absolute; top:10px; left:10px; background:var(--brand); color:#fff; border-radius:6px; padding:3px 10px; font-size:11px; font-weight:700; text-transform:uppercase; }
+  .hhm-card-body { padding:20px; }
+  .hhm-card-title { font-size:16px; font-weight:700; color:var(--text); margin:0 0 8px; line-height:1.35; }
+  .hhm-card-title a { color:inherit; text-decoration:none; }
+  .hhm-card-title a:hover { color:var(--brand); }
+  .hhm-card-meta { color:var(--muted); font-size:12px; margin-bottom:10px; }
+  .hhm-card-excerpt { color:#374151; font-size:13px; line-height:1.65; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .hhm-card-link { color:var(--brand); font-weight:700; font-size:13px; text-decoration:none; }
+  .hhm-card-link:hover { text-decoration:underline; }
+  .hhm-sidebar-widget { background:#fff; border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.04); margin-bottom:24px; }
+  .hhm-widget-title { font-size:15px; font-weight:800; color:var(--text); margin:0 0 16px; padding-bottom:12px; border-bottom:2px solid var(--brand-light); display:flex; align-items:center; gap:8px; }
+  .hhm-widget-title .material-symbols-outlined { color:var(--brand); font-size:18px; }
+  .hhm-cat-list { list-style:none; padding:0; margin:0; }
+  .hhm-cat-list li { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); font-size:14px; }
+  .hhm-cat-list li:last-child { border-bottom:none; }
+  .hhm-cat-list a { color:var(--text); text-decoration:none; display:flex; align-items:center; gap:8px; font-weight:500; }
+  .hhm-cat-list a:hover { color:var(--brand); }
+  .hhm-cat-dot { width:8px; height:8px; border-radius:50%; background:var(--brand); }
+  .hhm-cat-count { background:var(--bg); border-radius:50px; padding:2px 8px; font-size:11px; color:var(--muted); font-weight:600; }
+  .hhm-tags-cloud { display:flex; flex-wrap:wrap; gap:7px; }
+  .hhm-tag-pill { background:var(--brand-light); color:var(--brand); border:1px solid rgba(232,94,48,0.2); border-radius:50px; padding:4px 12px; font-size:12px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+  .hhm-tag-pill:hover { background:var(--brand); color:#fff; }
+  .hhm-pagination { display:flex; justify-content:center; gap:8px; margin-top:40px; flex-wrap:wrap; }
+  .hhm-pagination .page-numbers { display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1px solid var(--border); font-weight:600; font-size:14px; text-decoration:none; color:var(--text); background:#fff; transition:all 0.2s; }
+  .hhm-pagination .current { background:var(--brand); color:#fff; border-color:var(--brand); }
+  .hhm-pagination .page-numbers:hover:not(.current) { background:var(--brand-light); border-color:var(--brand); color:var(--brand); }
+  .hhm-pagination .prev,.hhm-pagination .next { width:auto; padding:0 16px; }
 </style>
 
-<div class="archive-mountain-wrap font-display text-slate-900 dark:text-slate-100 pb-20">
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        
-        <!-- Archive Header Section -->
-        <div class="mb-12">
-            <h2 class="text-5xl font-black tracking-tight mb-4">
-                <?php echo wp_kses_post( get_the_archive_title() ); ?>
-            </h2>
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="text-slate-600 max-w-xl text-lg relative z-10 prose prose-p:my-0">
-                    <?php the_archive_description(); ?>
-                </div>
-                
-                <!-- Category Filter Row -->
-                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar relative z-10">
-                    <a href="<?php echo esc_url( get_permalink( get_option( 'page_for_posts' ) ) ); ?>" class="bg-white border-slate-200 text-slate-700 hover:border-primary border px-5 py-2 rounded-full text-sm font-semibold shrink-0 transition-colors">
-                        <?php esc_html_e( 'All Posts', 'himalayanmart' ); ?>
-                    </a>
-                    <?php
-                    $categories = get_categories( array( 'hide_empty' => true, 'number' => 4, 'orderby' => 'count', 'order' => 'DESC' ) );
-                    foreach ( $categories as $cat ) {
-                        $is_active = is_category( $cat->term_id );
-                        $btn_classes = $is_active ? 'bg-primary text-white border-primary' : 'bg-white border-slate-200 text-slate-700 hover:border-primary';
-                        echo '<a href="' . esc_url( get_category_link( $cat->term_id ) ) . '" class="border px-5 py-2 rounded-full text-sm font-semibold shrink-0 transition-colors ' . esc_attr( $btn_classes ) . '">' . esc_html( $cat->name ) . '</a>';
-                    }
-                    ?>
-                </div>
-            </div>
+<div class="hhm-arch">
+  <div class="hhm-arch-hero">
+    <h1><?php echo wp_kses_post($archive_title); ?></h1>
+    <?php if ($archive_desc) : ?>
+      <p><?php echo wp_kses_post($archive_desc); ?></p>
+    <?php endif; ?>
+    <div class="hhm-arch-breadcrumb">
+      <a href="<?php echo home_url(); ?>">Home</a> ›
+      <span><?php echo wp_strip_all_tags($archive_title); ?></span>
+    </div>
+  </div>
+
+  <div class="hhm-arch-body">
+    <main>
+      <?php if (have_posts()) : ?>
+        <div class="hhm-cards-grid">
+          <?php while (have_posts()) : the_post();
+            $thumb = get_the_post_thumbnail_url(null,'medium_large') ?: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80';
+            $cats  = get_the_category();
+            $cat   = $cats ? $cats[0] : null;
+          ?>
+            <article class="hhm-card">
+              <div class="hhm-card-img-wrap">
+                <a href="<?php the_permalink(); ?>">
+                  <img class="hhm-card-img" src="<?php echo esc_url($thumb); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
+                </a>
+                <?php if ($cat) : ?>
+                  <a href="<?php echo get_category_link($cat->term_id); ?>" class="hhm-card-cat"><?php echo esc_html($cat->name); ?></a>
+                <?php endif; ?>
+              </div>
+              <div class="hhm-card-body">
+                <h2 class="hhm-card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+                <div class="hhm-card-meta"><?php the_author(); ?> · <?php echo get_the_date('M j, Y'); ?></div>
+                <p class="hhm-card-excerpt"><?php echo wp_trim_words(get_the_excerpt(), 18); ?></p>
+                <a href="<?php the_permalink(); ?>" class="hhm-card-link">Read More →</a>
+              </div>
+            </article>
+          <?php endwhile; ?>
         </div>
-
-        <?php if ( have_posts() ) : ?>
-            
-            <!-- Blog Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-                <?php while ( have_posts() ) : the_post(); ?>
-                    
-                    <!-- Card -->
-                    <article id="post-<?php the_ID(); ?>" <?php post_class( 'bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col border border-slate-100' ); ?>>
-                        
-                        <a href="<?php the_permalink(); ?>" class="relative block aspect-[16/10] overflow-hidden">
-                            <?php if ( has_post_thumbnail() ) : ?>
-                                <?php the_post_thumbnail( 'medium_large', array( 'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500' ) ); ?>
-                            <?php else : ?>
-                                <div class="w-full h-full bg-slate-100 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center text-slate-300">
-                                    <span class="material-symbols-outlined text-4xl">landscape</span>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php 
-                            $cats = get_the_category();
-                            if ( $cats ) : 
-                            ?>
-                                <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
-                                    <?php echo esc_html( $cats[0]->name ); ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                        
-                        <div class="p-6 flex-1 flex flex-col">
-                            <div class="flex items-center gap-3 text-slate-400 text-xs font-medium mb-3">
-                                <span><?php echo esc_html( strtoupper( get_the_date( 'M d, Y' ) ) ); ?></span>
-                                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                                <span>
-                                    <?php 
-                                    $word_count = str_word_count( wp_strip_all_tags( get_the_content() ) );
-                                    echo esc_html( strtoupper( max( 1, ceil( $word_count / 200 ) ) . ' MIN READ' ) );
-                                    ?>
-                                </span>
-                            </div>
-                            
-                            <h3 class="text-xl font-bold mb-3 group-hover:text-primary transition-colors leading-tight">
-                                <a href="<?php the_permalink(); ?>" class="block"><?php the_title(); ?></a>
-                            </h3>
-                            
-                            <p class="text-slate-600 text-sm line-clamp-2 mb-6 flex-1">
-                                <?php echo wp_trim_words( get_the_excerpt(), 20, '...' ); ?>
-                            </p>
-                            
-                            <div class="mt-auto flex items-center justify-between border-t border-slate-50 pt-4">
-                                <div class="flex items-center gap-2">
-                                    <?php echo get_avatar( get_the_author_meta( 'ID' ), 32, '', '', array( 'class' => 'w-8 h-8 rounded-full bg-slate-200' ) ); ?>
-                                    <span class="text-xs font-bold text-slate-700"><?php the_author(); ?></span>
-                                </div>
-                                <a href="<?php the_permalink(); ?>" class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</a>
-                            </div>
-                        </div>
-                    </article>
-
-                <?php endwhile; ?>
-            </div>
-
-            <!-- Pagination Section -->
-            <div class="hm-tailwind-pagination relative z-10">
-                <?php
-                the_posts_pagination( array(
-                    'mid_size'  => 2,
-                    'prev_text' => '<span class="material-symbols-outlined text-xl leading-none">chevron_left</span>',
-                    'next_text' => '<span class="material-symbols-outlined text-xl leading-none">chevron_right</span>',
-                ) );
-                ?>
-            </div>
-
-        <?php else : ?>
-            
-            <div class="text-center py-20">
-                <span class="material-symbols-outlined text-6xl text-slate-300 mb-4 block">search_off</span>
-                <h2 class="text-2xl font-bold text-slate-900 mb-2"><?php esc_html_e( 'No posts found', 'himalayanmart' ); ?></h2>
-                <p class="text-slate-500"><?php esc_html_e( 'It seems we can\'t find what you\'re looking for. Perhaps searching can help.', 'himalayanmart' ); ?></p>
-            </div>
-            
-        <?php endif; ?>
-
+        <div class="hhm-pagination">
+          <?php echo paginate_links(['type'=>'list','prev_text'=>'← Prev','next_text'=>'Next →']); ?>
+        </div>
+      <?php else : ?>
+        <div style="text-align:center;padding:60px;background:#fff;border-radius:16px;border:1px solid var(--border);">
+          <span class="material-symbols-outlined" style="font-size:56px;color:#cbd5e1;">article</span>
+          <h2>Nothing Found</h2>
+          <p style="color:var(--muted);">No posts match this archive.</p>
+        </div>
+      <?php endif; ?>
     </main>
+
+    <aside>
+      <div class="hhm-sidebar-widget">
+        <h3 class="hhm-widget-title"><span class="material-symbols-outlined">category</span>Categories</h3>
+        <ul class="hhm-cat-list">
+          <?php foreach (get_categories(['hide_empty'=>false,'number'=>8]) as $c) : ?>
+            <li>
+              <a href="<?php echo get_category_link($c->term_id); ?>">
+                <span class="hhm-cat-dot"></span><?php echo esc_html($c->name); ?>
+              </a>
+              <span class="hhm-cat-count"><?php echo $c->count; ?></span>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+      <div class="hhm-sidebar-widget">
+        <h3 class="hhm-widget-title"><span class="material-symbols-outlined">label</span>Tags</h3>
+        <div class="hhm-tags-cloud">
+          <?php foreach (get_tags(['number'=>16,'orderby'=>'count','order'=>'DESC']) as $t) : ?>
+            <a href="<?php echo get_tag_link($t->term_id); ?>" class="hhm-tag-pill"><?php echo esc_html($t->name); ?></a>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </aside>
+  </div>
 </div>
 
 <?php get_footer(); ?>

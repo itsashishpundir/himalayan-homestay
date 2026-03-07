@@ -31,6 +31,7 @@ function himalayan_homestay_setup() {
             'footer-discover'  => esc_html__( 'FuturaStays Footer: Discover', 'himalayanmart' ),
             'footer-company'   => esc_html__( 'FuturaStays Footer: Company', 'himalayanmart' ),
             'footer-support'   => esc_html__( 'FuturaStays Footer: Support', 'himalayanmart' ),
+            'footer-legal'     => esc_html__( 'FuturaStays Footer: Legal & Bottom', 'himalayanmart' ),
         )
     );
 

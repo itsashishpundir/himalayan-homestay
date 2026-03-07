@@ -179,12 +179,25 @@ $footer_heading = get_theme_mod( 'hm_futura_footer_heading_color', '#e85e30' );
             <span class="font-bold text-slate-900 dark:text-white"><?php bloginfo( 'name' ); ?></span>
             <span><?php echo wp_kses_post( $copyright ); ?></span>
         </div>
-        <div class="flex flex-wrap justify-center gap-6">
-            <?php if ( $privacy_url && $privacy_url !== '#' ) : ?>
-            <a class="hover:text-primary transition-colors" href="<?php echo esc_url( $privacy_url ); ?>"><?php esc_html_e( 'Privacy', 'himalayanmart' ); ?></a>
-            <?php endif; ?>
-            <a class="hover:text-primary transition-colors" href="<?php echo esc_url( get_privacy_policy_url() ?: '#' ); ?>"><?php esc_html_e( 'Terms', 'himalayanmart' ); ?></a>
-            <a class="hover:text-primary transition-colors" href="<?php echo esc_url( home_url( '/sitemap.xml' ) ); ?>"><?php esc_html_e( 'Sitemap', 'himalayanmart' ); ?></a>
+        <div class="flex flex-wrap justify-center gap-6 [&_a]:hover:text-primary [&_a]:transition-colors">
+            <?php
+            wp_nav_menu( array(
+                'theme_location' => 'footer-legal',
+                'container'      => false,
+                'menu_class'     => 'flex flex-wrap justify-center gap-6 m-0 p-0 list-none',
+                'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
+                'depth'          => 1,
+                'fallback_cb'    => function() use ( $privacy_url ) {
+                    echo '<ul class="flex flex-wrap justify-center gap-6 m-0 p-0 list-none">';
+                    if ( $privacy_url && $privacy_url !== '#' ) {
+                        echo '<li><a href="' . esc_url( $privacy_url ) . '">' . esc_html__( 'Privacy', 'himalayanmart' ) . '</a></li>';
+                    }
+                    echo '<li><a href="' . esc_url( get_privacy_policy_url() ?: '#' ) . '">' . esc_html__( 'Terms', 'himalayanmart' ) . '</a></li>';
+                    echo '<li><a href="' . esc_url( home_url( '/sitemap.xml' ) ) . '">' . esc_html__( 'Sitemap', 'himalayanmart' ) . '</a></li>';
+                    echo '</ul>';
+                },
+            ) );
+            ?>
         </div>
     </div>
 

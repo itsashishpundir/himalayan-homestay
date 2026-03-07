@@ -56,23 +56,30 @@ $share_title = urlencode( get_the_title() );
   .hhm-author-avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-light); }
   .hhm-author-name { font-size:15px; font-weight:700; color:var(--text); }
   .hhm-author-meta { font-size:13px; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; margin-top:2px; }
-  .hhm-share-row { display:flex; align-items:center; gap:10px; margin-bottom:32px; flex-wrap:wrap; }
+  .hhm-share-row { display:flex; align-items:center; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
   .hhm-share-label { font-size:13px; font-weight:600; color:var(--muted); margin-right:4px; }
-  .hhm-share-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+  .hhm-share-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 10px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.2s; white-space:nowrap; }
+  @media(min-width:480px) { .hhm-share-btn { padding:8px 14px; } }
+  .hhm-share-btn .hhm-btn-label { display:none; }
+  @media(min-width:480px) { .hhm-share-btn .hhm-btn-label { display:inline; } }
   .hhm-share-fb { background:#1877f2; color:#fff; }
   .hhm-share-tw { background:#1da1f2; color:#fff; }
   .hhm-share-wa { background:#25d366; color:#fff; }
-  .hhm-share-copy { background:var(--bg); color:var(--text); border:1px solid var(--border); cursor:pointer; border:none; }
+  .hhm-share-copy { background:var(--bg); color:var(--text); border:1px solid var(--border); cursor:pointer; }
   .hhm-share-btn:hover { opacity:0.88; transform:translateY(-1px); }
 
   /* ── POST CONTENT STYLES ── */
-  .hhm-post-content { font-size:17px; line-height:1.85; color:#374151; }
+  .hhm-post-content { font-size:16px; line-height:1.85; color:#374151; }
+  @media(min-width:768px) { .hhm-post-content { font-size:17px; } }
   .hhm-post-content p { margin:0 0 24px; }
   .hhm-post-content p:first-of-type::first-letter { font-size:80px; font-weight:900; color:var(--brand); float:left; line-height:0.68; margin:8px 12px -4px 0; font-family:'Inter',sans-serif; }
-  .hhm-post-content h2 { font-size:26px; font-weight:800; color:var(--text); margin:40px 0 18px; padding-bottom:10px; border-bottom:2px solid var(--brand-light); position:relative; }
+  .hhm-post-content h2 { font-size:22px; font-weight:800; color:var(--text); margin:36px 0 16px; padding-bottom:10px; border-bottom:2px solid var(--brand-light); position:relative; }
+  @media(min-width:768px) { .hhm-post-content h2 { font-size:26px; margin:40px 0 18px; } }
   .hhm-post-content h2::after { content:''; position:absolute; bottom:-2px; left:0; width:48px; height:2px; background:var(--brand); }
-  .hhm-post-content h3 { font-size:20px; font-weight:700; color:var(--text); margin:30px 0 14px; }
-  .hhm-post-content blockquote { margin:32px 0; padding:20px 24px 20px 28px; border-left:4px solid var(--brand); background:var(--brand-light); border-radius:0 12px 12px 0; font-size:18px; font-style:italic; color:var(--text); font-weight:500; }
+  .hhm-post-content h3 { font-size:18px; font-weight:700; color:var(--text); margin:28px 0 12px; }
+  @media(min-width:768px) { .hhm-post-content h3 { font-size:20px; margin:30px 0 14px; } }
+  .hhm-post-content blockquote { margin:24px 0; padding:16px 18px 16px 22px; border-left:4px solid var(--brand); background:var(--brand-light); border-radius:0 12px 12px 0; font-size:16px; font-style:italic; color:var(--text); font-weight:500; }
+  @media(min-width:768px) { .hhm-post-content blockquote { margin:32px 0; padding:20px 24px 20px 28px; font-size:18px; } }
   .hhm-post-content blockquote cite { display:block; font-size:13px; font-style:normal; color:var(--muted); margin-top:10px; font-weight:600; }
   .hhm-post-content img { max-width:100%; height:auto; border-radius:12px; margin:24px 0; display:block; }
   .hhm-post-content figcaption { text-align:center; color:var(--muted); font-size:13px; margin-top:-16px; margin-bottom:24px; }
@@ -81,11 +88,14 @@ $share_title = urlencode( get_the_title() );
   .hhm-post-content ul li::marker { color:var(--brand); }
   .hhm-post-content a { color:var(--brand); text-decoration:underline; }
   .hhm-post-content a:hover { color:#c94d22; }
-  .hhm-post-content code { background:#f1f5f9; border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:14px; font-family:monospace; color:#c94d22; }
-  .hhm-post-content pre { background:#1e293b; color:#e2e8f0; border-radius:12px; padding:24px; overflow-x:auto; margin:24px 0; font-size:14px; line-height:1.7; }
-  .hhm-post-content table { width:100%; border-collapse:collapse; margin:24px 0; font-size:14px; }
-  .hhm-post-content th { background:var(--brand); color:#fff; padding:12px 16px; text-align:left; }
-  .hhm-post-content td { padding:12px 16px; border-bottom:1px solid var(--border); }
+  .hhm-post-content code { background:#f1f5f9; border:1px solid var(--border); border-radius:4px; padding:2px 6px; font-size:13px; font-family:monospace; color:#c94d22; }
+  .hhm-post-content pre { background:#1e293b; color:#e2e8f0; border-radius:12px; padding:16px; overflow-x:auto; margin:24px 0; font-size:13px; line-height:1.7; }
+  @media(min-width:768px) { .hhm-post-content pre { padding:24px; font-size:14px; } }
+  /* Table: scrollable on mobile */
+  .hhm-post-content .hhm-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:24px 0; border-radius:8px; border:1px solid var(--border); }
+  .hhm-post-content table { width:100%; border-collapse:collapse; font-size:14px; margin:0; }
+  .hhm-post-content th { background:var(--brand); color:#fff; padding:10px 14px; text-align:left; white-space:nowrap; }
+  .hhm-post-content td { padding:10px 14px; border-bottom:1px solid var(--border); }
   .hhm-post-content tr:nth-child(even) td { background:#f8fafc; }
 
   /* Tags */
@@ -94,26 +104,32 @@ $share_title = urlencode( get_the_title() );
   .hhm-post-tags a:hover { background:var(--brand); color:#fff; border-color:var(--brand); }
 
   /* Author Bio */
-  .hhm-author-bio { margin:40px 0; background:#fff; border:1px solid var(--border); border-radius:20px; padding:28px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; gap:20px; align-items:flex-start; }
-  .hhm-author-bio-avatar { width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--brand); flex-shrink:0; }
+  .hhm-author-bio { margin:40px 0; background:#fff; border:1px solid var(--border); border-radius:20px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; gap:16px; align-items:center; text-align:center; }
+  @media(min-width:480px) { .hhm-author-bio { flex-direction:row; align-items:flex-start; text-align:left; gap:20px; padding:28px; } }
+  .hhm-author-bio-avatar { width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid var(--brand); flex-shrink:0; }
+  @media(min-width:480px) { .hhm-author-bio-avatar { width:80px; height:80px; } }
   .hhm-author-bio-name { font-size:18px; font-weight:800; color:var(--text); margin:0 0 4px; }
   .hhm-author-bio-role { font-size:12px; font-weight:700; color:var(--brand); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px; }
   .hhm-author-bio-text { font-size:14px; color:#374151; line-height:1.7; margin:0; }
 
   /* Post Navigation */
-  .hhm-post-nav { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:40px 0; }
-  .hhm-post-nav a { background:#fff; border:1px solid var(--border); border-radius:14px; padding:20px; text-decoration:none; display:flex; align-items:center; gap:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:all 0.2s; }
+  .hhm-post-nav { display:grid; grid-template-columns:1fr; gap:12px; margin:40px 0; }
+  @media(min-width:600px) { .hhm-post-nav { grid-template-columns:1fr 1fr; gap:20px; } }
+  .hhm-post-nav a { background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px; text-decoration:none; display:flex; align-items:center; gap:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:all 0.2s; }
+  @media(min-width:600px) { .hhm-post-nav a { padding:20px; } }
   .hhm-post-nav a:hover { border-color:var(--brand); box-shadow:0 6px 20px rgba(232,94,48,0.1); }
   .hhm-post-nav .hhm-nav-next { justify-content:flex-end; text-align:right; }
-  .hhm-post-nav img { width:56px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+  .hhm-post-nav img { width:52px; height:44px; border-radius:8px; object-fit:cover; flex-shrink:0; }
   .hhm-post-nav-direction { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px; }
-  .hhm-post-nav-title { font-size:14px; font-weight:700; color:var(--text); line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .hhm-post-nav-title { font-size:13px; font-weight:700; color:var(--text); line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 
   /* Related Posts */
   .hhm-related { margin-top:40px; padding-top:40px; border-top:1px solid var(--border); }
-  .hhm-related h2 { font-size:22px; font-weight:800; color:var(--text); margin:0 0 24px; }
-  .hhm-related-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-  @media(max-width:640px) { .hhm-related-grid { grid-template-columns:1fr; } .hhm-post-nav { grid-template-columns:1fr; } }
+  .hhm-related h2 { font-size:20px; font-weight:800; color:var(--text); margin:0 0 20px; }
+  @media(min-width:600px) { .hhm-related h2 { font-size:22px; margin:0 0 24px; } }
+  .hhm-related-grid { display:grid; grid-template-columns:1fr; gap:16px; }
+  @media(min-width:480px) { .hhm-related-grid { grid-template-columns:repeat(2,1fr); } }
+  @media(min-width:900px) { .hhm-related-grid { grid-template-columns:repeat(3,1fr); gap:20px; } }
   .hhm-rel-card { background:#fff; border-radius:14px; border:1px solid var(--border); overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:all 0.3s; }
   .hhm-rel-card:hover { transform:translateY(-4px); box-shadow:0 10px 28px rgba(0,0,0,0.09); }
   .hhm-rel-card img { width:100%; height:160px; object-fit:cover; display:block; }
@@ -201,17 +217,17 @@ $share_title = urlencode( get_the_title() );
 
           <div class="hhm-share-row">
             <span class="hhm-share-label">Share:</span>
-            <a class="hhm-share-btn hhm-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" rel="noopener">
-              <span class="material-symbols-outlined" style="font-size:16px;">share</span> Facebook
+            <a class="hhm-share-btn hhm-share-fb" href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" rel="noopener" aria-label="Share on Facebook">
+              <span class="material-symbols-outlined" style="font-size:16px;">share</span><span class="hhm-btn-label">Facebook</span>
             </a>
-            <a class="hhm-share-btn hhm-share-tw" href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" rel="noopener">
-              <span class="material-symbols-outlined" style="font-size:16px;">chat_bubble</span> Twitter
+            <a class="hhm-share-btn hhm-share-tw" href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" rel="noopener" aria-label="Share on Twitter">
+              <span class="material-symbols-outlined" style="font-size:16px;">chat_bubble</span><span class="hhm-btn-label">Twitter</span>
             </a>
-            <a class="hhm-share-btn hhm-share-wa" href="https://wa.me/?text=<?php echo $share_title; ?>%20<?php echo $share_url; ?>" target="_blank" rel="noopener">
-              <span class="material-symbols-outlined" style="font-size:16px;">forum</span> WhatsApp
+            <a class="hhm-share-btn hhm-share-wa" href="https://wa.me/?text=<?php echo $share_title; ?>%20<?php echo $share_url; ?>" target="_blank" rel="noopener" aria-label="Share on WhatsApp">
+              <span class="material-symbols-outlined" style="font-size:16px;">forum</span><span class="hhm-btn-label">WhatsApp</span>
             </a>
-            <button class="hhm-share-btn hhm-share-copy" onclick="navigator.clipboard.writeText('<?php echo get_permalink(); ?>');this.textContent='✓ Copied!'">
-              <span class="material-symbols-outlined" style="font-size:16px;">link</span> Copy Link
+            <button class="hhm-share-btn hhm-share-copy" onclick="navigator.clipboard.writeText('<?php echo esc_js( get_permalink() ); ?>');this.innerHTML='<span class=\'material-symbols-outlined\' style=\'font-size:16px;\'>check</span><span class=\'hhm-btn-label\'>Copied!</span>'" aria-label="Copy link">
+              <span class="material-symbols-outlined" style="font-size:16px;">link</span><span class="hhm-btn-label">Copy Link</span>
             </button>
           </div>
         </div>
@@ -358,8 +374,19 @@ $share_title = urlencode( get_the_title() );
 
 <script>
 (function() {
-  // ── Auto-build Table of Contents from H2 headings ─────────────────────────
+  // ── Wrap tables for horizontal scroll on mobile ───────────────────────────
   const content = document.getElementById('hhm-post-content');
+  if (content) {
+    content.querySelectorAll('table').forEach(function(table) {
+      if (table.parentElement.classList.contains('hhm-table-wrap')) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'hhm-table-wrap';
+      table.parentNode.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
+  }
+
+  // ── Auto-build Table of Contents from H2 headings ─────────────────────────
   const toc     = document.getElementById('hhm-toc');
   const headings = content ? content.querySelectorAll('h2, h3') : [];
 

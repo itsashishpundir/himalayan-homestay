@@ -162,7 +162,32 @@ add_action( 'customize_register', function( $wp_customize ) {
     $wp_customize->add_section( 'himalayanmart_homestay_archive_section', array(
         'title'       => __( 'Homestay Archive Settings', 'himalayanmart' ),
         'priority'    => 46,
-        'description' => __( 'Customize the Homestay archive/locations page title prefix and suffix.', 'himalayanmart' ),
+        'description' => __( 'Customize the Homestay archive/locations page title prefix and suffix, and hero image.', 'himalayanmart' ),
+    ) );
+
+    // Global Archive Hero Image
+    $wp_customize->add_setting( 'himalayanmart_archive_global_hero_image', array(
+        'default'           => 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'himalayanmart_archive_global_hero_image', array(
+        'label'       => __( 'Global Archive Hero Image', 'himalayanmart' ),
+        'description' => __( 'This background image will be applied to all Location and Property Type archive pages, matching the Contact Us style.', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homestay_archive_section',
+    ) ) );
+
+    // Global Archive Hero Subtitle
+    $wp_customize->add_setting( 'himalayanmart_archive_global_hero_subtitle', array(
+        'default'           => 'Experience the magic of the Himalayas in our handpicked cozy homestays. Nestled amidst snow-capped peaks and lush pine forests, find your perfect winter vibe and enjoy the warm hospitality of local hosts.',
+        'sanitize_callback' => 'sanitize_textarea_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'himalayanmart_archive_global_hero_subtitle', array(
+        'label'       => __( 'Global Archive Hero Subtitle', 'himalayanmart' ),
+        'description' => __( 'This text will be used as the default subtitle for Location and Property Type archives if they do not have a description set.', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homestay_archive_section',
+        'type'        => 'textarea',
     ) );
 
     // Archive Title Prefix

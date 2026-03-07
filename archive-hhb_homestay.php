@@ -24,8 +24,8 @@ $prop_suffix = get_theme_mod('himalayanmart_property_type_archive_suffix', ' Sta
 // Handle Active Term and Title logic
 $active_term = null;
 $location_name = 'the Himalayas';
-$hero_bg_image = 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop';
-$hero_desc = 'Experience the magic of the Himalayas in our handpicked cozy homestays. Nestled amidst snow-capped peaks and lush pine forests, find your perfect winter vibe and enjoy the warm hospitality of local hosts.';
+$hero_bg_image = get_theme_mod('himalayanmart_archive_global_hero_image', 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop');
+$hero_desc = get_theme_mod('himalayanmart_archive_global_hero_subtitle', 'Experience the magic of the Himalayas in our handpicked cozy homestays. Nestled amidst snow-capped peaks and lush pine forests, find your perfect winter vibe and enjoy the warm hospitality of local hosts.');
 
 $is_property_type = false;
 
@@ -62,12 +62,6 @@ if ($active_term) {
     $custom_title = get_term_meta($active_term->term_id, 'hhb_term_title', true);
     if ($custom_title) $hero_title = $custom_title;
     
-    $image_id = get_term_meta($active_term->term_id, 'hhb_term_image', true);
-    if ($image_id) {
-        $img_url = wp_get_attachment_image_url($image_id, 'full');
-        if ($img_url) $hero_bg_image = $img_url;
-    }
-    
     $term_desc = term_description($active_term->term_id);
     if ($term_desc) $hero_desc = wp_strip_all_tags($term_desc);
 }
@@ -83,6 +77,25 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
 
 
 <style>
+    /* Contact-Style Hero classes for Archive */
+    .hhb-contact-hero {
+        position: relative;
+        min-height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .hhb-contact-hero-bg {
+        position: absolute; inset: 0;
+        background-size: cover;
+        background-position: center;
+    }
+    .hhb-contact-hero-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+    }
+
     .mountain-texture {
         background-image: radial-gradient(circle at 2px 2px, rgba(232, 94, 48, 0.05) 1px, transparent 0);
         background-size: 40px 40px;
@@ -148,14 +161,15 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
     <main class="relative">
         
         <!-- Hero Section -->
-        <section class="relative h-[75vh] min-h-[500px] flex items-center justify-center overflow-hidden">
-            <div class="absolute inset-0 bg-cover bg-center transition-all duration-700" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('<?php echo esc_url($hero_bg_image); ?>')"></div>
+        <section class="hhb-contact-hero">
+            <div class="hhb-contact-hero-bg" style="background-image: url('<?php echo esc_url($hero_bg_image); ?>')"></div>
+            <div class="hhb-contact-hero-overlay"></div>
             
-            <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 drop-shadow-lg leading-tight">
+            <div class="relative z-10 text-center px-4 py-16 max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-3 drop-shadow-lg">
                     <?php echo esc_html($hero_title); ?>
                 </h1>
-                <p class="text-base md:text-lg text-white/90 leading-relaxed font-medium mb-10 max-w-2xl mx-auto drop-shadow-md">
+                <p class="text-white/80 text-base md:text-lg max-w-xl mx-auto mb-10">
                     <?php echo esc_html($hero_desc); ?>
                 </p>
                 

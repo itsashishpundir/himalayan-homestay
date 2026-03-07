@@ -154,12 +154,16 @@ $share_title = urlencode( get_the_title() );
   .hhm-sidebar-share .tw { background:#1da1f2; color:#fff; }
   .hhm-sidebar-share .wa { background:#25d366; color:#fff; }
   .hhm-sidebar-share a:hover { opacity:0.88; }
-  .hhm-newsletter-card { background:linear-gradient(135deg,#c94d22 0%,#e85e30 100%); border-radius:14px; padding:22px; text-align:center; }
-  .hhm-newsletter-card h4 { color:#fff; margin:0 0 6px; font-size:15px; font-weight:800; }
-  .hhm-newsletter-card p { color:rgba(255,255,255,0.85); font-size:12px; margin:0 0 14px; }
-  .hhm-newsletter-input { width:100%; padding:9px 12px; border-radius:8px; border:none; font-family:'Inter',sans-serif; font-size:13px; margin-bottom:7px; }
-  .hhm-newsletter-btn { width:100%; padding:9px; background:#1a1a2e; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; }
-  .hhm-newsletter-btn:hover { background:#000; }
+  .hhm-newsletter-card { background:linear-gradient(135deg,#1a1a2e 0%,#2d1a3e 60%,#c94d22 100%); border-radius:16px; padding:24px; text-align:center; }
+  .hhm-nl-icon { width:44px; height:44px; background:rgba(255,255,255,.12); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; }
+  .hhm-nl-icon .material-symbols-outlined { color:#fff; font-size:22px; }
+  .hhm-newsletter-card h4 { color:#fff; margin:0 0 6px; font-size:16px; font-weight:800; }
+  .hhm-newsletter-card p { color:rgba(255,255,255,0.75); font-size:12px; margin:0 0 16px; }
+  .hhm-newsletter-input { width:100%; padding:10px 13px; border-radius:8px; border:none; font-family:'Inter',sans-serif; font-size:13px; margin-bottom:8px; outline:none; }
+  .hhm-newsletter-input:focus { box-shadow:0 0 0 2px #e85e30; }
+  .hhm-newsletter-btn { width:100%; padding:11px; background:#e85e30; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; transition:background .2s; }
+  .hhm-newsletter-btn:hover { background:#c94d22; }
+  .hhm-newsletter-btn:disabled { background:#888; cursor:not-allowed; }
   .hhm-popular-post { display:flex; gap:10px; align-items:flex-start; margin-bottom:13px; padding-bottom:13px; border-bottom:1px solid var(--border); }
   .hhm-popular-post:last-child { margin-bottom:0; padding-bottom:0; border-bottom:none; }
   .hhm-popular-img { width:52px; height:44px; border-radius:6px; object-fit:cover; flex-shrink:0; }
@@ -358,13 +362,18 @@ $share_title = urlencode( get_the_title() );
         </div>
 
         <!-- Newsletter -->
-        <div class="hhm-newsletter-card">
-          <h4>✈️ Travel Inspiration</h4>
-          <p>Get stories delivered to your inbox.</p>
-          <form>
-            <input type="email" class="hhm-newsletter-input" placeholder="your@email.com">
-            <button type="submit" class="hhm-newsletter-btn">Subscribe Free</button>
+        <div class="hhm-newsletter-card" id="hhm-newsletter-widget">
+          <div class="hhm-nl-icon"><span class="material-symbols-outlined">mail</span></div>
+          <h4>Travel Inspiration</h4>
+          <p>Himalayan stories &amp; hidden gems, straight to your inbox.</p>
+          <form id="hhm-nl-form" novalidate onsubmit="return false;">
+            <input type="text" class="hhm-newsletter-input" id="hhm-nl-name" placeholder="Your name (optional)">
+            <input type="email" class="hhm-newsletter-input" id="hhm-nl-email" placeholder="your@email.com" required>
+            <button type="button" class="hhm-newsletter-btn" id="hhm-nl-btn">Subscribe Free</button>
+            <input type="hidden" id="hhm-nl-nonce" value="<?php echo esc_attr( $nonce ); ?>">
           </form>
+          <div id="hhm-nl-msg" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;text-align:center;"></div>
+          <p style="font-size:11px;color:rgba(255,255,255,.5);margin:10px 0 0;text-align:center;">No spam ever. Unsubscribe anytime.</p>
         </div>
 
       </aside>
@@ -419,6 +428,60 @@ $share_title = urlencode( get_the_title() );
   }, { rootMargin:'-20% 0px -70% 0px' });
 
   headings.forEach(h => observer.observe(h));
+})();
+
+// ── Newsletter Subscribe ──────────────────────────────────────────────────────
+(function() {
+  const form  = document.getElementById('hhm-nl-form');
+  const msg   = document.getElementById('hhm-nl-msg');
+  const btn   = document.getElementById('hhm-nl-btn');
+  if ( ! btn ) return;
+
+  btn.addEventListener('click', function() {
+    const email = document.getElementById('hhm-nl-email').value.trim();
+    const name  = document.getElementById('hhm-nl-name').value.trim();
+    const nonce = document.getElementById('hhm-nl-nonce').value;
+
+    if ( ! email ) {
+      showMsg('Please enter your email address.', false);
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Subscribing…';
+
+    const data = new FormData();
+    data.append('action', 'hhb_newsletter_subscribe');
+    data.append('nonce',  nonce);
+    data.append('email',  email);
+    data.append('name',   name);
+
+    fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+      method: 'POST',
+      body: data,
+      credentials: 'same-origin',
+    })
+    .then( r => r.json() )
+    .then( res => {
+      showMsg( res.data ? res.data.message : 'Something went wrong.', res.success );
+      if ( res.success ) {
+        form.reset();
+      }
+    })
+    .catch( () => showMsg('Network error. Please try again.', false) )
+    .finally( () => {
+      btn.disabled    = false;
+      btn.textContent = 'Subscribe Free';
+    });
+  });
+
+  function showMsg(text, success) {
+    msg.textContent    = text;
+    msg.style.display  = 'block';
+    msg.style.background = success ? 'rgba(255,255,255,.15)' : 'rgba(220,38,38,.3)';
+    msg.style.color    = '#fff';
+    msg.style.border   = success ? '1px solid rgba(255,255,255,.3)' : '1px solid rgba(220,38,38,.5)';
+  }
 })();
 </script>
 

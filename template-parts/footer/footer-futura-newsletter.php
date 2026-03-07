@@ -49,10 +49,12 @@ $footer_heading = get_theme_mod( 'hm_futura_footer_heading_color', '#e85e30' );
             <p class="text-slate-500 dark:text-slate-400"><?php echo esc_html( $newsletter_desc ); ?></p>
         </div>
         <div class="w-full max-w-lg">
-            <form class="flex flex-col sm:flex-row gap-3" action="#" method="post">
-                <input class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-5 py-4 focus:ring-2 focus:ring-primary/20 text-sm outline-none" placeholder="<?php esc_attr_e( 'Enter your email', 'himalayanmart' ); ?>" type="email" name="email" required />
-                <button class="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all whitespace-nowrap" type="submit"><?php echo esc_html( $newsletter_btn ); ?></button>
+            <form class="flex flex-col sm:flex-row gap-3" id="futura-nl-form" onsubmit="return false;">
+                <input class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-5 py-4 focus:ring-2 focus:ring-primary/20 text-sm outline-none" placeholder="<?php esc_attr_e( 'Enter your email', 'himalayanmart' ); ?>" type="email" id="futura-nl-email" required />
+                <input type="hidden" id="futura-nl-nonce" value="<?php echo esc_attr( wp_create_nonce( 'hhb_newsletter' ) ); ?>">
+                <button class="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all whitespace-nowrap" type="button" id="futura-nl-btn"><?php echo esc_html( $newsletter_btn ); ?></button>
             </form>
+            <div id="futura-nl-msg" style="display:none;margin-top:12px;font-size:13px;font-weight:600;padding:10px 14px;border-radius:8px;"></div>
             <?php if ( $privacy_text ) : ?>
             <p class="text-xs text-slate-400 mt-4 text-center sm:text-left">
                 <?php esc_html_e( 'We care about your data in our', 'himalayanmart' ); ?>
@@ -60,6 +62,46 @@ $footer_heading = get_theme_mod( 'hm_futura_footer_heading_color', '#e85e30' );
             </p>
             <?php endif; ?>
         </div>
+
+<script>
+(function(){
+    var btn   = document.getElementById('futura-nl-btn');
+    var msg   = document.getElementById('futura-nl-msg');
+    if ( ! btn ) return;
+
+    btn.addEventListener('click', function() {
+        var email = document.getElementById('futura-nl-email').value.trim();
+        var nonce = document.getElementById('futura-nl-nonce').value;
+        if ( ! email ) return;
+
+        btn.disabled    = true;
+        btn.textContent = 'Subscribing…';
+
+        var data = new FormData();
+        data.append('action', 'hhb_newsletter_subscribe');
+        data.append('nonce',  nonce);
+        data.append('email',  email);
+
+        fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+            method: 'POST', body: data, credentials: 'same-origin'
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+            msg.style.display      = 'block';
+            msg.style.background   = res.success ? 'rgba(22,163,74,.12)' : 'rgba(220,38,38,.12)';
+            msg.style.color        = res.success ? '#15803d' : '#dc2626';
+            msg.style.border       = res.success ? '1px solid rgba(22,163,74,.3)' : '1px solid rgba(220,38,38,.3)';
+            msg.textContent        = res.data ? res.data.message : 'Something went wrong.';
+            if ( res.success ) document.getElementById('futura-nl-email').value = '';
+        })
+        .catch(function(){ msg.style.display='block'; msg.textContent='Network error. Try again.'; })
+        .finally(function(){
+            btn.disabled    = false;
+            btn.textContent = '<?php echo esc_js( $newsletter_btn ); ?>';
+        });
+    });
+})();
+</script>
     </div>
     <?php endif; ?>
 

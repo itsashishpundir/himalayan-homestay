@@ -24,8 +24,6 @@ while ( have_posts() ) :
     $donts           = get_post_meta($post_id, 'hhb_donts', true);
     $attractions     = get_post_meta($post_id, 'hhb_attractions', true) ?: array();
     $amenity_keys    = get_post_meta($post_id, 'hhb_amenities', true) ?: array();
-    $lat             = '';
-    $lng             = '';
     $min_nights      = get_post_meta($post_id, 'hhb_min_nights', true) ?: 1;
     $max_nights      = get_post_meta($post_id, 'hhb_max_nights', true) ?: 30;
     $buffer_days     = get_post_meta($post_id, 'hhb_buffer_days', true) ?: 0;

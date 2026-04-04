@@ -33,6 +33,9 @@ if ($selected_loc) {
     $active_term = get_term_by('slug', $selected_loc, 'hhb_location');
     if ($active_term) {
         $location_name = $active_term->name;
+    } else {
+        // Free-text search — use the typed value as the display name.
+        $location_name = $selected_loc;
     }
 } elseif ($selected_type) {
     $active_term = get_term_by('slug', $selected_type, 'hhb_property_type');
@@ -67,8 +70,10 @@ if ($active_term) {
 }
 
 // Taxonomies for references
-$prop_types = get_terms(array('taxonomy' => 'hhb_property_type', 'hide_empty' => false));
-$locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => false));
+$prop_types      = get_terms(array('taxonomy' => 'hhb_property_type', 'hide_empty' => false));
+$locations       = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => false));
+// Latest 5 locations for autocomplete suggestions (most recently added first)
+$locations_top5  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => false, 'orderby' => 'id', 'order' => 'DESC', 'number' => 5));
 ?>
 
 <?php /* Assets (Tailwind, Material Symbols, Inter font) are enqueued
@@ -100,11 +105,156 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
         background-image: radial-gradient(circle at 2px 2px, rgba(232, 94, 48, 0.05) 1px, transparent 0);
         background-size: 40px 40px;
     }
-    .hero-glass-search {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+    /* ── Hero Search ── */
+    .hhb-arc-search-wrap { width: 100%; max-width: 580px; margin: 0 auto; }
+
+    .hhb-arc-search-bar {
+        position: relative;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 100px;
+        padding: 6px 6px 6px 20px;
+        gap: 8px;
+        transition: border-color .25s, background .25s;
+    }
+    .hhb-arc-search-bar:focus-within {
+        background: rgba(255,255,255,0.13);
+        border-color: rgba(255,255,255,0.35);
+        box-shadow: 0 0 0 4px rgba(244,92,37,0.15), 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .hhb-arc-search-icon {
+        color: rgba(255,255,255,0.6);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        font-size: 20px;
+    }
+    .hhb-arc-search-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        min-width: 0;
+        padding: 8px 0;
+    }
+    .hhb-arc-search-input::placeholder { color: rgba(255,255,255,0.45); }
+    .hhb-arc-search-btn {
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #f45c25, #e04010);
+        color: #fff;
+        border: none;
+        border-radius: 100px;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        transition: opacity .2s, transform .2s;
+        box-shadow: 0 4px 14px rgba(244,92,37,0.45);
+    }
+    .hhb-arc-search-btn:hover { opacity: .88; transform: scale(1.03); }
+
+    /* Suggestions panel */
+    .hhb-arc-loc-wrap { position: relative; flex: 1; min-width: 0; }
+    .hhb-arc-suggestions {
+        position: absolute;
+        top: calc(100% + 14px);
+        left: -20px;
+        right: -8px;
+        background: rgba(8,14,28,0.90);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-6px);
+        transition: opacity .2s, transform .2s, visibility .2s;
+        z-index: 100;
+    }
+    .hhb-arc-suggestions.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .hhb-arc-sug-label {
+        padding: 10px 16px 6px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.35);
+    }
+    .hhb-arc-sug-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 11px 16px;
+        background: transparent;
+        border: none;
+        color: rgba(255,255,255,0.85);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: background .15s, color .15s;
+    }
+    .hhb-arc-sug-item:hover, .hhb-arc-sug-item:focus {
+        background: rgba(255,255,255,0.07);
+        color: #fff;
+        outline: none;
+    }
+    .hhb-arc-sug-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: #f45c25;
+        flex-shrink: 0;
+    }
+
+    /* Property type pills */
+    .hhb-arc-pills {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+    }
+    .hhb-arc-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-decoration: none;
+        border: 1.5px solid rgba(255,255,255,0.25);
+        color: rgba(255,255,255,0.75);
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(8px);
+        transition: all .2s;
+    }
+    .hhb-arc-pill:hover {
+        border-color: rgba(255,255,255,0.55);
+        color: #fff;
+        background: rgba(255,255,255,0.12);
+    }
+    .hhb-arc-pill.is-active {
+        background: #fff;
+        border-color: #fff;
+        color: #1a1a2e;
     }
     /* WP Overrides */
     #page, .site, .site-content { max-width: none !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
@@ -173,28 +323,37 @@ $locations  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' => fals
                     <?php echo esc_html($hero_desc); ?>
                 </p>
                 
-                <!-- Quick Search / Filter Bar -->
-                <div class="hero-glass-search p-2 rounded-2xl max-w-xl mx-auto flex flex-col md:flex-row items-center gap-2">
-                    <div class="flex items-center gap-3 px-4 py-2 w-full text-white">
-                        <span class="material-symbols-outlined">location_on</span>
-                        <select onchange="window.location.href=this.value" class="bg-transparent border-none focus:ring-0 text-white w-full text-sm font-bold cursor-pointer appearance-none">
-                            <option value="<?php echo esc_url(get_post_type_archive_link('hhb_homestay')); ?>" class="text-slate-900">All Locations</option>
-                            <?php foreach ($locations as $loc) : ?>
-                                <option value="<?php echo esc_url(add_query_arg('location', $loc->slug, get_post_type_archive_link('hhb_homestay'))); ?>" <?php selected($selected_loc, $loc->slug); ?> class="text-slate-900"><?php echo esc_html($loc->name); ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                <!-- Search + Filter -->
+                <div class="hhb-arc-search-wrap">
+                    <form method="get" action="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>" class="hhb-arc-search-bar" id="hhb-arc-form">
+                        <span class="hhb-arc-search-icon material-symbols-outlined">search</span>
+                        <div class="hhb-arc-loc-wrap">
+                            <input type="text" name="location" id="hhb-arc-loc-input"
+                                   value="<?php echo esc_attr( $selected_loc ); ?>"
+                                   placeholder="Search a destination…"
+                                   class="hhb-arc-search-input" autocomplete="off">
+                            <?php if ( $selected_type ) : ?>
+                                <input type="hidden" name="type" value="<?php echo esc_attr( $selected_type ); ?>">
+                            <?php endif; ?>
+                        </div>
+                        <button type="submit" class="hhb-arc-search-btn">Search</button>
+                    </form>
+
+                    <!-- Property type pills -->
+                    <?php if ( $prop_types && ! is_wp_error( $prop_types ) ) : ?>
+                    <div class="hhb-arc-pills">
+                        <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>"
+                           class="hhb-arc-pill <?php echo ! $selected_type ? 'is-active' : ''; ?>">All</a>
+                        <?php foreach ( $prop_types as $type ) : ?>
+                        <a href="<?php echo esc_url( add_query_arg( 'type', $type->slug, get_post_type_archive_link( 'hhb_homestay' ) ) ); ?>"
+                           class="hhb-arc-pill <?php echo $selected_type === $type->slug ? 'is-active' : ''; ?>">
+                            <?php echo esc_html( $type->name ); ?>
+                        </a>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="h-6 w-[1px] bg-white/20 hidden md:block"></div>
-                    <div class="flex items-center gap-3 px-4 py-2 w-full text-white">
-                        <span class="material-symbols-outlined">cottage</span>
-                        <select onchange="window.location.href=this.value" class="bg-transparent border-none focus:ring-0 text-white w-full text-sm font-bold cursor-pointer appearance-none">
-                            <option value="<?php echo esc_url(get_post_type_archive_link('hhb_homestay')); ?>" class="text-slate-900">All Types</option>
-                            <?php foreach ($prop_types as $type) : ?>
-                                <option value="<?php echo esc_url(add_query_arg('type', $type->slug, get_post_type_archive_link('hhb_homestay'))); ?>" <?php selected($selected_type, $type->slug); ?> class="text-slate-900"><?php echo esc_html($type->name); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                    <?php endif; ?>
                 </div>
+
             </div>
         </section>
 

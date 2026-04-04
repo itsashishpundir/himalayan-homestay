@@ -14,6 +14,7 @@ define('HIMALAYANMART_VERSION', '1.0.0');
 // Customizer Setings
 require_once get_template_directory() . '/inc/customizer-pages.php';
 require_once get_template_directory() . '/inc/customizer-global.php';
+require_once get_template_directory() . '/inc/customizer/header-footer.php';
 
 /**
  * Setup Theme
@@ -88,7 +89,8 @@ function himalayan_homestay_scripts() {
                         'background-dark': '#211511',
                     },
                     fontFamily: {
-                        'display': ['Inter']
+                        'display': ['Playfair Display', 'serif'],
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
                     }
                 }
             }
@@ -139,6 +141,10 @@ function himalayan_homestay_scripts() {
         wp_enqueue_style('himalayanmart-futura-layouts', get_template_directory_uri() . '/assets/css/futura-layouts.css', array(), HIMALAYANMART_VERSION);
         wp_enqueue_script('himalayanmart-futura-layouts', get_template_directory_uri() . '/assets/js/futura-layouts.js', array(), HIMALAYANMART_VERSION, true);
     }
+
+    // Motion & Animation System (no dependencies — pure vanilla JS)
+    wp_enqueue_style( 'himalayanmart-animations', get_template_directory_uri() . '/assets/css/animations.css', array('himalayanmart-main'), HIMALAYANMART_VERSION );
+    wp_enqueue_script( 'himalayanmart-animations', get_template_directory_uri() . '/assets/js/animations.js', array(), HIMALAYANMART_VERSION, true );
 
     // Main JS (Deferred via filter below)
     wp_enqueue_script('himalayanmart-main', get_template_directory_uri() . '/assets/js/main.js', array('jquery'), HIMALAYANMART_VERSION, true);

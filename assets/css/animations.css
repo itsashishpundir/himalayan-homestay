@@ -1,0 +1,487 @@
+/* =============================================================
+   HIMALAYAN HOMESTAY — MOTION & ANIMATION SYSTEM
+   Pure CSS (no external libraries)
+   Works with animations.js (Intersection Observer)
+   ============================================================= */
+
+/* ── Animation Tokens ─────────────────────────────────────────── */
+:root {
+    --anim-dur-micro:  200ms;
+    --anim-dur-fast:   300ms;
+    --anim-dur-base:   500ms;
+    --anim-dur-slow:   700ms;
+
+    --anim-ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+    --anim-ease-in:     cubic-bezier(0.64, 0, 0.78, 0);
+    --anim-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --anim-ease-smooth: cubic-bezier(0.4,  0, 0.2, 1);
+
+    /* Stagger offset */
+    --stagger-step: 80ms;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   1. SCROLL REVEAL SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Base hidden states */
+.reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+        opacity  var(--anim-dur-base) var(--anim-ease-out),
+        transform var(--anim-dur-base) var(--anim-ease-out);
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-36px);
+    transition:
+        opacity  var(--anim-dur-base) var(--anim-ease-out),
+        transform var(--anim-dur-base) var(--anim-ease-out);
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(36px);
+    transition:
+        opacity  var(--anim-dur-base) var(--anim-ease-out),
+        transform var(--anim-dur-base) var(--anim-ease-out);
+}
+
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.90);
+    transition:
+        opacity  var(--anim-dur-base) var(--anim-ease-out),
+        transform var(--anim-dur-base) var(--anim-ease-out);
+}
+
+.reveal-fade {
+    opacity: 0;
+    transition: opacity var(--anim-dur-slow) var(--anim-ease-out);
+}
+
+/* Visible state — toggled by Intersection Observer */
+.reveal.is-visible,
+.reveal-left.is-visible,
+.reveal-right.is-visible,
+.reveal-scale.is-visible,
+.reveal-fade.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+
+/* ── Stagger Delays ─────────────────────────────────────────── */
+.stagger-1 { transition-delay: calc(var(--stagger-step) * 0); }
+.stagger-2 { transition-delay: calc(var(--stagger-step) * 1); }
+.stagger-3 { transition-delay: calc(var(--stagger-step) * 2); }
+.stagger-4 { transition-delay: calc(var(--stagger-step) * 3); }
+.stagger-5 { transition-delay: calc(var(--stagger-step) * 4); }
+.stagger-6 { transition-delay: calc(var(--stagger-step) * 5); }
+.stagger-7 { transition-delay: calc(var(--stagger-step) * 6); }
+.stagger-8 { transition-delay: calc(var(--stagger-step) * 7); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   2. HERO ENTRANCE ANIMATIONS (page load — no JS needed)
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes hhb-fade-up {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes hhb-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Hero staggered entrance — badge → h1 → subtitle → search → buttons */
+.hhb-hero-badge {
+    animation: hhb-fade-up var(--anim-dur-slow) var(--anim-ease-out) 0.05s both;
+}
+.hhb-fp-hero h1 {
+    animation: hhb-fade-up var(--anim-dur-slow) var(--anim-ease-out) 0.20s both;
+}
+.hhb-fp-hero-sub {
+    animation: hhb-fade-up var(--anim-dur-slow) var(--anim-ease-out) 0.35s both;
+}
+.hhb-fp-search-bar {
+    animation: hhb-fade-up var(--anim-dur-slow) var(--anim-ease-out) 0.50s both;
+}
+.hhb-fp-hero .hhb-hero-btn-primary,
+.hhb-fp-hero .hhb-hero-btn-outline {
+    animation: hhb-fade-up var(--anim-dur-slow) var(--anim-ease-out) 0.65s both;
+}
+.hhb-fp-hero-overlay,
+.hhb-fp-hero-glow,
+.hhb-fp-hero-mist {
+    animation: hhb-fade-in 1.4s var(--anim-ease-out) 0s both;
+}
+
+/* Hero parallax background — transform driven by JS */
+.hhb-fp-hero-bg {
+    will-change: transform;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   3. TRUST CARDS — Spring Lift Micro-interaction
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-trust-card {
+    transition:
+        transform  var(--anim-dur-fast) var(--anim-ease-spring),
+        box-shadow var(--anim-dur-fast) var(--anim-ease-out) !important;
+    cursor: default;
+}
+
+.hhb-trust-card:hover {
+    transform: translateY(-10px) !important;
+    box-shadow:
+        0 20px 40px rgba(232, 94, 48, 0.10),
+        0  6px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Icon pulse on card hover */
+.hhb-trust-card:hover .hhb-trust-icon {
+    transform: scale(1.15);
+    background: #e85e30;
+    color: #fff;
+}
+.hhb-trust-icon {
+    transition:
+        transform  var(--anim-dur-fast) var(--anim-ease-spring),
+        background var(--anim-dur-micro) var(--anim-ease-out),
+        color      var(--anim-dur-micro) var(--anim-ease-out);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   4. FEATURED STAYS — Card Depth Effect
+   ═══════════════════════════════════════════════════════════════ */
+
+/* The article.group cards in front-page.php */
+.hhb-fp-section article.group {
+    transition:
+        transform  var(--anim-dur-fast) var(--anim-ease-spring) !important,
+        box-shadow var(--anim-dur-fast) var(--anim-ease-out)    !important;
+    will-change: transform;
+}
+
+.hhb-fp-section article.group:hover {
+    transform: translateY(-8px) !important;
+    box-shadow:
+        0 28px 48px rgba(0, 0, 0, 0.10),
+        0  8px 20px rgba(232, 94, 48, 0.08) !important;
+}
+
+/* Image zoom smoothed */
+.hhb-fp-section article.group img {
+    transition: transform 0.8s var(--anim-ease-out) !important;
+}
+
+/* CTA button inside card — spring press */
+.hhb-fp-section article.group a:last-child {
+    transition:
+        background var(--anim-dur-micro) var(--anim-ease-out),
+        color      var(--anim-dur-micro) var(--anim-ease-out),
+        transform  var(--anim-dur-micro) var(--anim-ease-out) !important;
+}
+.hhb-fp-section article.group a:last-child:active {
+    transform: scale(0.97);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   5. DESTINATION CARDS — Overlay Reveal
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-dest-card {
+    transition: transform var(--anim-dur-fast) var(--anim-ease-spring) !important;
+}
+.hhb-dest-card:hover {
+    transform: scale(1.03) !important;
+}
+.hhb-dest-card img {
+    transition: transform 0.9s var(--anim-ease-out) !important;
+}
+.hhb-dest-card:hover img {
+    transform: scale(1.12) !important;
+}
+.hhb-dest-card-overlay {
+    transition: background 0.5s var(--anim-ease-out);
+}
+.hhb-dest-card:hover .hhb-dest-card-overlay {
+    background: linear-gradient(
+        180deg,
+        rgba(232, 94, 48, 0.10) 0%,
+        rgba(0, 0, 0, 0.82) 100%
+    );
+}
+
+/* Destination label slide up on hover */
+.hhb-dest-card-overlay > * {
+    transition: transform var(--anim-dur-fast) var(--anim-ease-out);
+}
+.hhb-dest-card:hover .hhb-dest-card-overlay > * {
+    transform: translateY(-4px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   6. STEPS — Number Pulse + Sequential Connector
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-step-num {
+    transition:
+        transform  var(--anim-dur-fast) var(--anim-ease-spring),
+        box-shadow var(--anim-dur-fast) var(--anim-ease-out);
+}
+.hhb-step-item:hover .hhb-step-num {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 10px rgba(232, 94, 48, 0.12);
+}
+
+/* Icon within steps (if using material icons instead of numbers) */
+.hhb-step-item:hover .hhb-step-icon {
+    transform: scale(1.15) rotate(-6deg);
+}
+.hhb-step-icon {
+    transition: transform var(--anim-dur-fast) var(--anim-ease-spring);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   7. REVIEW CARDS — Subtle Float
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-review-card {
+    transition:
+        transform  var(--anim-dur-fast) var(--anim-ease-spring) !important,
+        box-shadow var(--anim-dur-fast) var(--anim-ease-out)    !important;
+}
+.hhb-review-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow:
+        0 20px 36px rgba(0, 0, 0, 0.08),
+        0  4px 12px rgba(232, 94, 48, 0.06) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   8. BUTTONS — Hover & Press Feedback
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hero search submit button only (not all hero links) */
+.hhb-fp-hero button[type="submit"] {
+    transition:
+        background  var(--anim-dur-micro) var(--anim-ease-out),
+        transform   var(--anim-dur-micro) var(--anim-ease-out),
+        box-shadow  var(--anim-dur-micro) var(--anim-ease-out);
+}
+.hhb-fp-hero button[type="submit"]:active {
+    transform: scale(0.96);
+}
+
+/* ── Hero CTA Buttons (Browse Stays / Check Availability) ── */
+.hhb-hero-btn-primary {
+    transition:
+        background-color var(--anim-dur-micro) var(--anim-ease-out),
+        transform        var(--anim-dur-fast)  var(--anim-ease-spring),
+        box-shadow       var(--anim-dur-fast)  var(--anim-ease-out);
+}
+.hhb-hero-btn-primary:hover {
+    background-color: #c94b22;
+    color: #ffffff !important;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(232, 94, 48, 0.40);
+}
+.hhb-hero-btn-primary:active {
+    transform: scale(0.97) translateY(0);
+}
+
+.hhb-hero-btn-outline {
+    transition:
+        background-color var(--anim-dur-micro) var(--anim-ease-out),
+        color            var(--anim-dur-micro) var(--anim-ease-out),
+        transform        var(--anim-dur-fast)  var(--anim-ease-spring),
+        box-shadow       var(--anim-dur-fast)  var(--anim-ease-out);
+}
+.hhb-hero-btn-outline:hover {
+    background-color: #ffffff;
+    color: #1e293b;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.20);
+}
+.hhb-hero-btn-outline:active {
+    transform: scale(0.97) translateY(0);
+}
+
+/* ── Header CTA Button (List your homestay) ── */
+.hhb-header-cta-btn {
+    transition:
+        background-color var(--anim-dur-micro) var(--anim-ease-out),
+        transform        var(--anim-dur-fast)  var(--anim-ease-spring),
+        box-shadow       var(--anim-dur-fast)  var(--anim-ease-out);
+}
+.hhb-header-cta-btn:hover {
+    background-color: #c94b22 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(232, 94, 48, 0.45) !important;
+}
+.hhb-header-cta-btn:active {
+    transform: scale(0.96);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   9. SECTION HEADINGS — Underline Reveal
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-section-heading {
+    position: relative;
+    display: inline-block;
+}
+.hhb-section-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: #e85e30;
+    border-radius: 2px;
+    transition: width 0.6s var(--anim-ease-out);
+}
+.hhb-section-heading.is-visible::after {
+    width: 60px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   10. BOOKING WIDGET — Sidebar Slide In
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-sidebar {
+    transition: transform var(--anim-dur-base) var(--anim-ease-out);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   11. SKELETON SHIMMER (loading state placeholder)
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes hhb-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.hhb-skeleton {
+    background: linear-gradient(
+        90deg,
+        #f0ede8 25%,
+        #e6e0d9 50%,
+        #f0ede8 75%
+    );
+    background-size: 200% 100%;
+    animation: hhb-shimmer 1.6s infinite;
+    border-radius: 8px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   12. GALLERY IMAGE — Zoom + Overlay
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-gallery-item img {
+    transition: transform 0.5s var(--anim-ease-out) !important;
+}
+.hhb-gallery-item:hover img {
+    transform: scale(1.07) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   13. SCROLL PROGRESS INDICATOR (optional top bar)
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #e85e30, #f59e0b);
+    z-index: 9999;
+    transition: width 0.1s linear;
+    pointer-events: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   14. REDUCED MOTION OVERRIDE (Accessibility — REQUIRED)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    /* Disable all entrance animations */
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale,
+    .reveal-fade {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Disable hero keyframes */
+    .hhb-hero-badge,
+    .hhb-fp-hero h1,
+    .hhb-fp-hero-sub,
+    .hhb-fp-search-bar,
+    .hhb-fp-hero .hhb-hero-btn-primary,
+    .hhb-fp-hero .hhb-hero-btn-outline,
+    .hhb-fp-hero-overlay,
+    .hhb-fp-hero-glow,
+    .hhb-fp-hero-mist {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    /* Stop cinematic zoom + parallax */
+    .hhb-fp-hero-zoom {
+        animation: none !important;
+    }
+    .hhb-fp-hero-bg {
+        transform: none !important;
+        will-change: auto;
+    }
+
+    /* Keep hover transitions but reduce them */
+    .hhb-trust-card,
+    .hhb-dest-card,
+    .hhb-review-card,
+    .hhb-fp-section article.group {
+        transition:
+            box-shadow var(--anim-dur-micro) ease !important;
+    }
+
+    .hhb-trust-card:hover,
+    .hhb-dest-card:hover,
+    .hhb-review-card:hover,
+    .hhb-fp-section article.group:hover {
+        transform: none !important;
+    }
+
+    /* Underline still reveals but instantly */
+    .hhb-section-heading::after {
+        transition: none !important;
+    }
+}

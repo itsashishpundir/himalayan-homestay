@@ -26,16 +26,39 @@ $show_avatar       = get_theme_mod( 'hm_futura_header_show_avatar', true );
 $glass_opacity     = get_theme_mod( 'hm_futura_header_glass_opacity', 70 );
 $nav_text_color    = get_theme_mod( 'hm_futura_header_nav_text_color', '#334155' );
 
-// Mega menu items from hhb_property_type taxonomy
-$mega_menu_icons = array(
+// Mega menu — customizer settings
+$mega_label  = get_theme_mod( 'hm_futura_mega_label', 'Stays' );
+$mega_cols   = max( 1, min( 4, intval( get_theme_mod( 'hm_futura_mega_cols', 2 ) ) ) );
+$mega_rows   = max( 1, min( 4, intval( get_theme_mod( 'hm_futura_mega_rows', 3 ) ) ) );
+$mega_limit  = $mega_cols * $mega_rows;
+
+// Dropdown width scales with column count
+$mega_widths = array( 1 => '300px', 2 => '500px', 3 => '680px', 4 => '860px' );
+$mega_width  = $mega_widths[ $mega_cols ];
+
+$mega_menu_default_icons = array(
     'beach_access', 'landscape', 'location_city', 'eco', 'home_mini', 'domain',
-    'cottage', 'apartment', 'villa', 'cabin', 'hotel', 'house'
+    'cottage', 'apartment', 'villa', 'cabin', 'hotel', 'house',
 );
 $property_types = get_terms( array(
     'taxonomy'   => 'hhb_property_type',
     'hide_empty' => false,
-    'number'     => 6,
+    'number'     => $mega_limit,
 ) );
+
+// Extra custom items from repeater (JSON)
+$mega_extra_raw   = get_theme_mod( 'hm_futura_mega_extra_items', '[]' );
+$mega_extra_items = json_decode( $mega_extra_raw, true );
+if ( ! is_array( $mega_extra_items ) ) {
+    $mega_extra_items = array();
+}
+
+// Extra top-level custom links
+$header_links_raw = get_theme_mod( 'hm_futura_header_extra_links', '[]' );
+$header_extra_links = json_decode( $header_links_raw, true );
+if ( ! is_array( $header_extra_links ) ) {
+    $header_extra_links = array();
+}
 
 // Logged-in user info
 $current_user = wp_get_current_user();
@@ -88,34 +111,101 @@ if ( $current_user->ID ) {
             <!-- Desktop Menu & Search -->
             <div class="hidden lg:flex items-center gap-8 flex-1 justify-center max-w-4xl px-4">
 
-                <!-- Mega Menu: Stays -->
+                <!-- Mega Menu -->
+                <?php ob_start(); ?>
                 <?php if ( ! empty( $property_types ) && ! is_wp_error( $property_types ) ) : ?>
                 <div class="relative group">
                     <button class="flex items-center gap-1 font-semibold hover:text-primary transition-colors py-4" style="color:inherit;">
-                        <?php esc_html_e( 'Stays', 'himalayanmart' ); ?>
+                        <?php echo esc_html( $mega_label ); ?>
                         <span class="material-symbols-outlined text-base">expand_more</span>
                     </button>
                     <!-- Mega Dropdown -->
-                    <div class="futura-mega-menu absolute top-[calc(100%-1rem)] left-0 w-[500px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl shadow-2xl border border-primary/10 p-4 grid grid-cols-2 gap-2 z-50">
+                    <div class="futura-mega-menu absolute top-[calc(100%-1rem)] left-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl shadow-2xl border border-primary/10 p-4 grid gap-2 z-50"
+                         style="width:<?php echo esc_attr( $mega_width ); ?>; grid-template-columns:repeat(<?php echo esc_attr( $mega_cols ); ?>,minmax(0,1fr));">
                         <?php foreach ( $property_types as $idx => $type ) :
-                            $icon = isset( $mega_menu_icons[ $idx ] ) ? $mega_menu_icons[ $idx ] : 'home';
-                            $desc = $type->description ?: esc_html__( 'Explore this category', 'himalayanmart' );
-                            $link = get_term_link( $type );
+                            $tid         = $type->term_id;
+                            $custom_name = get_theme_mod( "hm_futura_mega_item_{$tid}_name", '' );
+                            $custom_link = get_theme_mod( "hm_futura_mega_item_{$tid}_link", '' );
+                            $custom_icon = get_theme_mod( "hm_futura_mega_item_{$tid}_icon", '' );
+                            $img_id      = (int) get_theme_mod( "hm_futura_mega_item_{$tid}_img", 0 );
+                            $img_url     = $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '';
+                            $display     = $custom_name ?: $type->name;
+                            $icon        = $custom_icon ?: ( $mega_menu_default_icons[ $idx ] ?? 'home' );
+                            $desc        = $type->description ?: esc_html__( 'Explore this category', 'himalayanmart' );
+                            $link        = $custom_link ?: get_term_link( $type );
                             if ( is_wp_error( $link ) ) $link = '#';
                         ?>
                         <a class="flex gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group/item" href="<?php echo esc_url( $link ); ?>">
-                            <div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover/item:bg-primary group-hover/item:text-white transition-colors shrink-0">
-                                <span class="material-symbols-outlined"><?php echo esc_html( $icon ); ?></span>
+                            <div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover/item:bg-primary group-hover/item:text-white transition-colors shrink-0 overflow-hidden">
+                                <?php if ( $img_url ) : ?>
+                                    <img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $display ); ?>" class="w-full h-full object-cover" />
+                                <?php else : ?>
+                                    <span class="material-symbols-outlined"><?php echo esc_html( $icon ); ?></span>
+                                <?php endif; ?>
                             </div>
                             <div class="min-w-0">
-                                <h4 class="font-bold text-sm text-slate-900 dark:text-white"><?php echo esc_html( $type->name ); ?></h4>
+                                <h4 class="font-bold text-sm text-slate-900 dark:text-white"><?php echo esc_html( $display ); ?></h4>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 truncate"><?php echo esc_html( $desc ); ?></p>
+                            </div>
+                        </a>
+                        <?php endforeach; ?>
+
+                        <?php foreach ( $mega_extra_items as $extra ) :
+                            $extra_name = sanitize_text_field( $extra['name'] ?? '' );
+                            $extra_link = esc_url_raw( $extra['link'] ?? '#' );
+                            $extra_img_id  = (int) ( $extra['img_id'] ?? 0 );
+                            $extra_img_url = $extra_img_id
+                                ? wp_get_attachment_image_url( $extra_img_id, 'thumbnail' )
+                                : esc_url( $extra['img_url'] ?? '' );
+                            if ( ! $extra_name ) continue;
+                            if ( ! $extra_link ) $extra_link = '#';
+                        ?>
+                        <a class="flex gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group/item" href="<?php echo esc_url( $extra_link ); ?>">
+                            <div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover/item:bg-primary group-hover/item:text-white transition-colors shrink-0 overflow-hidden">
+                                <?php if ( $extra_img_url ) : ?>
+                                    <img src="<?php echo esc_url( $extra_img_url ); ?>" alt="<?php echo esc_attr( $extra_name ); ?>" class="w-full h-full object-cover" />
+                                <?php else : ?>
+                                    <span class="material-symbols-outlined">home</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-sm text-slate-900 dark:text-white"><?php echo esc_html( $extra_name ); ?></h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate"><?php esc_html_e( 'Explore this category', 'himalayanmart' ); ?></p>
                             </div>
                         </a>
                         <?php endforeach; ?>
                     </div>
                 </div>
                 <?php endif; ?>
+                <?php
+                $futura_mega_menu_desktop_html = ob_get_clean();
+                
+                $has_mega = false;
+                foreach($header_extra_links as $l) {
+                    if (($l['link'] ?? '') === '#mega-menu') { $has_mega = true; break; }
+                }
+                
+                if ( ! $has_mega ) {
+                    echo $futura_mega_menu_desktop_html;
+                }
+                ?>
+
+                <!-- Custom Top Level Links -->
+                <?php foreach ( $header_extra_links as $link_item ) : 
+                    $link_name = sanitize_text_field( $link_item['name'] ?? '' );
+                    $link_url  = esc_url_raw( $link_item['link'] ?? '#' );
+                    if ( ! $link_name ) continue;
+                    
+                    if ( $link_url === '#mega-menu' ) {
+                        echo $futura_mega_menu_desktop_html;
+                    } else {
+                ?>
+                <a href="<?php echo esc_url( $link_url ); ?>" class="font-semibold hover:text-primary transition-colors py-4 text-[15px]" style="color:inherit; text-decoration: none;">
+                    <?php echo esc_html( $link_name ); ?>
+                </a>
+                <?php 
+                    }
+                endforeach; ?>
 
                 <!-- WordPress Primary Menu Items -->
                 <?php
@@ -144,7 +234,7 @@ if ( $current_user->ID ) {
             <div class="flex items-center gap-2 md:gap-4">
 
                 <?php if ( $show_cta ) : ?>
-                <a href="<?php echo esc_url( $cta_url ); ?>" class="hidden md:flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all" style="text-decoration:none;">
+                <a href="<?php echo esc_url( $cta_url ); ?>" class="hhb-header-cta-btn hidden md:flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-lg" style="text-decoration:none;">
                     <?php echo esc_html( $cta_text ); ?>
                 </a>
                 <?php endif; ?>
@@ -206,23 +296,78 @@ if ( $current_user->ID ) {
             <!-- Mobile Accordion Menu -->
             <div class="divide-y divide-slate-200 dark:divide-slate-700 overflow-y-auto flex-1">
 
-                <!-- Stays Accordion -->
+                <!-- Mobile Accordion (uses same label + per-term overrides) -->
+                <?php ob_start(); ?>
                 <?php if ( ! empty( $property_types ) && ! is_wp_error( $property_types ) ) : ?>
                 <details class="group p-4">
                     <summary class="list-none flex justify-between items-center cursor-pointer font-bold">
-                        <?php esc_html_e( 'Stays', 'himalayanmart' ); ?>
+                        <?php echo esc_html( $mega_label ); ?>
                         <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
                     </summary>
                     <div class="mt-4 flex flex-col gap-4 pl-2 border-l-2 border-primary/20 ml-2">
                         <?php foreach ( $property_types as $type ) :
-                            $link = get_term_link( $type );
+                            $tid         = $type->term_id;
+                            $custom_name = get_theme_mod( "hm_futura_mega_item_{$tid}_name", '' );
+                            $custom_link = get_theme_mod( "hm_futura_mega_item_{$tid}_link", '' );
+                            $img_id      = (int) get_theme_mod( "hm_futura_mega_item_{$tid}_img", 0 );
+                            $img_url     = $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '';
+                            $display     = $custom_name ?: $type->name;
+                            $link        = $custom_link ?: get_term_link( $type );
                             if ( is_wp_error( $link ) ) $link = '#';
                         ?>
-                        <a class="text-sm font-medium hover:text-primary transition-colors" href="<?php echo esc_url( $link ); ?>"><?php echo esc_html( $type->name ); ?></a>
+                        <a class="flex items-center gap-3 text-sm font-medium hover:text-primary transition-colors" href="<?php echo esc_url( $link ); ?>">
+                            <?php if ( $img_url ) : ?>
+                                <img src="<?php echo esc_url( $img_url ); ?>" alt="" class="size-6 rounded object-cover shrink-0" />
+                            <?php endif; ?>
+                            <?php echo esc_html( $display ); ?>
+                        </a>
+                        <?php endforeach; ?>
+
+                        <?php foreach ( $mega_extra_items as $extra ) :
+                            $extra_name    = sanitize_text_field( $extra['name'] ?? '' );
+                            $extra_link    = esc_url_raw( $extra['link'] ?? '#' );
+                            $extra_img_id  = (int) ( $extra['img_id'] ?? 0 );
+                            $extra_img_url = $extra_img_id
+                                ? wp_get_attachment_image_url( $extra_img_id, 'thumbnail' )
+                                : esc_url( $extra['img_url'] ?? '' );
+                            if ( ! $extra_name ) continue;
+                            if ( ! $extra_link ) $extra_link = '#';
+                        ?>
+                        <a class="flex items-center gap-3 text-sm font-medium hover:text-primary transition-colors" href="<?php echo esc_url( $extra_link ); ?>">
+                            <?php if ( $extra_img_url ) : ?>
+                                <img src="<?php echo esc_url( $extra_img_url ); ?>" alt="" class="size-6 rounded object-cover shrink-0" />
+                            <?php endif; ?>
+                            <?php echo esc_html( $extra_name ); ?>
+                        </a>
                         <?php endforeach; ?>
                     </div>
                 </details>
                 <?php endif; ?>
+                <?php
+                $futura_mega_menu_mobile_html = ob_get_clean();
+                if ( ! $has_mega ) {
+                    echo $futura_mega_menu_mobile_html;
+                }
+                ?>
+
+                <!-- Custom Top-Level Links (Mobile) -->
+                <?php foreach ( $header_extra_links as $link_item ) : 
+                    $link_name = sanitize_text_field( $link_item['name'] ?? '' );
+                    $link_url  = esc_url_raw( $link_item['link'] ?? '#' );
+                    if ( ! $link_name ) continue;
+                    
+                    if ( $link_url === '#mega-menu' ) {
+                        echo $futura_mega_menu_mobile_html;
+                    } else {
+                ?>
+                <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                    <a href="<?php echo esc_url( $link_url ); ?>" class="text-sm font-bold text-slate-800 dark:text-slate-100 hover:text-primary transition-colors" style="text-decoration: none;">
+                        <?php echo esc_html( $link_name ); ?>
+                    </a>
+                </div>
+                <?php 
+                    }
+                endforeach; ?>
 
                 <!-- Primary Menu Items -->
                 <?php
@@ -240,7 +385,7 @@ if ( $current_user->ID ) {
             <!-- Mobile CTA -->
             <?php if ( $show_cta ) : ?>
             <div class="p-4 border-t border-slate-200 dark:border-slate-700">
-                <a href="<?php echo esc_url( $cta_url ); ?>" class="block w-full text-center bg-primary text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all" style="text-decoration:none;">
+                <a href="<?php echo esc_url( $cta_url ); ?>" class="hhb-header-cta-btn block w-full text-center bg-primary text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg" style="text-decoration:none;">
                     <?php echo esc_html( $cta_text ); ?>
                 </a>
             </div>

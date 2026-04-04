@@ -63,10 +63,23 @@ while ( have_posts() ) :
     ]);
 
     // Taxonomies
-    $locations  = get_the_terms($post_id, 'hhb_location');
-    $prop_types = get_the_terms($post_id, 'hhb_property_type');
+    $locations       = get_the_terms($post_id, 'hhb_location');
+    $prop_types      = get_the_terms($post_id, 'hhb_property_type');
 
-    $location_name = ($locations && !is_wp_error($locations)) ? $locations[0]->name : '';
+    // Find the deepest location term for breadcrumbs
+    $deepest_loc     = null;
+    $max_depth       = -1;
+    if ($locations && !is_wp_error($locations)) {
+        foreach ($locations as $l) {
+            $anc   = get_ancestors($l->term_id, 'hhb_location');
+            $depth = count($anc);
+            if ($depth > $max_depth) {
+                $max_depth   = $depth;
+                $deepest_loc = $l;
+            }
+        }
+    }
+    $location_name   = $deepest_loc ? $deepest_loc->name : '';
 
     // Live rating from reviews DB
     global $wpdb;
@@ -150,6 +163,13 @@ while ( have_posts() ) :
         .hhb-booking-widget { background: transparent !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
         body, html { overflow-x: hidden; }
 
+        /* ── Typography / Content Spacing ── */
+        .entry-content p { margin-bottom: 1.25rem; }
+        .entry-content p:last-child { margin-bottom: 0; }
+        .entry-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1.25rem; }
+        .entry-content ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 1.25rem; }
+        .entry-content li { margin-bottom: 0.5rem; }
+
         /* ── GLightbox — hide caption ── */
         .glightbox-clean .gdesc-inner { display: none !important; }
 
@@ -200,11 +220,23 @@ while ( have_posts() ) :
                                 <span class="material-symbols-outlined text-sm">verified_user</span>
                                 <span>Verified Host</span>
                             </div>
-                            <?php if ($location_name && !empty($locations) && !is_wp_error($locations)) :
-                                $loc_link = get_term_link($locations[0]);
+                            <?php if ($deepest_loc) :
+                                $ancestor_ids = array_reverse(get_ancestors($deepest_loc->term_id, 'hhb_location'));
+                                $breadcrumb_terms = [];
+                                foreach ($ancestor_ids as $anc_id) {
+                                    $breadcrumb_terms[] = get_term($anc_id, 'hhb_location');
+                                }
+                                $breadcrumb_terms[] = $deepest_loc;
                             ?>
                             <span>·</span>
-                            <a href="<?php echo esc_url(is_wp_error($loc_link) ? '#' : $loc_link); ?>" class="underline hover:text-primary"><?php echo esc_html($location_name); ?></a>
+                            <div class="flex items-center gap-1">
+                                <?php foreach ($breadcrumb_terms as $idx => $b_term) :
+                                    $b_link = get_term_link($b_term);
+                                ?>
+                                    <a href="<?php echo esc_url(is_wp_error($b_link) ? '#' : $b_link); ?>" class="underline hover:text-primary transition-colors"><?php echo esc_html($b_term->name); ?></a>
+                                    <?php if ($idx < count($breadcrumb_terms) - 1) echo '<span class="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>'; ?>
+                                <?php endforeach; ?>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -326,11 +358,6 @@ while ( have_posts() ) :
                         ?>
                                 <a href="<?php echo esc_url(is_wp_error($pt_link) ? '#' : $pt_link); ?>" class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg uppercase tracking-wider hover:bg-primary/20 transition"><?php echo esc_html($pt->name); ?></a>
                         <?php endforeach; endif; ?>
-                        <?php if ($location_name && !empty($locations) && !is_wp_error($locations)) :
-                            $loc_link2 = get_term_link($locations[0]);
-                        ?>
-                            <a href="<?php echo esc_url(is_wp_error($loc_link2) ? '#' : $loc_link2); ?>" class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg uppercase tracking-wider hover:bg-primary/20 transition"><?php echo esc_html($location_name); ?></a>
-                        <?php endif; ?>
                         </div>
 
                         <!-- Capacity Info -->

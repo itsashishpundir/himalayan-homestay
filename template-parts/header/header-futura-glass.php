@@ -51,6 +51,10 @@ $mega_extra_raw   = get_theme_mod( 'hm_futura_mega_extra_items', '[]' );
 $mega_extra_items = json_decode( $mega_extra_raw, true );
 if ( ! is_array( $mega_extra_items ) ) {
     $mega_extra_items = array();
+} else {
+    usort($mega_extra_items, function($a, $b) {
+        return (int)($a['order'] ?? 0) <=> (int)($b['order'] ?? 0);
+    });
 }
 
 // Extra top-level custom links
@@ -58,6 +62,10 @@ $header_links_raw = get_theme_mod( 'hm_futura_header_extra_links', '[]' );
 $header_extra_links = json_decode( $header_links_raw, true );
 if ( ! is_array( $header_extra_links ) ) {
     $header_extra_links = array();
+} else {
+    usort($header_extra_links, function($a, $b) {
+        return (int)($a['order'] ?? 0) <=> (int)($b['order'] ?? 0);
+    });
 }
 
 // Logged-in user info
@@ -184,10 +192,6 @@ if ( $current_user->ID ) {
                 foreach($header_extra_links as $l) {
                     if (($l['link'] ?? '') === '#mega-menu') { $has_mega = true; break; }
                 }
-                
-                if ( ! $has_mega ) {
-                    echo $futura_mega_menu_desktop_html;
-                }
                 ?>
 
                 <!-- Custom Top Level Links -->
@@ -209,14 +213,36 @@ if ( $current_user->ID ) {
 
                 <!-- WordPress Primary Menu Items -->
                 <?php
-                wp_nav_menu( array(
+                $primary_menu_html = wp_nav_menu( array(
                     'theme_location' => 'primary',
                     'container'      => false,
-                    'menu_class'     => 'futura-desktop-menu',
+                    'menu_class'     => 'futura-desktop-menu flex items-center gap-6 m-0 p-0 list-none',
                     'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
                     'depth'          => 1,
                     'fallback_cb'    => false,
+                    'echo'           => false,
                 ) );
+
+                $mega_pos = (int) get_theme_mod( 'hm_futura_mega_position', 0 );
+
+                // If the user hasn't forced it as a custom link, intelligently inject it into the WP primary menu
+                if ( ! $has_mega && $primary_menu_html ) {
+                    $items_array = explode('<li', $primary_menu_html);
+                    if ( count($items_array) > 1 ) {
+                        $inject_index = min( $mega_pos + 1, count($items_array) );
+                        $mega_li_html = ' class="menu-item list-none p-0 m-0">' . $futura_mega_menu_desktop_html . '</li>';
+                        array_splice( $items_array, $inject_index, 0, $mega_li_html );
+                        $primary_menu_html = implode( '<li', $items_array );
+                        $has_mega = true;
+                    }
+                }
+
+                // Absolute fallback if primary menu is empty and it wasn't in custom links
+                if ( ! $has_mega ) {
+                    echo $futura_mega_menu_desktop_html;
+                }
+
+                echo $primary_menu_html;
                 ?>
 
                 <!-- Search Bar -->

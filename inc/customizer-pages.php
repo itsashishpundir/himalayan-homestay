@@ -97,6 +97,82 @@ add_action( 'customize_register', function( $wp_customize ) {
     $wp_customize->add_setting( 'hhb_home_hero_subheading', [ 'default' => 'Handpicked homestays with local hospitality — breathtaking views, warm hosts, unforgettable mornings.', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_home_hero_subheading', [ 'label' => 'Subheading', 'section' => 'hhb_hero_section', 'type' => 'textarea' ] );
 
+    // --- Homepage Featured Stays Section ---
+    $wp_customize->add_section( 'himalayanmart_homepage_featured_section', array(
+        'title'       => __( 'Homepage Featured Stays', 'himalayanmart' ),
+        'panel'       => 'hhb_frontpage_panel',
+        'priority'    => 45,
+        'description' => __( 'Customize the featured stays grid and texts on the homepage.', 'himalayanmart' ),
+    ) );
+
+    // Section Label
+    $wp_customize->add_setting( 'hhb_featured_label', array(
+        'default'           => 'Best Sellers',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_label', array(
+        'label'       => __( 'Section Top Label', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'text',
+    ) );
+
+    // Section Heading
+    $wp_customize->add_setting( 'hhb_featured_heading', array(
+        'default'           => 'Featured Stays',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_heading', array(
+        'label'       => __( 'Section Main Heading', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'text',
+    ) );
+
+    // Section Subheading
+    $wp_customize->add_setting( 'hhb_featured_subheading', array(
+        'default'           => 'Handpicked properties loved by our guests',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_subheading', array(
+        'label'       => __( 'Section Subheading', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'textarea',
+    ) );
+
+    // Number of Items
+    $wp_customize->add_setting( 'hhb_featured_item_count', array(
+        'default'           => 6,
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_item_count', array(
+        'label'       => __( 'Number of Featured Items', 'himalayanmart' ),
+        'description' => __( 'How many featured homestays to display on the homepage.', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'number',
+        'input_attrs' => array( 'min' => 2, 'max' => 24, 'step' => 1 ),
+    ) );
+
+    // Number of Columns
+    $wp_customize->add_setting( 'hhb_featured_grid_cols', array(
+        'default'           => '4',
+        'sanitize_callback' => 'sanitize_key',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_grid_cols', array(
+        'label'       => __( 'Desktop Grid Columns', 'himalayanmart' ),
+        'description' => __( 'Choose how many cards to show per row on large desktop screens.', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'select',
+        'choices'     => array(
+            '3' => __( '3 Columns', 'himalayanmart' ),
+            '4' => __( '4 Columns', 'himalayanmart' ),
+            '5' => __( '5 Columns', 'himalayanmart' ),
+        ),
+    ) );
+
     // --- Trust Section ---
     $wp_customize->add_section( 'hhb_trust_section', [
         'title' => 'Why Choose Us',
@@ -207,6 +283,88 @@ add_action( 'customize_register', function( $wp_customize ) {
         $wp_customize->add_setting( "hhb_faq_{$n}_a", [ 'default' => $def[1], 'sanitize_callback' => 'sanitize_textarea_field' ] );
         $wp_customize->add_control( "hhb_faq_{$n}_a", [ 'label' => "FAQ {$n} Answer", 'section' => 'hhb_contact_faq_section', 'type' => 'textarea' ] );
     }
+} );
+
+/* ══════════════════════════════════════════════════════════════════
+ * HEADER/FOOTER CUSTOMIZER REGISTRATION (Includes About Page)
+ * ══════════════════════════════════════════════════════════════════ */
+add_action( 'customize_register', function( $wp_customize ) {
+    /* ── Panel: About Page ──────────────────────────────────────── */
+    $wp_customize->add_panel( 'hhb_about_panel', [
+        'title'    => 'About Page',
+        'priority' => 27,
+    ] );
+
+    // --- Hero Section ---
+    $wp_customize->add_section( 'hhb_about_hero_section', [ 'title' => 'Hero Banner', 'panel' => 'hhb_about_panel' ] );
+    
+    $wp_customize->add_setting( 'hhb_about_hero_img', [ 'default' => 'https://images.unsplash.com/photo-1544256718-3b61a34ca536?q=80&w=2940&auto=format&fit=crop', 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_about_hero_img', [ 'label' => 'Hero Image', 'section' => 'hhb_about_hero_section' ] ) );
+    
+    $wp_customize->add_setting( 'hhb_about_hero_head', [ 'default' => 'About Himalayan Homestay', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_hero_head', [ 'label' => 'Hero Heading', 'section' => 'hhb_about_hero_section', 'type' => 'text' ] );
+    
+    $wp_customize->add_setting( 'hhb_about_hero_sub', [ 'default' => 'Connecting curious travelers with the heart of the mountains through local hospitality.', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_hero_sub', [ 'label' => 'Hero Subheading', 'section' => 'hhb_about_hero_section', 'type' => 'textarea' ] );
+
+    // --- Story Narrative Chapters ---
+    $wp_customize->add_section( 'hhb_about_story_section', [ 'title' => 'Story Timeline', 'panel' => 'hhb_about_panel' ] );
+    $wp_customize->add_setting( 'hhb_about_story_title', [ 'default' => 'Where Tradition Meets Travel', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_story_title', [ 'label' => 'Section Title', 'section' => 'hhb_about_story_section', 'type' => 'text' ] );
+
+    $chap_defaults = [
+        1 => [ 'The Spark', 'How It All Started', 'Founded in the heart of the peaks, Himalayan Homestay was born from a simple realization: the most beautiful parts of the mountains aren\'t the views, but the people who call them home.', 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop' ],
+        2 => [ 'The Journey', 'Building the Bridge', 'We bridge the gap between remote village communities and global travelers, ensuring that every stay supports local livelihoods while offering an unparalleled glimpse into ancient cultures.', 'https://images.unsplash.com/photo-1533157497230-01dc481bb20f?q=80&w=2940&auto=format&fit=crop' ],
+        3 => [ 'Today', 'A Growing Community', 'Today, we work with over 500 hosts across 5 states, empowering local economies and providing travelers with unforgettable memories.', 'https://images.unsplash.com/photo-1513271169004-9497e7f6dff4?q=80&w=2940&auto=format&fit=crop' ]
+    ];
+    foreach ( $chap_defaults as $n => $def ) {
+        $wp_customize->add_setting( "hhb_about_chap_{$n}_sub", [ 'default' => $def[0], 'sanitize_callback' => 'sanitize_text_field' ] );
+        $wp_customize->add_control( "hhb_about_chap_{$n}_sub", [ 'label' => "Chapter {$n} Subtitle", 'section' => 'hhb_about_story_section', 'type' => 'text' ] );
+        
+        $wp_customize->add_setting( "hhb_about_chap_{$n}_title", [ 'default' => $def[1], 'sanitize_callback' => 'sanitize_text_field' ] );
+        $wp_customize->add_control( "hhb_about_chap_{$n}_title", [ 'label' => "Chapter {$n} Title", 'section' => 'hhb_about_story_section', 'type' => 'text' ] );
+        
+        $wp_customize->add_setting( "hhb_about_chap_{$n}_text", [ 'default' => $def[2], 'sanitize_callback' => 'wp_kses_post' ] );
+        $wp_customize->add_control( "hhb_about_chap_{$n}_text", [ 'label' => "Chapter {$n} Text", 'section' => 'hhb_about_story_section', 'type' => 'textarea' ] );
+        
+        $wp_customize->add_setting( "hhb_about_chap_{$n}_img", [ 'default' => $def[3], 'sanitize_callback' => 'esc_url_raw' ] );
+        $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, "hhb_about_chap_{$n}_img", [ 'label' => "Chapter {$n} Image", 'section' => 'hhb_about_story_section' ] ) );
+    }
+
+    // --- Core Values ---
+    $wp_customize->add_section( 'hhb_about_values_section', [ 'title' => 'Core Values', 'panel' => 'hhb_about_panel' ] );
+    $wp_customize->add_setting( 'hhb_about_values_title', [ 'default' => 'Our Core Values', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_values_title', [ 'label' => 'Section Title', 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
+    $wp_customize->add_setting( 'hhb_about_values_sub', [ 'default' => 'Guided by the spirit of the mountains', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_values_sub', [ 'label' => 'Section Subtitle', 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
+
+    $values_defaults = [
+        1 => [ 'verified_user', 'Authenticity', 'Real homes, real families, and real experiences. No staged performances, just genuine Himalayan life.' ],
+        2 => [ 'eco', 'Sustainability', 'Preserving the fragile mountain ecosystem and supporting slow travel that leaves a positive footprint.' ],
+        3 => [ 'groups', 'Community', 'Empowering local hosts through fair trade and direct economic opportunities for remote villages.' ]
+    ];
+    foreach ( $values_defaults as $n => $def ) {
+        $wp_customize->add_setting( "hhb_about_v{$n}_icon", [ 'default' => $def[0], 'sanitize_callback' => 'sanitize_text_field' ] );
+        $wp_customize->add_control( "hhb_about_v{$n}_icon", [ 'label' => "Value {$n} Icon (Material Symbols)", 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
+        
+        $wp_customize->add_setting( "hhb_about_v{$n}_title", [ 'default' => $def[1], 'sanitize_callback' => 'sanitize_text_field' ] );
+        $wp_customize->add_control( "hhb_about_v{$n}_title", [ 'label' => "Value {$n} Title", 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
+        
+        $wp_customize->add_setting( "hhb_about_v{$n}_desc", [ 'default' => $def[2], 'sanitize_callback' => 'sanitize_text_field' ] );
+        $wp_customize->add_control( "hhb_about_v{$n}_desc", [ 'label' => "Value {$n} Description", 'section' => 'hhb_about_values_section', 'type' => 'textarea' ] );
+    }
+
+    // --- Bottom CTA ---
+    $wp_customize->add_section( 'hhb_about_cta_section', [ 'title' => 'Bottom CTA & Quote', 'panel' => 'hhb_about_panel' ] );
+    $wp_customize->add_setting( 'hhb_about_quote', [ 'default' => '"Our mission is to ensure that the majesty of the Himalayas is preserved through the wisdom of its people."', 'sanitize_callback' => 'wp_kses_post' ] );
+    $wp_customize->add_control( 'hhb_about_quote', [ 'label' => 'Large Quote', 'section' => 'hhb_about_cta_section', 'type' => 'textarea' ] );
+    
+    $wp_customize->add_setting( 'hhb_about_cta_text', [ 'default' => 'Meet Our Hosts', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_cta_text', [ 'label' => 'CTA Button Text', 'section' => 'hhb_about_cta_section', 'type' => 'text' ] );
+    
+    $wp_customize->add_setting( 'hhb_about_cta_link', [ 'default' => '/hosts', 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( 'hhb_about_cta_link', [ 'label' => 'CTA Button Link', 'section' => 'hhb_about_cta_section', 'type' => 'url' ] );
+    
 } );
 
 

@@ -1522,6 +1522,20 @@ function himalayanmart_customizer_header_footer($wp_customize) {
         'type'        => 'text',
     ) );
 
+    // ── Mega Menu Position ───────────────────────────────────────────────
+    $wp_customize->add_setting( 'hm_futura_mega_position', array(
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hm_futura_mega_position', array(
+        'label'       => __( 'Mega Menu Position (Primary Menu)', 'himalayanmart' ),
+        'description' => __( 'Choose where to insert the Mega Menu in your main WordPress Menu. 0 = At the very beginning. 1 = After 1st menu item. 2 = After 2nd, etc.', 'himalayanmart' ),
+        'section'     => 'hm_futura_mega_section',
+        'type'        => 'number',
+        'input_attrs' => array( 'min' => 0, 'max' => 10, 'step' => 1 ),
+    ) );
+
     // ── Columns ────────────────────────────────────────────────────────────
     $wp_customize->add_setting( 'hm_futura_mega_cols', array(
         'default'           => 2,

@@ -12,6 +12,84 @@ if ( ! defined( 'ABSPATH' ) ) {
 function himalayanmart_customizer_homestay( $wp_customize ) {
 
     // ==============================================
+    // HOMEPAGE FEATURED SECTION
+    // ==============================================
+    $wp_customize->add_section( 'himalayanmart_homepage_featured_section', array(
+        'title'       => __( 'Homepage Featured Stays', 'himalayanmart' ),
+        'panel'       => 'hhb_frontpage_panel',
+        'priority'    => 45,
+        'description' => __( 'Customize the featured stays grid and texts on the homepage.', 'himalayanmart' ),
+    ) );
+
+    // Section Label
+    $wp_customize->add_setting( 'hhb_featured_label', array(
+        'default'           => 'Best Sellers',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_label', array(
+        'label'       => __( 'Section Top Label', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'text',
+    ) );
+
+    // Section Heading
+    $wp_customize->add_setting( 'hhb_featured_heading', array(
+        'default'           => 'Featured Stays',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_heading', array(
+        'label'       => __( 'Section Main Heading', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'text',
+    ) );
+
+    // Section Subheading
+    $wp_customize->add_setting( 'hhb_featured_subheading', array(
+        'default'           => 'Handpicked properties loved by our guests',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_subheading', array(
+        'label'       => __( 'Section Subheading', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'textarea',
+    ) );
+
+    // Number of Items
+    $wp_customize->add_setting( 'hhb_featured_item_count', array(
+        'default'           => 6,
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_item_count', array(
+        'label'       => __( 'Number of Featured Items', 'himalayanmart' ),
+        'description' => __( 'How many featured homestays to display on the homepage.', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'number',
+        'input_attrs' => array( 'min' => 2, 'max' => 24, 'step' => 1 ),
+    ) );
+
+    // Number of Columns
+    $wp_customize->add_setting( 'hhb_featured_grid_cols', array(
+        'default'           => '4',
+        'sanitize_callback' => 'sanitize_key',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hhb_featured_grid_cols', array(
+        'label'       => __( 'Desktop Grid Columns', 'himalayanmart' ),
+        'description' => __( 'Choose how many cards to show per row on large desktop screens.', 'himalayanmart' ),
+        'section'     => 'himalayanmart_homepage_featured_section',
+        'type'        => 'select',
+        'choices'     => array(
+            '3' => __( '3 Columns', 'himalayanmart' ),
+            '4' => __( '4 Columns', 'himalayanmart' ),
+            '5' => __( '5 Columns', 'himalayanmart' ),
+        ),
+    ) );
+
+    // ==============================================
     // HOMESTAY ARCHIVE SECTION
     // ==============================================
     $wp_customize->add_section( 'himalayanmart_homestay_archive_section', array(

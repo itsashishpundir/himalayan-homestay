@@ -11,52 +11,52 @@
 get_header();
 
 // ── Customizer Values ──────────────────────────────────────────────
-$hero_img      = 'https://images.unsplash.com/photo-1544256718-3b61a34ca536?q=80&w=2940&auto=format&fit=crop';
-$hero_head     = 'About Himalayan Homestay';
-$hero_sub      = 'Connecting curious travelers with the heart of the mountains through local hospitality.';
+$hero_img      = get_theme_mod( 'hhb_about_hero_img', 'https://images.unsplash.com/photo-1544256718-3b61a34ca536?q=80&w=2940&auto=format&fit=crop' );
+$hero_head     = get_theme_mod( 'hhb_about_hero_head', 'About Himalayan Homestay' );
+$hero_sub      = get_theme_mod( 'hhb_about_hero_sub', 'Connecting curious travelers with the heart of the mountains through local hospitality.' );
 
 // Story Narrative Chapters
-$story_title   = 'Where Tradition Meets Travel';
+$story_title   = get_theme_mod( 'hhb_about_story_title', 'Where Tradition Meets Travel' );
 
 $chapters = [
     1 => [
-        'subtitle' => 'The Spark',
-        'title'    => 'How It All Started',
-        'text'     => 'Founded in the heart of the peaks, Himalayan Homestay was born from a simple realization: the most beautiful parts of the mountains aren\'t the views, but the people who call them home.',
-        'image'    => 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop',
+        'subtitle' => get_theme_mod( 'hhb_about_chap_1_sub', 'The Spark' ),
+        'title'    => get_theme_mod( 'hhb_about_chap_1_title', 'How It All Started' ),
+        'text'     => get_theme_mod( 'hhb_about_chap_1_text', 'Founded in the heart of the peaks, Himalayan Homestay was born from a simple realization: the most beautiful parts of the mountains aren\'t the views, but the people who call them home.' ),
+        'image'    => get_theme_mod( 'hhb_about_chap_1_img', 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop' ),
     ],
     2 => [
-        'subtitle' => 'The Journey',
-        'title'    => 'Building the Bridge',
-        'text'     => 'We bridge the gap between remote village communities and global travelers, ensuring that every stay supports local livelihoods while offering an unparalleled glimpse into ancient cultures.',
-        'image'    => 'https://images.unsplash.com/photo-1533157497230-01dc481bb20f?q=80&w=2940&auto=format&fit=crop',
+        'subtitle' => get_theme_mod( 'hhb_about_chap_2_sub', 'The Journey' ),
+        'title'    => get_theme_mod( 'hhb_about_chap_2_title', 'Building the Bridge' ),
+        'text'     => get_theme_mod( 'hhb_about_chap_2_text', 'We bridge the gap between remote village communities and global travelers, ensuring that every stay supports local livelihoods while offering an unparalleled glimpse into ancient cultures.' ),
+        'image'    => get_theme_mod( 'hhb_about_chap_2_img', 'https://images.unsplash.com/photo-1533157497230-01dc481bb20f?q=80&w=2940&auto=format&fit=crop' ),
     ],
     3 => [
-        'subtitle' => 'Today',
-        'title'    => 'A Growing Community',
-        'text'     => 'Today, we work with over 500 hosts across 5 states, empowering local economies and providing travelers with unforgettable memories.',
-        'image'    => 'https://images.unsplash.com/photo-1513271169004-9497e7f6dff4?q=80&w=2940&auto=format&fit=crop',
+        'subtitle' => get_theme_mod( 'hhb_about_chap_3_sub', 'Today' ),
+        'title'    => get_theme_mod( 'hhb_about_chap_3_title', 'A Growing Community' ),
+        'text'     => get_theme_mod( 'hhb_about_chap_3_text', 'Today, we work with over 500 hosts across 5 states, empowering local economies and providing travelers with unforgettable memories.' ),
+        'image'    => get_theme_mod( 'hhb_about_chap_3_img', 'https://images.unsplash.com/photo-1513271169004-9497e7f6dff4?q=80&w=2940&auto=format&fit=crop' ),
     ]
 ];
 
-$values_title  = 'Our Core Values';
-$values_sub    = 'Guided by the spirit of the mountains';
+$values_title  = get_theme_mod( 'hhb_about_values_title', 'Our Core Values' );
+$values_sub    = get_theme_mod( 'hhb_about_values_sub', 'Guided by the spirit of the mountains' );
 
-$v1_icon       = 'verified_user';
-$v1_title      = 'Authenticity';
-$v1_desc       = 'Real homes, real families, and real experiences. No staged performances, just genuine Himalayan life.';
+$v1_icon       = get_theme_mod( 'hhb_about_v1_icon', 'verified_user' );
+$v1_title      = get_theme_mod( 'hhb_about_v1_title', 'Authenticity' );
+$v1_desc       = get_theme_mod( 'hhb_about_v1_desc', 'Real homes, real families, and real experiences. No staged performances, just genuine Himalayan life.' );
 
-$v2_icon       = 'eco';
-$v2_title      = 'Sustainability';
-$v2_desc       = 'Preserving the fragile mountain ecosystem and supporting slow travel that leaves a positive footprint.';
+$v2_icon       = get_theme_mod( 'hhb_about_v2_icon', 'eco' );
+$v2_title      = get_theme_mod( 'hhb_about_v2_title', 'Sustainability' );
+$v2_desc       = get_theme_mod( 'hhb_about_v2_desc', 'Preserving the fragile mountain ecosystem and supporting slow travel that leaves a positive footprint.' );
 
-$v3_icon       = 'groups';
-$v3_title      = 'Community';
-$v3_desc       = 'Empowering local hosts through fair trade and direct economic opportunities for remote villages.';
+$v3_icon       = get_theme_mod( 'hhb_about_v3_icon', 'groups' );
+$v3_title      = get_theme_mod( 'hhb_about_v3_title', 'Community' );
+$v3_desc       = get_theme_mod( 'hhb_about_v3_desc', 'Empowering local hosts through fair trade and direct economic opportunities for remote villages.' );
 
-$quote         = '"Our mission is to ensure that the majesty of the Himalayas is preserved through the wisdom of its people."';
-$cta_text      = 'Meet Our Hosts';
-$cta_link      = '/hosts';
+$quote         = get_theme_mod( 'hhb_about_quote', '"Our mission is to ensure that the majesty of the Himalayas is preserved through the wisdom of its people."' );
+$cta_text      = get_theme_mod( 'hhb_about_cta_text', 'Meet Our Hosts' );
+$cta_link      = get_theme_mod( 'hhb_about_cta_link', '/hosts' );
 ?>
 
 <style>

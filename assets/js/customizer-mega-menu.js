@@ -25,6 +25,7 @@
             items.push( {
                 name:    $item.find( '.hm-item-name' ).val(),
                 link:    $item.find( '.hm-item-link' ).val(),
+                order:   parseInt( $item.find( '.hm-item-order' ).val(), 10 ) || 0,
                 img_id:  parseInt( $item.find( '.hm-item-img-id' ).val(), 10 ) || 0,
                 img_url: $item.find( '.hm-item-img-preview' ).attr( 'src' ) || ''
             } );
@@ -75,6 +76,14 @@
                         'value="' + escAttr( item.link || '' ) + '" ' +
                         'placeholder="https://" />' +
                 '</p>' +
+
+                // Order
+                '<div style="margin:0 0 6px;">' +
+                    '<label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;">Order Index</label>' +
+                    '<input type="number" class="widefat hm-item-order" ' +
+                        'value="' + escAttr( typeof item.order !== "undefined" ? item.order : 0 ) + '" ' +
+                        'placeholder="0" />' +
+                '</div>' +
 
                 // Image
                 '<p style="margin:0;">' +
@@ -134,7 +143,7 @@
         } );
 
         // ── Event: text input ────────────────────────────────────────────────
-        $item.find( 'input[type=text], input[type=url]' ).on( 'input', function () {
+        $item.find( 'input[type=text], input[type=url], input[type=number]' ).on( 'input', function () {
             syncValue( $item.closest( '.hm-mega-repeater-wrap' ) );
         } );
 

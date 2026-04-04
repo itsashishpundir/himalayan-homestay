@@ -35,9 +35,12 @@ $locations      = get_terms( [ 'taxonomy' => 'hhb_location',      'hide_empty' =
 $prop_types     = get_terms( [ 'taxonomy' => 'hhb_property_type', 'hide_empty' => false ] );
 $locations_top5 = get_terms( [ 'taxonomy' => 'hhb_location', 'hide_empty' => false, 'orderby' => 'id', 'order' => 'DESC', 'number' => 5 ] );
 
+$featured_count = (int) get_theme_mod( 'hhb_featured_item_count', 6 );
+$featured_cols  = esc_attr( get_theme_mod( 'hhb_featured_grid_cols', '4' ) );
+
 $featured_args = [
     'post_type'      => 'hhb_homestay',
-    'posts_per_page' => 6,
+    'posts_per_page' => $featured_count,
     'post_status'    => 'publish',
     'meta_query'     => [ [ 'key' => '_is_best_seller', 'value' => '1' ] ],
 ];
@@ -45,7 +48,7 @@ $featured_query = new WP_Query( $featured_args );
 if ( ! $featured_query->have_posts() ) {
     $featured_query = new WP_Query( [
         'post_type'      => 'hhb_homestay',
-        'posts_per_page' => 6,
+        'posts_per_page' => $featured_count,
         'post_status'    => 'publish',
         'orderby'        => 'date',
         'order'          => 'DESC',
@@ -238,7 +241,7 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
 
 /* Hero heading — editorial split-line style */
 .hhb-fp-hero h1 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Outfit', sans-serif;
     font-weight: 700;
     line-height: 1.08;
     text-shadow: 0 2px 30px rgba(0,0,0,0.35);
@@ -292,7 +295,7 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
 }
 .hhb-hero-stat-num {
     display: block;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Outfit', sans-serif;
     font-size: 28px;
     font-weight: 700;
     color: #fff;
@@ -782,7 +785,7 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
     border-radius: 1px;
 }
 .hhb-section-heading {
-    font-family: 'Playfair Display', Georgia, serif !important;
+    font-family: 'Outfit', sans-serif !important;
     letter-spacing: -0.025em !important;
     font-weight: 800 !important;
     line-height: 1.15 !important;
@@ -858,151 +861,107 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
    PROPERTY CARDS (Featured + Newly Listed)
    ═══════════════════════════════════════════════════════════════ */
 
-.hhb-prop-card {
-    background: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid var(--hhb-border);
-    transition: transform 250ms var(--ease-out),
-                box-shadow 250ms var(--ease-out);
-}
-@media (hover: hover) and (pointer: fine) {
-    .hhb-prop-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 24px 48px rgba(0,0,0,0.10), 0 0 0 1px rgba(232,94,48,0.08);
-    }
-}
+/* ═══════════════════════════════════════════════════════════════
+   FUTURISTIC PROPERTY CARDS (Apple TV / Netflix style)
+   ═══════════════════════════════════════════════════════════════ */
 
-/* Image area — taller ratio for more visual impact */
-.hhb-prop-card-img {
+/* Sibling fade effect on grid */
+/* ═══════════════════════════════════════════════════════════════
+   FEATURED PROPERTY CARDS (Static Overlay Layout)
+   ═══════════════════════════════════════════════════════════════ */
+
+.hhb-prop-card-futuristic {
     position: relative;
-    aspect-ratio: 3/2;
+    border-radius: 4px; /* subtle border radius like normal cards */
+    background: #fff;
     overflow: hidden;
-    background: #e2e8f0;
-}
-.hhb-prop-card-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 500ms var(--ease-out);
-}
-@media (hover: hover) and (pointer: fine) {
-    .hhb-prop-card:hover .hhb-prop-card-img img { transform: scale(1.05); }
+    cursor: pointer;
+    text-decoration: none;
+    aspect-ratio: 4/5;
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Image overlay gradient — makes badges more readable */
-.hhb-prop-card-img::after {
-    content: '';
+.hhb-prop-card-futuristic:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+}
+
+/* Card Image Wrapper */
+.hhb-prop-card-img-wrap {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.25) 100%);
-    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: #e2e8f0;
+}
+.hhb-prop-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+.hhb-prop-card-futuristic:hover .hhb-prop-card-img-wrap img {
+    transform: scale(1.05); /* very subtle pan/zoom on hover */
 }
 
-/* Type badge — glass pill on image */
-.hhb-prop-type-badge {
+/* Gradient Overlay for Text Readability */
+.hhb-prop-card-gradient {
     position: absolute;
-    top: 14px; left: 14px;
+    inset: 0;
     z-index: 2;
-    background: rgba(255,255,255,0.90);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 5px 14px;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #1e293b;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 45%, transparent 100%);
+    opacity: 0.95;
+    transition: background 0.4s ease, opacity 0.4s ease, backdrop-filter 0.4s ease;
+}
+.hhb-prop-card-futuristic:hover .hhb-prop-card-gradient {
+    background: rgba(255, 255, 255, 0.4); /* Frosty white overlay */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 1;
 }
 
-/* Rating chip on image (top-right) */
-.hhb-prop-rating-chip {
+/* Glassmorphism Text Inversion on Hover */
+.hhb-prop-card-futuristic * {
+    transition: color 0.4s ease, border-color 0.4s ease, background-color 0.4s ease;
+}
+.hhb-prop-card-futuristic:hover h3,
+.hhb-prop-card-futuristic:hover .text-white { color: #0f172a !important; }
+.hhb-prop-card-futuristic:hover .text-slate-300,
+.hhb-prop-card-futuristic:hover .text-white\/90 { color: #334155 !important; }
+.hhb-prop-card-futuristic:hover .text-white\/60,
+.hhb-prop-card-futuristic:hover .text-white\/50 { color: #64748b !important; }
+.hhb-prop-card-futuristic:hover .border-t { border-top-color: rgba(0,0,0,0.1) !important; }
+.hhb-prop-card-futuristic:hover a.border-white\/20 { border-color: rgba(0,0,0,0.15) !important; }
+.hhb-prop-card-futuristic:hover a.bg-white\/10 { 
+    background-color: transparent !important; 
+    color: #0f172a !important; 
+}
+.hhb-prop-card-futuristic:hover a.bg-white\/10:hover { 
+    background-color: var(--hhb-primary) !important; 
+    border-color: var(--hhb-primary) !important; 
+    color: #fff !important; 
+}
+
+/* Content wrapper fixed to bottom */
+.hhb-prop-card-content {
     position: absolute;
-    top: 14px; right: 14px;
-    z-index: 2;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    z-index: 3;
     display: flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-}
-.hhb-prop-rating-chip .material-symbols-outlined {
-    font-size: 13px;
-    color: #fbbf24;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
-/* Card body — more breathing room */
-.hhb-prop-card-body { padding: 20px 22px 22px; }
-
-/* Location line */
-.hhb-prop-card-loc {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: #94a3b8;
-    font-weight: 500;
-    margin-bottom: 12px;
+/* Details ALWAYS visible now */
+.hhb-prop-card-details {
+    display: block;
+    margin-top: 8px;
 }
-.hhb-prop-card-loc .material-symbols-outlined { font-size: 14px; color: var(--hhb-primary); }
-
-/* Title */
-.hhb-prop-card-title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: #0f172a;
-    line-height: 1.25;
-    margin-bottom: 4px;
-    letter-spacing: -0.015em;
-    transition: color 150ms var(--ease-out);
-}
-.hhb-prop-card-title a { color: inherit; text-decoration: none; }
-@media (hover: hover) and (pointer: fine) {
-    .hhb-prop-card:hover .hhb-prop-card-title { color: var(--hhb-primary); }
-}
-
-/* Price block — sits below location */
-.hhb-prop-card-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-bottom: 16px;
-}
-.hhb-prop-card-price {
-    font-size: 22px;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1;
-    letter-spacing: -0.02em;
-}
-.hhb-prop-card-price-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #94a3b8;
-}
-
-/* Meta chips — pill style */
-.hhb-prop-card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 18px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--hhb-border);
-}
-.hhb-prop-card-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
     background: var(--hhb-surface);
     padding: 6px 12px;
     border-radius: 999px;
@@ -1268,7 +1227,7 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
     font-weight: 900;
     line-height: 1;
     color: rgba(232,94,48,0.07);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Outfit', sans-serif;
     pointer-events: none;
     user-select: none;
 }
@@ -1792,11 +1751,11 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
      ═══════════════════════════════════════════════════════════════ -->
 <section class="hhb-fp-section">
     <div class="max-w-7xl mx-auto">
-        <div class="flex items-end justify-between mb-12">
+        <div class="flex items-end justify-between mb-24 mt-8">
             <div class="hhb-reveal">
-                <span class="hhb-section-label">Best Sellers</span>
-                <h2 class="text-3xl md:text-4xl text-slate-900 mb-2 hhb-section-heading">Featured Stays</h2>
-                <p class="hhb-section-sub">Handpicked properties loved by our guests</p>
+                <span class="hhb-section-label"><?php echo esc_html( get_theme_mod( 'hhb_featured_label', 'Best Sellers' ) ); ?></span>
+                <h2 class="text-3xl md:text-4xl text-slate-900 mb-2 hhb-section-heading"><?php echo esc_html( get_theme_mod( 'hhb_featured_heading', 'Featured Stays' ) ); ?></h2>
+                <p class="hhb-section-sub"><?php echo esc_html( get_theme_mod( 'hhb_featured_subheading', 'Handpicked properties loved by our guests' ) ); ?></p>
             </div>
             <a href="<?php echo esc_url( get_post_type_archive_link( 'hhb_homestay' ) ); ?>"
                class="text-primary font-bold text-sm hover:underline hidden md:block hhb-reveal"
@@ -1806,7 +1765,7 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
         </div>
 
         <?php if ( $featured_query->have_posts() ) : ?>
-            <div class="hhb-featured-grid hhb-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="hhb-featured-grid hhb-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-<?php echo esc_attr( $featured_cols ); ?> gap-6">
                 <?php $card_i = 0; while ( $featured_query->have_posts() ) : $featured_query->the_post(); $card_i++;
                     $price_range  = hhb_get_price_range( get_the_ID() );
                     $max_guests   = get_post_meta( get_the_ID(), 'hhb_max_guests', true ) ?: '2';
@@ -1831,64 +1790,85 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
                         $loc_name    = ( $locs && ! is_wp_error( $locs ) ) ? $locs[0]->name : '';
                         $display_loc = $city ? $city . ( $loc_name ? ', ' . $loc_name : '' ) : $loc_name;
                     ?>
-                    <article class="hhb-prop-card hhb-reveal">
-                        <div class="hhb-prop-card-img">
+                    <article class="hhb-prop-card-futuristic hhb-reveal">
+                        <!-- Image that slides on hover -->
+                        <div class="hhb-prop-card-img-wrap">
                             <?php if ( has_post_thumbnail() ) : ?>
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail( 'large', [ 'class' => 'w-full h-full object-cover', 'loading' => 'lazy' ] ); ?>
-                                </a>
+                                <?php the_post_thumbnail( 'large', [ 'class' => 'w-full h-full object-cover', 'loading' => 'lazy' ] ); ?>
                             <?php else : ?>
-                                <a href="<?php the_permalink(); ?>" class="flex items-center justify-center w-full h-full" style="aspect-ratio:3/2;background:#e2e8f0;">
+                                <div class="flex items-center justify-center w-full h-full" style="background:#e2e8f0;">
                                     <span class="material-symbols-outlined text-4xl text-slate-300">landscape</span>
-                                </a>
+                                </div>
                             <?php endif; ?>
-                            <?php if ( $types && ! is_wp_error( $types ) ) : ?>
-                                <span class="hhb-prop-type-badge"><?php echo esc_html( $types[0]->name ); ?></span>
-                            <?php endif; ?>
+                        </div>
+
+                        <!-- Gradient Overlay -->
+                        <div class="hhb-prop-card-gradient"></div>
+
+                        <!-- Top Badges Always Visible -->
+                        <div class="absolute top-4 left-4 right-4 z-10 flex items-start justify-between">
+                            <div class="flex flex-col gap-2">
+                                <?php if ( $types && ! is_wp_error( $types ) ) : ?>
+                                    <span class="bg-white/90 backdrop-blur-md text-slate-900 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm w-fit">
+                                        <?php echo esc_html( $types[0]->name ); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            
                             <?php if ( $review_count > 0 ) : ?>
-                                <span class="hhb-prop-rating-chip">
-                                    <span class="material-symbols-outlined">star</span>
+                                <span class="flex items-center gap-1 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-2.5 py-1.5 rounded-full">
+                                    <span class="material-symbols-outlined text-[13px] text-yellow-400">star</span>
                                     <?php echo esc_html( $avg_rating ); ?>
                                 </span>
                             <?php endif; ?>
                         </div>
 
-                        <div class="hhb-prop-card-body">
-                            <?php if ( $display_loc ) : ?>
-                                <div class="hhb-prop-card-loc">
-                                    <span class="material-symbols-outlined">location_on</span>
-                                    <?php echo esc_html( $display_loc ); ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <h3 class="hhb-prop-card-title">
-                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                            </h3>
-
-                            <div class="hhb-prop-card-price-row">
-                                <?php if ( $price_range ) : ?>
-                                    <span class="hhb-prop-card-price"><?php echo esc_html( $price_range['formatted'] ); ?></span>
-                                    <span class="hhb-prop-card-price-label">/ night</span>
-                                <?php else : ?>
-                                    <span class="hhb-prop-card-price-label">Price on request</span>
+                        <!-- Floating Content -->
+                        <div class="hhb-prop-card-content">
+                            <!-- Title & Location -->
+                            <div class="mb-1 pointer-events-none">
+                                <?php if ( $display_loc ) : ?>
+                                    <div class="text-slate-300 text-xs font-medium flex items-center gap-1 mb-1">
+                                        📍 <?php echo esc_html( $display_loc ); ?>
+                                    </div>
                                 <?php endif; ?>
+                                
+                                <h3 class="text-white text-2xl font-bold leading-tight" style="font-family: 'Outfit', sans-serif;">
+                                    <?php the_title(); ?>
+                                </h3>
                             </div>
 
-                            <div class="hhb-prop-card-meta">
-                                <div class="hhb-prop-card-meta-item">
-                                    <span class="material-symbols-outlined">group</span>
-                                    <?php echo esc_html( $max_guests ); ?> Guests
+                            <!-- Hidden details revealed on hover -->
+                            <div class="hhb-prop-card-details">
+                                <div class="text-white/90 text-xs leading-snug mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 font-medium">
+                                    <span>👥 Up to <?php echo esc_html($max_guests); ?> Guests</span>
+                                    <span class="text-white/50">·</span> <span>🏔️ Mountain View</span>
+                                    <span class="text-white/50">·</span> <span>📶 Wi-Fi</span>
                                 </div>
-                                <div class="hhb-prop-card-meta-item">
-                                    <span class="material-symbols-outlined">bed</span>
-                                    <?php echo esc_html( $bedrooms ); ?> Bedrooms
-                                </div>
-                            </div>
 
-                            <a href="<?php the_permalink(); ?>" class="hhb-view-btn">
-                                View Details
-                                <span class="material-symbols-outlined">arrow_forward</span>
-                            </a>
+                                <div class="flex items-center justify-between border-t border-white/20 pt-4 mb-4">
+                                    <div class="flex items-center gap-1 text-white">
+                                        <span>⭐</span>
+                                        <span class="font-bold"><?php echo esc_html( $avg_rating > 0 ? $avg_rating : 'New' ); ?></span>
+                                        <?php if ( $review_count > 0 ) : ?>
+                                            <span class="text-white/60 text-xs font-medium">(<?php echo esc_html( $review_count ); ?>)</span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="text-white font-bold text-lg">
+                                        <?php if ( $price_range ) : ?>
+                                            <?php echo esc_html( $price_range['formatted'] ); ?> <span class="text-white/60 text-xs font-normal">/ Night</span>
+                                        <?php else : ?>
+                                            <span class="text-sm">Price on request</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <a href="<?php the_permalink(); ?>" class="flex items-center justify-center gap-2 w-full py-3 bg-white/10 hover:bg-primary text-white hover:text-white border border-white/20 font-bold rounded-xl transition-colors backdrop-blur-md">
+                                    Explore Stay
+                                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                </a>
+                            </div>
                         </div>
                     </article>
                 <?php endwhile; wp_reset_postdata(); ?>
@@ -2034,23 +2014,26 @@ $new_homestays_query = new WP_Query( [
                     <div class="hhb-new-card-body">
                         <div class="hhb-new-card-title"><?php the_title(); ?></div>
                         <?php if ( $display_loc ) : ?>
-                            <div class="hhb-new-card-loc"><?php echo esc_html( $display_loc ); ?></div>
+                            <div class="hhb-new-card-loc" style="margin-bottom:6px;">📍 <?php echo esc_html( $display_loc ); ?></div>
                         <?php endif; ?>
-                        <div class="hhb-new-card-meta">
-                            <span><span class="material-symbols-outlined">group</span><?php echo esc_html( $max_guests ); ?></span>
-                            <span><span class="material-symbols-outlined">bed</span><?php echo esc_html( $bedrooms ); ?></span>
+                        
+                        <div class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-slate-500 text-[11px] font-medium mb-4">
+                            <span>👥 Up to <?php echo esc_html( $max_guests ); ?> Guests</span>
+                            <span class="text-slate-300">·</span> <span>🏔️ Mountain View</span>
+                            <span class="text-slate-300">·</span> <span>📶 Wi-Fi</span>
                         </div>
-                        <div class="hhb-new-card-footer">
-                            <?php if ( $price_range ) : ?>
-                                <div>
-                                    <div class="hhb-new-card-price"><?php echo esc_html( $price_range['formatted'] ); ?></div>
-                                    <div class="hhb-new-card-price-label">per night</div>
-                                </div>
-                            <?php else : ?>
-                                <span class="text-sm font-semibold text-slate-400">Price TBD</span>
-                            <?php endif; ?>
-                            <div class="hhb-new-card-arrow">
-                                <span class="material-symbols-outlined">arrow_forward</span>
+                        
+                        <div class="hhb-new-card-footer flex items-center justify-between border-t border-slate-100 pt-3">
+                            <div class="flex items-center gap-1 text-slate-800 text-xs font-bold w-1/3">
+                                <span>⭐</span> New
+                            </div>
+                            
+                            <div class="flex-1 text-right">
+                                <?php if ( $price_range ) : ?>
+                                    <span class="text-slate-900 font-bold text-[15px]"><?php echo esc_html( $price_range['formatted'] ); ?></span> <span class="text-slate-400 text-[10px] font-medium">/ Night</span>
+                                <?php else : ?>
+                                    <span class="text-sm font-semibold text-slate-400">Price TBD</span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

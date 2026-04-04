@@ -110,7 +110,7 @@ function himalayan_homestay_scripts() {
         wp_enqueue_style( 'material-symbols-outlined', 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block', array(), null );
     }
     // Google Fonts 
-    wp_enqueue_style( 'himalayanmart-organic-fonts', 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap', array(), null );
+    wp_enqueue_style( 'himalayanmart-organic-fonts', 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap', array(), null );
     wp_enqueue_style( 'himalayanmart-material-icons', 'https://fonts.googleapis.com/icon?family=Material+Icons', array(), null );
 
     // Header/Footer Assets - Load based on selected layout

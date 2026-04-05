@@ -87,9 +87,26 @@ add_action( 'customize_register', function( $wp_customize ) {
 
     $wp_customize->add_setting( 'hhb_home_hero_image', [ 'default' => 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop', 'sanitize_callback' => 'esc_url_raw' ] );
     $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_home_hero_image', [
-        'label'   => 'Hero Background Image',
+        'label'   => 'Hero Background Image 1',
         'section' => 'hhb_hero_section',
     ] ) );
+
+    for ( $i = 2; $i <= 5; $i++ ) {
+        $wp_customize->add_setting( 'hhb_home_hero_image_' . $i, [ 'default' => '', 'sanitize_callback' => 'esc_url_raw' ] );
+        $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_home_hero_image_' . $i, [
+            'label'   => 'Hero Background Image ' . $i,
+            'section' => 'hhb_hero_section',
+        ] ) );
+    }
+
+    $wp_customize->add_setting( 'hhb_home_hero_slider_speed', [ 'default' => 5, 'sanitize_callback' => 'absint' ] );
+    $wp_customize->add_control( 'hhb_home_hero_slider_speed', [
+        'label'       => 'Slider Speed (seconds)',
+        'description' => 'Time between slides. Set to 0 to disable auto-sliding.',
+        'section'     => 'hhb_hero_section',
+        'type'        => 'number',
+        'input_attrs' => [ 'min' => 0, 'max' => 30, 'step' => 1 ]
+    ] );
 
     $wp_customize->add_setting( 'hhb_home_hero_heading', [ 'default' => 'Stay in the Heart of the Himalayas', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_home_hero_heading', [ 'label' => 'Heading', 'section' => 'hhb_hero_section', 'type' => 'text' ] );

@@ -486,53 +486,55 @@ $locations_top5  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' =>
                     </div>
                     
                     <script>
+                    window.hhbAjax = window.hhbAjax || { url: '<?php echo admin_url("admin-ajax.php"); ?>', nonce: '<?php echo wp_create_nonce("hhb_wishlist_nonce"); ?>' };
+
+                    function hhbToggleWishlist(btn) {
+                        // If not logged in, show the login modal (injected by WishlistHandler::output_login_modal)
+                        if (!window.hhbIsLoggedIn) {
+                            var modal = document.getElementById('hhb-wishlist-modal');
+                            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+                            return;
+                        }
+
+                        var postId = btn.dataset.postId;
+                        var svg   = btn.querySelector('svg');
+                        if (!svg || !postId) return;
+
+                        // Optimistic UI update
+                        var isHearted = svg.getAttribute('fill') === 'currentColor';
+                        if (isHearted) {
+                            svg.setAttribute('fill', 'none');
+                            svg.style.color = '';
+                        } else {
+                            svg.setAttribute('fill', 'currentColor');
+                            svg.style.color = '#ef4444';
+                        }
+                        svg.style.transform = 'scale(1.2)';
+                        setTimeout(function() { svg.style.transform = ''; }, 200);
+
+                        var formData = new FormData();
+                        formData.append('action',   'hhb_toggle_wishlist');
+                        formData.append('post_id',  postId);
+                        formData.append('security', window.hhbAjax.nonce);
+
+                        fetch(window.hhbAjax.url, { method: 'POST', body: formData })
+                            .then(function(r) { return r.json(); })
+                            .then(function(data) {
+                                if (!data.success) {
+                                    // Revert optimistic update
+                                    if (isHearted) { svg.setAttribute('fill', 'currentColor'); svg.style.color = '#ef4444'; }
+                                    else           { svg.setAttribute('fill', 'none');          svg.style.color = ''; }
+                                }
+                            })
+                            .catch(function(err) { console.error('HHB Wishlist error:', err); });
+                    }
+
                     document.addEventListener('DOMContentLoaded', function() {
-                        const toggles = document.querySelectorAll('.hhb-wishlist-toggle');
-                        toggles.forEach(toggle => {
-                            toggle.addEventListener('click', function(e) {
+                        document.querySelectorAll('.hhb-wishlist-toggle').forEach(function(btn) {
+                            btn.addEventListener('click', function(e) {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                
-                                const postId = this.dataset.postId;
-                                const svg = this.querySelector('svg');
-                                
-                                // Optimistic update
-                                const isCurrentlyHearted = svg.getAttribute('fill') === 'currentColor';
-                                if (isCurrentlyHearted) {
-                                    svg.setAttribute('fill', 'none');
-                                    svg.style.color = '';
-                                    svg.style.transform = 'scale(0.9)';
-                                } else {
-                                    svg.setAttribute('fill', 'currentColor');
-                                    svg.style.color = '#ef4444';
-                                    svg.style.transform = 'scale(1.2)';
-                                }
-                                setTimeout(() => { svg.style.transform = ''; }, 200);
-
-                                const formData = new FormData();
-                                formData.append('action', 'hhb_toggle_wishlist');
-                                formData.append('post_id', postId);
-                                formData.append('security', '<?php echo wp_create_nonce("hhb_wishlist_nonce"); ?>');
-
-                                fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (!data.success) {
-                                        alert(data.data);
-                                        // Revert on failure
-                                        if (isCurrentlyHearted) {
-                                            svg.setAttribute('fill', 'currentColor');
-                                            svg.style.color = '#ef4444';
-                                        } else {
-                                            svg.setAttribute('fill', 'none');
-                                            svg.style.color = '';
-                                        }
-                                    }
-                                })
-                                .catch(err => console.error(err));
+                                hhbToggleWishlist(this);
                             });
                         });
                     });

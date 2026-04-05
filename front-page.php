@@ -12,7 +12,15 @@
 get_header();
 
 /* ── Customizer values (with defaults) ──────────────────────────── */
-$hero_img   = get_theme_mod( 'hhb_home_hero_image', 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop' );
+$hero_imgs = [ get_theme_mod( 'hhb_home_hero_image', 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop' ) ];
+for ( $i = 2; $i <= 5; $i++ ) {
+    $img = get_theme_mod( 'hhb_home_hero_image_' . $i, '' );
+    if ( ! empty( $img ) ) {
+        $hero_imgs[] = $img;
+    }
+}
+$hero_slider_speed = (int) get_theme_mod( 'hhb_home_hero_slider_speed', 5 );
+
 $hero_h1    = get_theme_mod( 'hhb_home_hero_heading', 'Stay in the Heart of the Himalayas' );
 $hero_sub   = get_theme_mod( 'hhb_home_hero_subheading', 'Handpicked homestays with local hospitality — breathtaking views, warm hosts, unforgettable mornings.' );
 
@@ -1395,9 +1403,28 @@ $table_exists  = $wpdb->get_var( "SHOW TABLES LIKE '{$reviews_table}'" );
 <section class="hhb-fp-hero">
 
     <!-- Background photo with cinematic zoom wrapper -->
-    <div class="hhb-fp-hero-zoom">
-        <div class="hhb-fp-hero-bg" style="background-image: url('<?php echo esc_url( $hero_img ); ?>')"></div>
+    <div class="hhb-fp-hero-zoom" id="hhb-hero-slider-wrap">
+        <?php foreach ( $hero_imgs as $index => $img_url ) : ?>
+            <div class="hhb-fp-hero-bg hhb-hero-slide" style="background-image: url('<?php echo esc_url( $img_url ); ?>'); <?php if ( $index > 0 ) echo 'opacity: 0; transition: opacity 1.5s ease-in-out; position: absolute; inset: 0;'; else echo 'opacity: 1; transition: opacity 1.5s ease-in-out; z-index: 1;'; ?>"></div>
+        <?php endforeach; ?>
     </div>
+
+    <?php if ( count( $hero_imgs ) > 1 && $hero_slider_speed > 0 ) : ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var slides = document.querySelectorAll('.hhb-hero-slide');
+            var currentSlide = 0;
+            setInterval(function() {
+                var prevSlide = currentSlide;
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[prevSlide].style.opacity = '0';
+                slides[prevSlide].style.zIndex = '0';
+                slides[currentSlide].style.opacity = '1';
+                slides[currentSlide].style.zIndex = '1';
+            }, <?php echo $hero_slider_speed * 1000; ?>);
+        });
+    </script>
+    <?php endif; ?>
 
     <!-- Atmospheric overlays -->
     <div class="hhb-fp-hero-overlay"></div>

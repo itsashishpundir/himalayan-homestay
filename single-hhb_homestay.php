@@ -778,8 +778,11 @@ while ( have_posts() ) :
                     <div class="group relative flex flex-col gap-3">
                         <a href="<?php the_permalink(); ?>" class="block relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-200">
                             <img alt="<?php the_title_attribute(); ?>" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="<?php echo esc_url($r_thumb); ?>"/>
-                            <button class="absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm z-10" onclick="event.preventDefault();">
-                                <span class="material-symbols-outlined block text-[20px]">favorite</span>
+                            <button class="hhb-wishlist-toggle absolute top-3 right-3 p-2 rounded-full bg-white/50 hover:bg-white backdrop-blur-md transition-all text-slate-800 hover:scale-110 shadow-sm z-10" data-post-id="<?php echo esc_attr($r_id); ?>" onclick="event.preventDefault(); event.stopPropagation();" aria-label="Save to Wishlist">
+                                <?php $r_is_hearted = \Himalayan\Homestay\Interface\Frontend\WishlistHandler::is_in_wishlist($r_id); ?>
+                                <svg class="w-5 h-5" fill="<?php echo $r_is_hearted ? 'currentColor' : 'none'; ?>" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="<?php echo $r_is_hearted ? 'color:#ef4444;' : ''; ?>">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
                             </button>
                             
                             <div class="absolute top-3 left-3 flex flex-wrap gap-2 pointer-events-none z-10">
@@ -830,61 +833,82 @@ while ( have_posts() ) :
     </div>
 
     <script>
+    window.hhbAjax = window.hhbAjax || { url: '<?php echo admin_url("admin-ajax.php"); ?>', nonce: '<?php echo wp_create_nonce("hhb_wishlist_nonce"); ?>' };
+
+    function hhbToggleWishlist(btn) {
+        if (!window.hhbIsLoggedIn) {
+            var modal = document.getElementById('hhb-wishlist-modal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+            return;
+        }
+
+        var postId = btn.dataset.postId;
+        if (!postId) return;
+
+        // Detect style: icon+text button vs svg-only card button
+        var icon     = btn.querySelector('.hhb-wishlist-icon');
+        var textSpan = btn.querySelector('.hhb-wishlist-text');
+        var svg      = btn.querySelector('svg');
+
+        var isHearted;
+        if (textSpan) {
+            isHearted = textSpan.textContent.trim() === 'Saved';
+        } else if (svg) {
+            isHearted = svg.getAttribute('fill') === 'currentColor';
+        } else { return; }
+
+        // Optimistic update
+        if (textSpan) {
+            textSpan.textContent = isHearted ? 'Save' : 'Saved';
+            if (icon) {
+                icon.style.color = isHearted ? '' : '#ef4444';
+                icon.style.fontVariationSettings = isHearted ? "'FILL' 0" : "'FILL' 1";
+            }
+        }
+        if (svg) {
+            svg.setAttribute('fill', isHearted ? 'none' : 'currentColor');
+            svg.style.color = isHearted ? '' : '#ef4444';
+        }
+
+        var formData = new FormData();
+        formData.append('action',   'hhb_toggle_wishlist');
+        formData.append('post_id',  postId);
+        formData.append('security', window.hhbAjax.nonce);
+
+        fetch(window.hhbAjax.url, { method: 'POST', body: formData })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.success) {
+                    // Revert optimistic update
+                    if (textSpan) {
+                        textSpan.textContent = isHearted ? 'Saved' : 'Save';
+                        if (icon) {
+                            icon.style.color = isHearted ? '#ef4444' : '';
+                            icon.style.fontVariationSettings = isHearted ? "'FILL' 1" : "'FILL' 0";
+                        }
+                    }
+                    if (svg) {
+                        svg.setAttribute('fill', isHearted ? 'currentColor' : 'none');
+                        svg.style.color = isHearted ? '#ef4444' : '';
+                    }
+                }
+            })
+            .catch(function(err) { console.error('HHB Wishlist error:', err); });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof GLightbox !== 'undefined') {
             GLightbox({ selector: '.glightbox' });
         }
 
-        // Wishlist Toggle Logic for Single Page
-        const toggleBtn = document.querySelector('.hhb-wishlist-toggle');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function(e) {
+        // Wire up ALL .hhb-wishlist-toggle buttons on the page
+        document.querySelectorAll('.hhb-wishlist-toggle').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const postId = this.dataset.postId;
-                const icon = this.querySelector('.hhb-wishlist-icon');
-                const textSpan = this.querySelector('.hhb-wishlist-text');
-                
-                // Optimistic UI update
-                const isCurrentlyHearted = textSpan.innerText === 'Saved';
-                
-                if (isCurrentlyHearted) {
-                    textSpan.innerText = 'Save';
-                    icon.style.color = '';
-                    icon.style.fontVariationSettings = "'FILL' 0";
-                } else {
-                    textSpan.innerText = 'Saved';
-                    icon.style.color = '#ef4444';
-                    icon.style.fontVariationSettings = "'FILL' 1";
-                }
-
-                const formData = new FormData();
-                formData.append('action', 'hhb_toggle_wishlist');
-                formData.append('post_id', postId);
-                formData.append('security', '<?php echo wp_create_nonce("hhb_wishlist_nonce"); ?>');
-
-                fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        alert(data.data);
-                        // Revert on fail
-                        if (isCurrentlyHearted) {
-                            textSpan.innerText = 'Saved';
-                            icon.style.color = '#ef4444';
-                            icon.style.fontVariationSettings = "'FILL' 1";
-                        } else {
-                            textSpan.innerText = 'Save';
-                            icon.style.color = '';
-                            icon.style.fontVariationSettings = "'FILL' 0";
-                        }
-                    }
-                })
-                .catch(err => console.error(err));
+                e.stopPropagation();
+                hhbToggleWishlist(this);
             });
-        }
+        });
     });
     </script>
 

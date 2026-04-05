@@ -221,7 +221,7 @@ $footer_heading = get_theme_mod( 'hm_futura_footer_heading_color', '#e85e30' );
             <span class="font-bold text-slate-900 dark:text-white"><?php bloginfo( 'name' ); ?></span>
             <span><?php echo wp_kses_post( $copyright ); ?></span>
         </div>
-        <div class="flex flex-wrap justify-center gap-6 [&_a]:hover:text-primary [&_a]:transition-colors">
+        <div class="flex flex-wrap justify-center gap-6 [&_a]:transition-colors [&_a:hover]:text-primary">
             <?php
             wp_nav_menu( array(
                 'theme_location' => 'footer-legal',

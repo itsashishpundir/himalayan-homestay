@@ -371,8 +371,9 @@ if ( $current_user->ID ) {
                 <?php endif; ?>
                 <?php
                 $futura_mega_menu_mobile_html = ob_get_clean();
-                if ( ! $has_mega ) {
-                    echo $futura_mega_menu_mobile_html;
+                $has_mega_mobile = false;
+                foreach($header_extra_links as $l) {
+                    if (($l['link'] ?? '') === '#mega-menu') { $has_mega_mobile = true; break; }
                 }
                 ?>
 
@@ -397,14 +398,32 @@ if ( $current_user->ID ) {
 
                 <!-- Primary Menu Items -->
                 <?php
-                wp_nav_menu( array(
+                $primary_menu_mobile_html = wp_nav_menu( array(
                     'theme_location' => 'primary',
                     'container'      => false,
-                    'menu_class'     => 'futura-mobile-nav-list',
-                    'items_wrap'     => '<div class="%2$s">%3$s</div>',
+                    'menu_class'     => 'futura-mobile-nav-list p-0 m-0 list-none',
+                    'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
                     'depth'          => 1,
                     'fallback_cb'    => false,
+                    'echo'           => false,
                 ) );
+
+                if ( ! $has_mega_mobile && $primary_menu_mobile_html ) {
+                    $items_array_mobile = explode('<li', $primary_menu_mobile_html);
+                    if ( count($items_array_mobile) > 1 ) {
+                        $inject_index_mob = min( $mega_pos + 1, count($items_array_mobile) );
+                        $mega_li_mob_html = ' class="menu-item list-none p-0 m-0 border-b border-slate-200 dark:border-slate-700">' . $futura_mega_menu_mobile_html . '</li>';
+                        array_splice( $items_array_mobile, $inject_index_mob, 0, $mega_li_mob_html );
+                        $primary_menu_mobile_html = implode( '<li', $items_array_mobile );
+                        $has_mega_mobile = true;
+                    }
+                }
+
+                if ( ! $has_mega_mobile ) {
+                    echo $futura_mega_menu_mobile_html;
+                }
+
+                echo $primary_menu_mobile_html;
                 ?>
             </div>
 

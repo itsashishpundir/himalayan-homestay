@@ -39,6 +39,13 @@ $chapters = [
     ]
 ];
 
+$stat1_num     = get_theme_mod( 'hhb_about_stat_1_num', '500+' );
+$stat1_label   = get_theme_mod( 'hhb_about_stat_1_label', 'Properties' );
+$stat2_num     = get_theme_mod( 'hhb_about_stat_2_num', '50k+' );
+$stat2_label   = get_theme_mod( 'hhb_about_stat_2_label', 'Happy Guests' );
+$stat3_num     = get_theme_mod( 'hhb_about_stat_3_num', '4.9/5' );
+$stat3_label   = get_theme_mod( 'hhb_about_stat_3_label', 'Average Rating' );
+
 $values_title  = get_theme_mod( 'hhb_about_values_title', 'Our Core Values' );
 $values_sub    = get_theme_mod( 'hhb_about_values_sub', 'Guided by the spirit of the mountains' );
 
@@ -79,27 +86,16 @@ $cta_link      = get_theme_mod( 'hhb_about_cta_link', '/hosts' );
     background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
 }
 
-/* ── Storytelling Timeline Styles ────────────────────── */
+/* ── Overlapping Chapter Styles ────────────────────── */
 .hhb-timeline {
     position: relative;
 }
-/* Optional Connecting Line (hidden on mobile) */
-@media (min-width: 1024px) {
-    .hhb-timeline::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        width: 2px;
-        background: rgba(232, 94, 48, 0.1);
-        transform: translateX(-50%);
-        z-index: 0;
-    }
-}
-.hhb-chapter {
-    position: relative;
-    z-index: 1;
+.hhb-glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
 }
 </style>
 
@@ -122,45 +118,61 @@ $cta_link      = get_theme_mod( 'hhb_about_cta_link', '/hosts' );
             <div class="w-20 h-1.5 bg-primary rounded-full mx-auto mt-6"></div>
         </div>
 
-        <div class="hhb-timeline space-y-20 lg:space-y-32">
+        <div class="hhb-timeline space-y-20 lg:space-y-32 max-w-5xl mx-auto">
             <?php foreach ( $chapters as $i => $chap ) : 
                 if ( empty( $chap['title'] ) ) continue; 
                 
-                // Determine if Image is on Left or Right based on completely alternating logic (evens flip)
+                // Determine orientation based on completely alternating logic
                 $is_even = ($i % 2 === 0);
-                $img_order  = $is_even ? 'lg:order-first' : 'lg:order-last';
-                $text_order = $is_even ? 'lg:order-last' : 'lg:order-first';
-                // Adjust text alignment slightly towards the center line
-                $text_align = $is_even ? 'lg:pl-16 lg:pr-8' : 'lg:pr-16 lg:pl-8 text-left';
+                $flex_dir   = $is_even ? 'lg:flex-row' : 'lg:flex-row-reverse';
+                $overlap_m  = $is_even ? 'lg:-ml-16' : 'lg:-mr-16';
             ?>
-            <div class="hhb-chapter grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-0 items-center">
+            <div class="relative flex flex-col items-center <?php echo esc_attr( $flex_dir ); ?>">
                 
-                <!-- Text Block -->
-                <div class="space-y-4 <?php echo esc_attr( $text_order . ' ' . $text_align ); ?>">
-                    <?php if ( $chap['subtitle'] ) : ?>
-                        <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest rounded-full mb-2 border border-primary/20">
-                            <?php echo esc_html( $chap['subtitle'] ); ?>
-                        </span>
-                    <?php endif; ?>
-                    
-                    <h3 class="font-serif text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
-                        <?php echo esc_html( $chap['title'] ); ?>
-                    </h3>
-                    
-                    <div class="text-slate-600 dark:text-slate-400 text-base md:text-lg leading-relaxed">
-                        <?php echo wp_kses_post( wpautop( $chap['text'] ) ); ?>
-                    </div>
+                <!-- Image Layer -->
+                <div class="w-full lg:w-7/12 rounded-[2rem] overflow-hidden shadow-2xl relative aspect-[4/3] bg-slate-200">
+                    <img src="<?php echo esc_url( $chap['image'] ); ?>" alt="<?php echo esc_attr( $chap['title'] ); ?>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105">
                 </div>
-
-                <!-- Image Block -->
-                <div class="p-4 <?php echo esc_attr( $img_order ); ?>">
-                    <div class="rounded-3xl overflow-hidden shadow-xl aspect-square lg:aspect-[4/3] w-full hover:scale-[1.03] transition-transform duration-700 ease-out will-change-transform bg-slate-200 ring-8 ring-white dark:ring-slate-900" 
-                         style="background-image: url('<?php echo esc_url( $chap['image'] ); ?>'); background-size: cover; background-position: center;">
+                
+                <!-- Glass Text Panel -->
+                <div class="w-11/12 lg:w-6/12 relative z-10 -mt-16 lg:mt-0 <?php echo esc_attr( $overlap_m ); ?>">
+                    <div class="hhb-glass-card rounded-[2rem] p-8 md:p-12 space-y-5">
+                        <?php if ( $chap['subtitle'] ) : ?>
+                            <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest rounded-full mb-2 border border-primary/20">
+                                <?php echo esc_html( $chap['subtitle'] ); ?>
+                            </span>
+                        <?php endif; ?>
+                        
+                        <h3 class="font-serif text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+                            <?php echo esc_html( $chap['title'] ); ?>
+                        </h3>
+                        
+                        <div class="text-slate-600 text-base md:text-lg leading-relaxed">
+                            <?php echo wp_kses_post( wpautop( $chap['text'] ) ); ?>
+                        </div>
                     </div>
                 </div>
                 
             </div>
             <?php endforeach; ?>
+        </div>
+    </section>
+
+    <!-- Company Stats Section (New!) -->
+    <section class="container mx-auto px-4 lg:px-6 pb-20 md:pb-32 -mt-10 relative z-20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-3xl p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(232,94,48,0.1)] border border-primary/5 transition-all duration-300 hover:-translate-y-2">
+                <div class="text-5xl md:text-6xl font-black text-primary mb-2"><?php echo esc_html( $stat1_num ); ?></div>
+                <div class="text-sm md:text-base font-bold text-slate-500 uppercase tracking-widest"><?php echo esc_html( $stat1_label ); ?></div>
+            </div>
+            <div class="bg-white rounded-3xl p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(232,94,48,0.1)] border border-primary/5 transition-all duration-300 hover:-translate-y-2">
+                <div class="text-5xl md:text-6xl font-black text-primary mb-2"><?php echo esc_html( $stat2_num ); ?></div>
+                <div class="text-sm md:text-base font-bold text-slate-500 uppercase tracking-widest"><?php echo esc_html( $stat2_label ); ?></div>
+            </div>
+            <div class="bg-white rounded-3xl p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(232,94,48,0.1)] border border-primary/5 transition-all duration-300 hover:-translate-y-2">
+                <div class="text-5xl md:text-6xl font-black text-primary mb-2"><?php echo esc_html( $stat3_num ); ?></div>
+                <div class="text-sm md:text-base font-bold text-slate-500 uppercase tracking-widest"><?php echo esc_html( $stat3_label ); ?></div>
+            </div>
         </div>
     </section>
 
@@ -210,7 +222,7 @@ $cta_link      = get_theme_mod( 'hhb_about_cta_link', '/hosts' );
             <?php echo wp_kses_post( $quote ); ?>
         </p>
         <?php if ( $cta_text && $cta_link ) : ?>
-            <a href="<?php echo esc_url( $cta_link ); ?>" class="inline-block bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-full font-bold shadow-xl shadow-primary/30 transition-transform hover:-translate-y-1 text-lg">
+            <a href="<?php echo esc_url( $cta_link ); ?>" class="inline-block bg-primary hover:bg-primary/90 text-white hover:text-white px-10 py-5 rounded-full font-bold shadow-xl shadow-primary/30 transition-transform hover:-translate-y-1 text-lg">
                 <?php echo esc_html( $cta_text ); ?>
             </a>
         <?php endif; ?>

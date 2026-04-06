@@ -74,7 +74,7 @@ function himalayan_homestay_scripts() {
         || is_tax('hhb_location')
         || is_tax('hhb_property_type');
 
-    if ( (is_single() && get_post_type() === 'post') || is_home() || is_archive() || is_search() || $is_homestay_page ) {
+    if ( true ) { // Load Tailwind everywhere, as Gutenberg blocks (like FAQ) use it heavily.
         wp_enqueue_script( 'tailwindcss', 'https://cdn.tailwindcss.com?plugins=forms,container-queries,typography', array(), null, false );
         
         // Add inline configuration for Tailwind
@@ -239,6 +239,66 @@ add_action('after_setup_theme', function() {
  */
 require get_template_directory() . '/inc/helpers.php';
 require get_template_directory() . '/inc/widgets.php';
+
+/**
+ * Gutenberg Blocks Registration
+ */
+function himalayan_homestay_block_categories( $categories, $post ) {
+    return array_merge(
+        array(
+            array(
+                'slug'  => 'himalayanmart-blocks',
+                'title' => __( 'HimalayanMart Theme', 'himalayanmart' ),
+                'icon'  => 'admin-home',
+            ),
+        ),
+        $categories
+    );
+}
+add_filter( 'block_categories_all', 'himalayan_homestay_block_categories', 10, 2 );
+
+function himalayan_homestay_enqueue_block_editor_assets() {
+    // 1. Enqueue Tailwind in the Gutenberg editor so block classes render properly
+    wp_enqueue_script( 'tailwindcss-editor', 'https://cdn.tailwindcss.com?plugins=forms,container-queries,typography', array(), null, false );
+    $tailwind_config = "
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                colors: { 'primary': '#e85e30' },
+                fontFamily: { 'serif': ['Playfair Display', 'serif'] }
+            }
+        }
+    };";
+    wp_add_inline_script( 'tailwindcss-editor', $tailwind_config, 'before' );
+
+    // 2. Enqueue the FAQ block JS and CSS
+    wp_enqueue_script(
+        'hm-faq-block-js',
+        get_template_directory_uri() . '/assets/js/blocks/faq-block.js',
+        array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components' ),
+        filemtime( get_template_directory() . '/assets/js/blocks/faq-block.js' ),
+        true
+    );
+    wp_enqueue_style(
+        'hm-faq-block-css',
+        get_template_directory_uri() . '/assets/css/blocks/faq-block.css',
+        array(),
+        filemtime( get_template_directory() . '/assets/css/blocks/faq-block.css' )
+    );
+}
+add_action( 'enqueue_block_editor_assets', 'himalayan_homestay_enqueue_block_editor_assets' );
+
+function himalayan_homestay_enqueue_block_assets() {
+    wp_enqueue_style(
+        'hm-faq-block-css',
+        get_template_directory_uri() . '/assets/css/blocks/faq-block.css',
+        array(),
+        filemtime( get_template_directory() . '/assets/css/blocks/faq-block.css' )
+    );
+}
+add_action( 'wp_enqueue_scripts', 'himalayan_homestay_enqueue_block_assets' );
+
 
 
 // Data migrations have been moved to the plugin's Database layer.

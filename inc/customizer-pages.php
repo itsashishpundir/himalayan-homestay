@@ -348,6 +348,24 @@ add_action( 'customize_register', function( $wp_customize ) {
         $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, "hhb_about_chap_{$n}_img", [ 'label' => "Chapter {$n} Image", 'section' => 'hhb_about_story_section' ] ) );
     }
 
+    // --- Company Stats ---
+    $wp_customize->add_section( 'hhb_about_stats_section', [ 'title' => 'Company Stats', 'panel' => 'hhb_about_panel' ] );
+    
+    $wp_customize->add_setting( 'hhb_about_stat_1_num', [ 'default' => '500+', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_stat_1_num', [ 'label' => 'Stat 1 Number', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+    $wp_customize->add_setting( 'hhb_about_stat_1_label', [ 'default' => 'Properties', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_stat_1_label', [ 'label' => 'Stat 1 Label', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_about_stat_2_num', [ 'default' => '50k+', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_stat_2_num', [ 'label' => 'Stat 2 Number', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+    $wp_customize->add_setting( 'hhb_about_stat_2_label', [ 'default' => 'Happy Guests', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_stat_2_label', [ 'label' => 'Stat 2 Label', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_about_stat_3_num', [ 'default' => '4.9/5', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_stat_3_num', [ 'label' => 'Stat 3 Number', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+    $wp_customize->add_setting( 'hhb_about_stat_3_label', [ 'default' => 'Average Rating', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_about_stat_3_label', [ 'label' => 'Stat 3 Label', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+
     // --- Core Values ---
     $wp_customize->add_section( 'hhb_about_values_section', [ 'title' => 'Core Values', 'panel' => 'hhb_about_panel' ] );
     $wp_customize->add_setting( 'hhb_about_values_title', [ 'default' => 'Our Core Values', 'sanitize_callback' => 'sanitize_text_field' ] );

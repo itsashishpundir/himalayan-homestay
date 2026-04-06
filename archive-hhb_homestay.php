@@ -12,6 +12,20 @@ get_header();
 // Fetch filter values
 $selected_type = isset($_GET['type']) ? sanitize_text_field($_GET['type']) : '';
 $selected_loc  = isset($_GET['location']) ? sanitize_text_field($_GET['location']) : '';
+$current_sort  = isset($_GET['sort']) && in_array($_GET['sort'], ['price_asc','price_desc'], true) ? $_GET['sort'] : '';
+
+// Helper: build a sort URL that preserves existing filters (location, type)
+if ( ! function_exists('hhb_sort_url') ) {
+    function hhb_sort_url( string $new_sort ): string {
+        $params = array_filter([
+            'location' => isset($_GET['location']) ? sanitize_text_field($_GET['location']) : '',
+            'type'     => isset($_GET['type'])     ? sanitize_text_field($_GET['type'])     : '',
+            'sort'     => $new_sort,
+        ]);
+        $base = get_post_type_archive_link('hhb_homestay') ?: home_url('/');
+        return $params ? trailingslashit($base) . '?' . http_build_query($params) : $base;
+    }
+}
 
 // Prefix and Suffix from Customizer (Location)
 $title_prefix = get_theme_mod('himalayanmart_homestay_archive_prefix', 'Explore Homestays in ');
@@ -136,10 +150,10 @@ $locations_top5  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' =>
     }
     .hhb-arc-search-input {
         flex: 1;
-        background: transparent;
+        background: transparent !important;
         border: none;
         outline: none;
-        color: #fff;
+        color: #fff !important;
         font-size: 15px;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -366,12 +380,28 @@ $locations_top5  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' =>
                         <p class="text-slate-500">Showing handpicked properties in <?php echo esc_html($location_name); ?></p>
                     </div>
                     
-                    <div class="flex gap-2">
-                        <!-- Desktop Sorting/Filtering Placeholders -->
-                        <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold text-slate-600">
-                           <span class="material-symbols-outlined text-sm">sort</span>
-                           <span>Sort by Price</span>
-                        </div>
+                    <div class="flex gap-2 flex-wrap items-center">
+                        <!-- Sort Pills -->
+                        <span class="text-xs font-black text-slate-400 uppercase tracking-widest mr-1">Sort:</span>
+                        <a href="<?php echo esc_url( hhb_sort_url('price_asc') ); ?>"
+                           class="inline-flex items-center gap-1.5 border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold transition-all
+                                  <?php echo $current_sort === 'price_asc' ? 'bg-primary text-white border-primary shadow-md shadow-primary/25' : 'bg-white text-slate-600 hover:border-primary hover:text-primary'; ?>"
+                           title="Sort cheapest first">
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 2L2 8h8L6 2z"/></svg>
+                          Low &rarr; High
+                        </a>
+                        <a href="<?php echo esc_url( hhb_sort_url('price_desc') ); ?>"
+                           class="inline-flex items-center gap-1.5 border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold transition-all
+                                  <?php echo $current_sort === 'price_desc' ? 'bg-primary text-white border-primary shadow-md shadow-primary/25' : 'bg-white text-slate-600 hover:border-primary hover:text-primary'; ?>"
+                           title="Sort most expensive first">
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 10L2 4h8l-4 6z"/></svg>
+                          High &rarr; Low
+                        </a>
+                        <?php if ($current_sort) : ?>
+                          <a href="<?php echo esc_url( hhb_sort_url('') ); ?>"
+                             class="text-xs font-bold text-slate-400 hover:text-primary transition-colors px-2 py-1 rounded-lg"
+                             title="Clear sort">&#x2715; Clear</a>
+                        <?php endif; ?>
                     </div>
                 </div>
 

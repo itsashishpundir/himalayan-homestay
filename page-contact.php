@@ -2,283 +2,450 @@
 /**
  * Template Name: Contact Us
  *
- * Contact page with the "Mountain Ethereal" aesthetic.
- * Fully customizable via repeaters in the WordPress Customizer.
- *
  * @package HimalayanHomestay
  */
 
 get_header();
 
-// ── Customizer Values ──────────────────────────────────────────────
-$banner_img   = get_theme_mod( 'hhb_contact_banner_image', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2940&auto=format&fit=crop' );
-$heading      = get_theme_mod( 'hhb_contact_heading', 'Get in Touch' );
-$subheading   = get_theme_mod( 'hhb_contact_subheading', 'Have a question or need help planning your stay? We\'re here for you.' );
-$map_embed    = get_theme_mod( 'hhb_contact_map_embed', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d54000!2d77.35!3d31.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sTirthan+Valley!5e0!3m2!1sen!2sin!4v1' );
+$banner_img  = get_theme_mod( 'hhb_contact_banner_image', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2940&auto=format&fit=crop' );
+$heading     = get_theme_mod( 'hhb_contact_heading', 'Get in Touch' );
+$subheading  = get_theme_mod( 'hhb_contact_subheading', 'Have a question or need help planning your stay? We\'re here for you.' );
+$map_embed   = get_theme_mod( 'hhb_contact_map_embed', '' );
 
-// Contact Details Repeater
 $contact_json = get_theme_mod( 'hhb_contact_cards', '[]' );
 $contact_data = json_decode( $contact_json, true ) ?: [];
 if ( empty( $contact_data ) ) {
     $contact_data = [
-        [ 'q' => 'Our Location', 'a' => 'Village Jibhi, Tirthan Valley, Banjar, Himachal Pradesh 175143, India' ],
-        [ 'q' => 'Call Us',       'a' => '+91 98765 43210' ],
-        [ 'q' => 'Email Us',      'a' => 'hello@himalayanhomestay.com' ]
+        [ 'q' => 'Our Location', 'a' => 'Village Jibhi, Tirthan Valley, Banjar, Himachal Pradesh 175143, India', 'icon' => 'location_on' ],
+        [ 'q' => 'Call Us',      'a' => '+91 98765 43210', 'icon' => 'phone' ],
+        [ 'q' => 'Email Us',     'a' => 'hello@himalayanhomestay.com', 'icon' => 'mail' ],
+        [ 'q' => 'Working Hours','a' => "Mon–Sat: 9:00 AM – 7:00 PM IST\nSunday: 10:00 AM – 5:00 PM IST", 'icon' => 'schedule' ],
     ];
 }
 
-// FAQs Repeater
 $faq_json = get_theme_mod( 'hhb_contact_faq_items', '[]' );
 $faq_data = json_decode( $faq_json, true ) ?: [];
 if ( empty( $faq_data ) ) {
     $faq_data = [
-        [ 'q' => 'How do I book a homestay?', 'a' => 'Browse our listings, select your dates, and complete a quick booking request.' ],
-        [ 'q' => 'What is the cancellation policy?', 'a' => 'Free cancellation up to 7 days before check-in.' ]
+        [ 'q' => 'How do I book a homestay?', 'a' => 'Browse our listings, select your dates, and complete a quick booking request. Once the host confirms availability, you\'ll receive a secure payment link. Your booking is confirmed after payment.' ],
+        [ 'q' => 'What is the cancellation policy?', 'a' => 'Free cancellation up to 7 days before check-in. After that, a 50% charge applies. No-shows are fully charged.' ],
+        [ 'q' => 'Do you offer airport or bus stand transfers?', 'a' => 'Many of our hosts can arrange local pickup for an additional fee. Check the individual listing or contact the host after booking.' ],
+        [ 'q' => 'Are your homestays pet-friendly?', 'a' => 'Some of our properties welcome pets. Filter by \'Pet Friendly\' on the search page or contact the host directly to confirm.' ],
+        [ 'q' => 'What payment methods do you accept?', 'a' => 'We accept all major credit/debit cards, UPI, net banking, and bank transfers. International cards are also supported.' ],
     ];
 }
 ?>
-
 <style>
-/* ── Design Tokens ────────────────────── */
 :root {
-    --primary-gradient: linear-gradient(135deg, #a93102 0%, #cb491c 100%);
-    --surface-glass: rgba(255, 255, 255, 0.86);
-    --surface-blur: blur(24px);
-    --text-main: #1a1c1c;
-    --text-muted: #59413a;
+    --ct-primary: #cb491c;
+    --ct-primary-dark: #a93102;
+    --ct-text: #1a1c1c;
+    --ct-muted: #6b7280;
+    --ct-bg: #f5f4f2;
+    --ct-white: #ffffff;
+    --ct-border: #e8e4e0;
+    --ct-radius: 16px;
+    --ct-radius-sm: 10px;
 }
 
-/* ── Hero ────────────────────── */
-.contact-hero {
+/* ── Hero ───────────────────────────────────────────── */
+.ct-hero {
     position: relative;
-    min-height: 400px;
+    min-height: 340px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    text-align: center;
 }
-.contact-hero-bg {
+.ct-hero-bg {
     position: absolute; inset: 0;
     background-size: cover;
-    background-position: center;
+    background-position: center 35%;
 }
-.contact-hero-overlay {
+.ct-hero-overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(249,249,249,1) 100%);
+    background: rgba(0,0,0,0.52);
 }
-.contact-hero-content {
-    position: relative; z-index: 10;
-    text-align: center;
-    max-width: 800px;
+.ct-hero-content {
+    position: relative; z-index: 2;
+    padding: 60px 20px;
+    max-width: 640px;
 }
-.contact-hero-title {
-    font-size: clamp(48px, 8vw, 72px);
+.ct-hero-title {
+    font-size: clamp(40px, 7vw, 68px);
     font-weight: 900;
-    letter-spacing: -0.04em;
-    color: var(--text-main);
-    margin-bottom: 24px;
+    letter-spacing: -0.03em;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 18px;
+}
+.ct-hero-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.6;
 }
 
-/* ── Layout ────────────────────── */
-.contact-grid {
+/* ── Main section ───────────────────────────────────── */
+.ct-section {
+    background: var(--ct-bg);
+    padding: 60px 0 80px;
+}
+.ct-layout {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 60px;
-    padding: 100px 0;
+    grid-template-columns: 1fr 360px;
+    gap: 28px;
+    align-items: start;
 }
-@media (max-width: 1024px) {
-    .contact-grid { grid-template-columns: 1fr; }
+@media (max-width: 960px) {
+    .ct-layout { grid-template-columns: 1fr; }
 }
 
-/* ── Form ────────────────────── */
-.contact-form-card {
-    background: var(--surface-glass);
-    backdrop-filter: var(--surface-blur);
-    padding: 60px;
-    border-radius: 0;
-    border: 1px solid rgba(0,0,0,0.05);
+/* ── Form card ──────────────────────────────────────── */
+.ct-form-card {
+    background: var(--ct-white);
+    border-radius: var(--ct-radius);
+    padding: 44px 40px 48px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
-.form-group { margin-bottom: 32px; }
-.form-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; color: #cb491c; margin-bottom: 12px; display: block; }
-.form-input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid #eee;
-    padding: 12px 0;
-    font-size: 18px;
-    font-weight: 500;
-    border-radius: 0;
-    transition: border-color 0.3s;
+.ct-form-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ct-text);
+    margin-bottom: 28px;
+    letter-spacing: -0.02em;
 }
-.form-input:focus { outline: none; border-color: #cb491c; }
-.submit-btn {
-    width: 100%;
-    padding: 24px;
-    background: var(--primary-gradient);
-    color: white;
-    font-weight: 900;
+.ct-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+@media (max-width: 560px) {
+    .ct-row-2 { grid-template-columns: 1fr; }
+    .ct-form-card { padding: 28px 24px 32px; }
+}
+.ct-field { margin-bottom: 20px; }
+.ct-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    border: none;
-    cursor: pointer;
-    border-radius: 0;
-    transition: transform 0.3s;
+    letter-spacing: 0.14em;
+    color: var(--ct-muted);
+    margin-bottom: 6px;
 }
-.submit-btn:hover { transform: translateY(-4px); }
+.ct-input {
+    width: 100%;
+    background: #f5f4f2;
+    border: 1.5px solid transparent;
+    border-radius: var(--ct-radius-sm);
+    padding: 11px 14px;
+    font-size: 15px;
+    color: var(--ct-text);
+    transition: border-color .2s, background .2s;
+    box-sizing: border-box;
+    font-weight: 500;
+}
+.ct-input::placeholder { color: #aaa; font-weight: 400; }
+.ct-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--ct-primary);
+}
+select.ct-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+textarea.ct-input { resize: vertical; min-height: 110px; }
 
-/* ── Info Cards ────────────────────── */
-.contact-info-list { display: flex; flex-col; gap: 40px; }
-.info-item { border-left: 4px solid #cb491c; padding-left: 32px; }
-.info-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; color: #cb491c; margin-bottom: 12px; }
-.info-value { font-size: 20px; font-weight: 700; color: var(--text-main); line-height: 1.4; }
+.ct-submit {
+    width: 100%;
+    padding: 15px 24px;
+    background: linear-gradient(135deg, var(--ct-primary-dark), var(--ct-primary));
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border: none;
+    border-radius: var(--ct-radius-sm);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+.ct-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(169,49,2,.5);
+}
+.ct-submit-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ct-muted);
+    margin-top: 10px;
+}
 
-/* ── Map ────────────────────── */
-.contact-map-wrap { margin-top: 80px; filter: grayscale(1) contrast(1.1); border-radius: 0; overflow: hidden; }
+/* ── Info cards stack ───────────────────────────────── */
+.ct-info-stack { display: flex; flex-direction: column; gap: 12px; }
 
-/* ── FAQ ────────────────────── */
-.contact-faq { padding: 120px 0; background: #fff; }
-.faq-item { border-bottom: 1px solid #eee; }
-.faq-summary { padding: 32px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-.faq-q { font-size: 20px; font-weight: 800; color: var(--text-main); }
-.faq-icon { color: #cb491c; transition: transform 0.3s; }
-.faq-item[open] .faq-icon { transform: rotate(45deg); }
-.faq-a { padding-bottom: 32px; font-size: 16px; color: var(--text-muted); line-height: 1.7; max-width: 800px; }
+.ct-info-card {
+    background: var(--ct-white);
+    border-radius: var(--ct-radius);
+    padding: 20px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow .2s;
+}
+.ct-info-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+
+.ct-info-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    background: #fdeee8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ct-primary);
+}
+.ct-info-icon .material-symbols-outlined { font-size: 20px; }
+
+.ct-info-body {}
+.ct-info-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ct-text);
+    margin-bottom: 4px;
+}
+.ct-info-value {
+    font-size: 14px;
+    color: var(--ct-muted);
+    line-height: 1.5;
+}
+.ct-whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #16a34a;
+    text-decoration: none;
+    background: #dcfce7;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+/* ── FAQ section ────────────────────────────────────── */
+.ct-faq-section { padding: 80px 0 100px; background: #fff; }
+.ct-faq-head { text-align: center; margin-bottom: 56px; }
+.ct-faq-head h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--ct-text);
+    margin-bottom: 10px;
+}
+.ct-faq-head p { font-size: 16px; color: var(--ct-muted); }
+.ct-faq-head p a { color: var(--ct-primary); text-decoration: none; }
+
+.ct-faq-list { max-width: 780px; margin: 0 auto; }
+
+details.ct-faq-item {
+    border-bottom: 1px solid var(--ct-border);
+}
+details.ct-faq-item summary { list-style: none; }
+details.ct-faq-item summary::-webkit-details-marker { display: none; }
+
+.ct-faq-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 0;
+    cursor: pointer;
+    user-select: none;
+}
+.ct-faq-q {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ct-text);
+    line-height: 1.35;
+}
+.ct-faq-icon {
+    font-size: 20px;
+    color: var(--ct-primary);
+    transition: transform .25s;
+    flex-shrink: 0;
+}
+details[open].ct-faq-item .ct-faq-icon { transform: rotate(45deg); }
+.ct-faq-a {
+    font-size: 15px;
+    color: var(--ct-muted);
+    line-height: 1.75;
+    padding-bottom: 20px;
+    max-width: 660px;
+}
 </style>
 
 <main>
+
     <!-- Hero -->
-    <section class="contact-hero">
-        <div class="contact-hero-bg" style="background-image: url('<?php echo esc_url( $banner_img ); ?>');"></div>
-        <div class="contact-hero-overlay"></div>
-        <div class="contact-hero-content">
-            <h1 class="contact-hero-title"><?php echo esc_html( $heading ); ?></h1>
-            <p class="text-xl text-muted"><?php echo esc_html( $subheading ); ?></p>
+    <section class="ct-hero">
+        <div class="ct-hero-bg" style="background-image: url('<?php echo esc_url( $banner_img ); ?>');"></div>
+        <div class="ct-hero-overlay"></div>
+        <div class="ct-hero-content">
+            <h1 class="ct-hero-title"><?php echo esc_html( $heading ); ?></h1>
+            <p class="ct-hero-sub"><?php echo esc_html( $subheading ); ?></p>
         </div>
     </section>
 
-    <div class="container mx-auto px-6">
-        <div class="contact-grid">
-            <!-- Form -->
-            <div class="contact-form-section">
-                <div class="contact-form-card">
+    <!-- Form + Info Cards -->
+    <section class="ct-section">
+        <div class="container mx-auto px-6">
+            <div class="ct-layout">
+
+                <!-- Form -->
+                <div class="ct-form-card">
+                    <h2 class="ct-form-heading">Send Us a Message</h2>
                     <form id="hhb-contact-form" method="post">
                         <?php wp_nonce_field( 'hhb_contact_form', 'hhb_contact_nonce' ); ?>
-                        
-                        <div class="grid grid-cols-2 gap-8">
-                            <div class="form-group">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" name="fullname" class="form-input" required />
+
+                        <div class="ct-row-2">
+                            <div class="ct-field">
+                                <label class="ct-label">Full Name</label>
+                                <input type="text" name="fullname" class="ct-input" placeholder="Your full name" required />
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" name="email" class="form-input" required />
+                            <div class="ct-field">
+                                <label class="ct-label">Email Address</label>
+                                <input type="email" name="email" class="ct-input" placeholder="you@example.com" required />
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Subject</label>
-                            <select name="subject" class="form-input" required>
-                                <option value="general">General Inquiry</option>
-                                <option value="booking">Booking Help</option>
-                                <option value="partnership">Partnership</option>
-                            </select>
+                        <div class="ct-row-2">
+                            <div class="ct-field">
+                                <label class="ct-label">Phone Number</label>
+                                <input type="tel" name="phone" class="ct-input" placeholder="+91 12345 67890" />
+                            </div>
+                            <div class="ct-field">
+                                <label class="ct-label">Subject</label>
+                                <select name="subject" class="ct-input" required>
+                                    <option value="">Select a topic</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="booking">Booking Help</option>
+                                    <option value="partnership">Partnership</option>
+                                    <option value="hosting">Become a Host</option>
+                                    <option value="complaint">Feedback / Complaint</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Message</label>
-                            <textarea name="message" class="form-input" rows="4" required></textarea>
+                        <div class="ct-field">
+                            <label class="ct-label">Message</label>
+                            <textarea name="message" class="ct-input" placeholder="Tell us how we can help..." required></textarea>
                         </div>
 
-                        <button type="submit" class="submit-btn" id="hhb-submit-btn">Send Message</button>
-                        <div id="hhb-form-msg" class="mt-4 p-4 text-sm hidden"></div>
+                        <button type="submit" class="ct-submit" id="hhb-submit-btn">
+                            <span class="material-symbols-outlined" style="font-size:18px;">send</span>
+                            Send Message
+                        </button>
+                        <p class="ct-submit-note">We typically respond within 24 hours.</p>
+                        <div id="hhb-form-msg" class="hidden" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
                     </form>
                 </div>
-            </div>
 
-            <!-- Info -->
-            <div class="contact-info-section">
-                <div class="contact-info-list">
-                    <?php foreach ( $contact_data as $item ) : ?>
-                    <div class="info-item">
-                        <div class="info-title"><?php echo esc_html( $item['q'] ?? '' ); ?></div>
-                        <div class="info-value"><?php echo esc_html( $item['a'] ?? '' ); ?></div>
+                <!-- Info Cards -->
+                <div class="ct-info-stack">
+                    <?php
+                    $default_icons = [ 'location_on', 'phone', 'mail', 'schedule' ];
+                    foreach ( $contact_data as $i => $item ) :
+                        $icon = sanitize_text_field( $item['icon'] ?? ( $default_icons[ $i ] ?? 'info' ) );
+                        $is_phone = ( $icon === 'phone' );
+                    ?>
+                    <div class="ct-info-card">
+                        <div class="ct-info-icon">
+                            <span class="material-symbols-outlined"><?php echo esc_html( $icon ); ?></span>
+                        </div>
+                        <div class="ct-info-body">
+                            <div class="ct-info-title"><?php echo esc_html( $item['q'] ?? '' ); ?></div>
+                            <div class="ct-info-value"><?php echo nl2br( esc_html( $item['a'] ?? '' ) ); ?></div>
+                            <?php if ( $is_phone ) : ?>
+                            <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $item['a'] ?? ''); ?>" class="ct-whatsapp-link" target="_blank" rel="noopener">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                WhatsApp
+                            </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
 
-                <?php if ( $map_embed ) : ?>
-                <div class="contact-map-wrap">
-                    <iframe src="<?php echo esc_url( $map_embed ); ?>" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- FAQ -->
     <?php if ( ! empty( $faq_data ) ) : ?>
-    <section class="contact-faq">
+    <section class="ct-faq-section">
         <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-black mb-12">Common Questions</h2>
-            <div class="faq-list">
+            <div class="ct-faq-head">
+                <h2>Frequently Asked Questions</h2>
+                <p><a href="#">Quick answers</a> to common questions</p>
+            </div>
+            <div class="ct-faq-list">
                 <?php foreach ( $faq_data as $i => $faq ) : ?>
-                <details class="faq-item" <?php echo $i === 0 ? 'open' : ''; ?>>
-                    <summary class="faq-summary">
-                        <span class="faq-q"><?php echo esc_html( $faq['q'] ); ?></span>
-                        <span class="material-symbols-outlined faq-icon">add</span>
+                <details class="ct-faq-item" <?php echo $i === 0 ? 'open' : ''; ?>>
+                    <summary class="ct-faq-summary">
+                        <span class="ct-faq-q"><?php echo esc_html( $faq['q'] ); ?></span>
+                        <span class="material-symbols-outlined ct-faq-icon">add</span>
                     </summary>
-                    <div class="faq-a"><?php echo wp_kses_post( $faq['a'] ); ?></div>
+                    <div class="ct-faq-a"><?php echo wp_kses_post( $faq['a'] ); ?></div>
                 </details>
                 <?php endforeach; ?>
             </div>
         </div>
     </section>
     <?php endif; ?>
+
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('hhb-contact-form');
     if (!form) return;
-
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
         const btn = document.getElementById('hhb-submit-btn');
         const msg = document.getElementById('hhb-form-msg');
-        
         btn.disabled = true;
-        btn.textContent = 'Sending...';
-        msg.classList.add('hidden');
-
-        const formData = new FormData(form);
-        formData.append('action', 'hhb_contact_form_submit');
-
-        fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
-            method: 'POST',
-            body: formData
-        })
-        .then(r => r.json())
-        .then(data => {
-            msg.classList.remove('hidden');
-            if (data.success) {
-                msg.className = 'mt-4 p-4 text-sm bg-green-50 text-green-700';
-                msg.textContent = data.data || 'Thank you! We\'ll get back to you soon.';
-                form.reset();
-            } else {
-                msg.className = 'mt-4 p-4 text-sm bg-red-50 text-red-700';
-                msg.textContent = data.data || 'Something went wrong. Please try again.';
-            }
-        })
-        .catch(() => {
-            msg.classList.remove('hidden');
-            msg.className = 'mt-4 p-4 text-sm bg-red-50 text-red-700';
-            msg.textContent = 'Network error. Please try again.';
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.textContent = 'Send Message';
-        });
+        btn.querySelector('span:last-child') && (btn.lastChild.textContent = ' Sending…');
+        const fd = new FormData(form);
+        fd.append('action', 'hhb_contact_form_submit');
+        fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                msg.classList.remove('hidden');
+                msg.style.cssText = d.success
+                    ? 'background:#dcfce7;color:#15803d;margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;'
+                    : 'background:#fee2e2;color:#b91c1c;margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;';
+                msg.textContent = d.data || (d.success ? 'Thank you! We\'ll get back to you soon.' : 'Something went wrong. Please try again.');
+                if (d.success) form.reset();
+            })
+            .catch(() => {
+                msg.classList.remove('hidden');
+                msg.style.cssText = 'background:#fee2e2;color:#b91c1c;margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;';
+                msg.textContent = 'Network error. Please try again.';
+            })
+            .finally(() => { btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">send</span> Send Message'; });
     });
 });
 </script>

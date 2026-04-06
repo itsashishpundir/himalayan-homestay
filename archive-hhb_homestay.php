@@ -616,49 +616,40 @@ $locations_top5  = get_terms(array('taxonomy' => 'hhb_location', 'hide_empty' =>
         <?php
         // Bottom Content — displayed below the property grid for SEO (set per-term in taxonomy admin)
         $bottom_content = '';
+        $custom_about_title = '';
         if ( $active_term ) {
             $bottom_content = get_term_meta( $active_term->term_id, 'hhb_term_bottom_content', true );
+            $custom_about_title = get_term_meta( $active_term->term_id, 'hhb_term_custom_about', true );
         }
+        
+        if ( empty( $custom_about_title ) && $active_term ) {
+            $custom_about_title = 'About ' . $active_term->name;
+        }
+        
         if ( $bottom_content ) : ?>
-        <section class="relative py-20 px-6 md:px-20 mountain-texture" style="background-color:#f8f6f6; border-top: 3px solid #e85e30;">
-
-            <!-- Decorative top stripe -->
-            <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-30"></div>
-
+        <section class="py-16 md:py-24 px-6 relative bg-white border-t border-slate-100">
             <div class="max-w-4xl mx-auto">
-
-                <!-- Section Label -->
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-primary" style="font-size:20px;">menu_book</span>
-                    </div>
-                    <div>
-                        <span class="text-xs font-black uppercase tracking-widest text-primary/70 block leading-none mb-0.5">About</span>
-                        <p class="text-sm font-bold text-slate-500 leading-none"><?php echo esc_html( $location_name ); ?></p>
-                    </div>
-                    <div class="flex-1 h-px bg-slate-200 ml-4"></div>
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-5xl font-display font-black text-slate-900 mb-6 tracking-tight"><?php echo esc_html( $custom_about_title ); ?></h2>
+                    <div class="w-20 h-1.5 bg-primary mx-auto rounded-full opacity-80"></div>
                 </div>
 
-                <!-- Content -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12" style="border-left: 4px solid #e85e30;">
-                    <div class="prose prose-slate prose-lg max-w-none
-                        prose-headings:font-black prose-headings:text-slate-900 prose-headings:leading-tight
-                        prose-h2:text-2xl prose-h3:text-xl
-                        prose-p:text-slate-600 prose-p:leading-relaxed
-                        prose-a:text-primary prose-a:font-semibold hover:prose-a:opacity-80
-                        prose-strong:text-slate-800
-                        prose-ul:text-slate-600 prose-li:marker:text-primary">
-                        <?php echo wp_kses_post( $bottom_content ); ?>
-                    </div>
+                <div class="prose prose-slate prose-lg max-w-none 
+                    prose-headings:font-display prose-headings:font-black prose-headings:text-slate-900
+                    prose-h2:text-3xl prose-h3:text-2xl
+                    prose-p:text-slate-600 prose-p:leading-relaxed
+                    prose-a:text-primary prose-a:font-bold hover:prose-a:underline
+                    prose-strong:text-slate-900
+                    prose-ul:text-slate-600 prose-li:marker:text-primary">
+                    <?php echo wp_kses_post( $bottom_content ); ?>
                 </div>
 
-                <!-- Decorative footer line -->
-                <div class="flex items-center gap-4 mt-10">
-                    <div class="flex-1 h-px bg-slate-200"></div>
-                    <span class="material-symbols-outlined text-slate-300" style="font-size:18px;">landscape</span>
-                    <div class="flex-1 h-px bg-slate-200"></div>
+                <!-- Subtle bottom separator -->
+                <div class="flex items-center justify-center gap-4 mt-20 opacity-40">
+                    <div class="w-16 h-px bg-slate-300"></div>
+                    <span class="material-symbols-outlined text-slate-400">landscape</span>
+                    <div class="w-16 h-px bg-slate-300"></div>
                 </div>
-
             </div>
         </section>
         <?php endif; ?>

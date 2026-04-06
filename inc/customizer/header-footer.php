@@ -1458,6 +1458,7 @@ function himalayanmart_customizer_header_footer($wp_customize) {
     }
 
     require_once get_template_directory() . '/inc/customizer/class-mega-menu-repeater-control.php';
+    require_once get_template_directory() . '/inc/customizer/class-mega-menu-columns-control.php';
 
     // Top-Level Custom Links
     $wp_customize->add_setting( 'hm_futura_header_extra_links', array(
@@ -1506,150 +1507,89 @@ function himalayanmart_customizer_header_footer($wp_customize) {
         'title'       => __( 'Mega Menu', 'himalayanmart' ),
         'panel'       => 'himalayanmart_layouts_panel',
         'priority'    => 37,
-        'description' => __( 'Customise the mega menu: label, grid layout, icons/images for each property type, and add extra custom items.', 'himalayanmart' ),
+        'description' => __( 'Customize the Futura mega menu: 3 columns, rows, and links.', 'himalayanmart' ),
     ) );
 
-    // ── Button label ──────────────────────────────────────────────────────
+    // ── Trigger Label ───────────────────────────────────────────────────────────
     $wp_customize->add_setting( 'hm_futura_mega_label', array(
         'default'           => 'Stays',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ) );
     $wp_customize->add_control( 'hm_futura_mega_label', array(
-        'label'       => __( 'Menu Button Label', 'himalayanmart' ),
-        'description' => __( 'Text on the nav trigger (e.g. "Stays", "Explore", "Properties").', 'himalayanmart' ),
+        'label'       => __( 'Menu Trigger Label', 'himalayanmart' ),
+        'description' => __( 'Text shown in the nav bar (e.g. "Stays" or "Explore").', 'himalayanmart' ),
         'section'     => 'hm_futura_mega_section',
         'type'        => 'text',
     ) );
 
-    // ── Mega Menu Position ───────────────────────────────────────────────
-    $wp_customize->add_setting( 'hm_futura_mega_position', array(
-        'default'           => 0,
-        'sanitize_callback' => 'absint',
-        'transport'         => 'refresh',
-    ) );
-    $wp_customize->add_control( 'hm_futura_mega_position', array(
-        'label'       => __( 'Mega Menu Position (Primary Menu)', 'himalayanmart' ),
-        'description' => __( 'Choose where to insert the Mega Menu in your main WordPress Menu. 0 = At the very beginning. 1 = After 1st menu item. 2 = After 2nd, etc.', 'himalayanmart' ),
-        'section'     => 'hm_futura_mega_section',
-        'type'        => 'number',
-        'input_attrs' => array( 'min' => 0, 'max' => 10, 'step' => 1 ),
-    ) );
-
-    // ── Columns ────────────────────────────────────────────────────────────
-    $wp_customize->add_setting( 'hm_futura_mega_cols', array(
-        'default'           => 2,
-        'sanitize_callback' => 'absint',
-        'transport'         => 'refresh',
-    ) );
-    $wp_customize->add_control( 'hm_futura_mega_cols', array(
-        'label'       => __( 'Columns', 'himalayanmart' ),
-        'description' => __( 'Number of columns in the dropdown grid (1 – 4).', 'himalayanmart' ),
-        'section'     => 'hm_futura_mega_section',
-        'type'        => 'number',
-        'input_attrs' => array( 'min' => 1, 'max' => 4, 'step' => 1 ),
-    ) );
-
-    // ── Rows ───────────────────────────────────────────────────────────────
+    // ── Rows per column ─────────────────────────────────────────────────────────
     $wp_customize->add_setting( 'hm_futura_mega_rows', array(
-        'default'           => 3,
+        'default'           => 6,
         'sanitize_callback' => 'absint',
         'transport'         => 'refresh',
     ) );
     $wp_customize->add_control( 'hm_futura_mega_rows', array(
-        'label'       => __( 'Rows', 'himalayanmart' ),
-        'description' => __( 'Number of rows. Taxonomy items shown = columns × rows.', 'himalayanmart' ),
+        'label'       => __( 'Max Rows Per Column', 'himalayanmart' ),
+        'description' => __( 'Maximum number of links shown per column.', 'himalayanmart' ),
         'section'     => 'hm_futura_mega_section',
         'type'        => 'number',
-        'input_attrs' => array( 'min' => 1, 'max' => 4, 'step' => 1 ),
+        'input_attrs' => array( 'min' => 1, 'max' => 20, 'step' => 1 ),
     ) );
 
-    // ── Per-type settings (one group per hhb_property_type term) ──────────
-    $_mega_default_icons = array(
-        'beach_access', 'landscape', 'location_city', 'eco', 'home_mini', 'domain',
-        'cottage', 'apartment', 'villa', 'cabin', 'hotel', 'house',
-    );
-    $_mega_terms = get_terms( array( 'taxonomy' => 'hhb_property_type', 'hide_empty' => false ) );
+    // ── Layout options ──────────────────────────────────────────────────────────
+    $wp_customize->add_setting( 'hm_futura_mega_compact', array(
+        'default'           => false,
+        'sanitize_callback' => 'wp_validate_boolean',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hm_futura_mega_compact', array(
+        'label'       => __( 'Compact Mode', 'himalayanmart' ),
+        'description' => __( 'Reduces vertical padding for a tighter dropdown.', 'himalayanmart' ),
+        'section'     => 'hm_futura_mega_section',
+        'type'        => 'checkbox',
+    ) );
 
-    if ( $_mega_terms && ! is_wp_error( $_mega_terms ) ) {
-        foreach ( $_mega_terms as $_idx => $_term ) {
-            $_tid          = $_term->term_id;
-            $_default_icon = $_mega_default_icons[ $_idx ] ?? 'home';
+    $wp_customize->add_setting( 'hm_futura_mega_half_width', array(
+        'default'           => false,
+        'sanitize_callback' => 'wp_validate_boolean',
+        'transport'         => 'refresh',
+    ) );
+    $wp_customize->add_control( 'hm_futura_mega_half_width', array(
+        'label'       => __( 'Half Width', 'himalayanmart' ),
+        'description' => __( 'Limits the dropdown to ~50% of the viewport instead of full-width.', 'himalayanmart' ),
+        'section'     => 'hm_futura_mega_section',
+        'type'        => 'checkbox',
+    ) );
 
-            // ── Display name ──
-            $wp_customize->add_setting( "hm_futura_mega_item_{$_tid}_name", array(
-                'default'           => '',
-                'sanitize_callback' => 'sanitize_text_field',
-                'transport'         => 'refresh',
-            ) );
-            $wp_customize->add_control( "hm_futura_mega_item_{$_tid}_name", array(
-                /* translators: %s = taxonomy term name */
-                'label'       => sprintf( __( '"%s" — Display Name', 'himalayanmart' ), $_term->name ),
-                'description' => __( 'Leave blank to use the term name as-is.', 'himalayanmart' ),
-                'section'     => 'hm_futura_mega_section',
-                'type'        => 'text',
-            ) );
-
-            // ── Custom link ──
-            $wp_customize->add_setting( "hm_futura_mega_item_{$_tid}_link", array(
-                'default'           => '',
-                'sanitize_callback' => 'esc_url_raw',
-                'transport'         => 'refresh',
-            ) );
-            $wp_customize->add_control( "hm_futura_mega_item_{$_tid}_link", array(
-                /* translators: %s = taxonomy term name */
-                'label'       => sprintf( __( '"%s" — Custom Link', 'himalayanmart' ), $_term->name ),
-                'description' => __( 'Leave blank to use the default taxonomy archive URL.', 'himalayanmart' ),
-                'section'     => 'hm_futura_mega_section',
-                'type'        => 'url',
-            ) );
-
-            // ── Icon image (upload) ── replaces plain-text Material Symbol ──
-            $wp_customize->add_setting( "hm_futura_mega_item_{$_tid}_img", array(
-                'default'           => 0,
-                'sanitize_callback' => 'absint',
-                'transport'         => 'refresh',
-            ) );
-            $wp_customize->add_control(
-                new WP_Customize_Media_Control( $wp_customize, "hm_futura_mega_item_{$_tid}_img", array(
-                    /* translators: %s = taxonomy term name */
-                    'label'         => sprintf( __( '"%s" — Icon Image', 'himalayanmart' ), $_term->name ),
-                    'description'   => __( 'Upload an icon image. If left empty the default Material Symbol icon is used.', 'himalayanmart' ),
-                    'section'       => 'hm_futura_mega_section',
-                    'mime_type'     => 'image',
-                ) )
-            );
-
-            // ── Fallback Material Symbol (kept for when no image is set) ──
-            $wp_customize->add_setting( "hm_futura_mega_item_{$_tid}_icon", array(
-                'default'           => $_default_icon,
-                'sanitize_callback' => 'sanitize_text_field',
-                'transport'         => 'refresh',
-            ) );
-            $wp_customize->add_control( "hm_futura_mega_item_{$_tid}_icon", array(
-                /* translators: %s = taxonomy term name */
-                'label'       => sprintf( __( '"%s" — Fallback Icon (Material Symbol)', 'himalayanmart' ), $_term->name ),
-                'description' => __( 'Used only when no image is uploaded above. Browse names at fonts.google.com/icons', 'himalayanmart' ),
-                'section'     => 'hm_futura_mega_section',
-                'type'        => 'text',
-            ) );
-        }
-    }
-
-    // ── Extra custom items repeater ────────────────────────────────────────
-    // Stores a JSON array: [{"name":"...","link":"...","img_id":0,"img_url":"..."}]
-    $wp_customize->add_setting( 'hm_futura_mega_extra_items', array(
-        'default'           => '[]',
-        'sanitize_callback' => 'wp_kses_post', // JSON string — permissive enough
+    // ── 3-Column Links ──────────────────────────────────────────────────────────
+    // Stored as JSON: {col1:[{name,link},...], col2:[...], col3:[...]}
+    $wp_customize->add_setting( 'hm_futura_mega_col_links', array(
+        'default'           => '{"col1":[],"col2":[],"col3":[]}',
+        'sanitize_callback' => 'wp_kses_post',
         'transport'         => 'refresh',
     ) );
     $wp_customize->add_control(
-        new HM_Mega_Menu_Repeater_Control( $wp_customize, 'hm_futura_mega_extra_items', array(
-            'label'       => __( 'Extra Menu Items', 'himalayanmart' ),
-            'description' => __( 'Add extra items beyond the property-type terms. Each item has a name, link, and optional icon image.', 'himalayanmart' ),
+        new HM_Mega_Columns_Control( $wp_customize, 'hm_futura_mega_col_links', array(
+            'label'       => __( 'Mega Menu Links (3 Columns)', 'himalayanmart' ),
+            'description' => __( 'Add links independently to each of the 3 columns. Drag to reorder within each column.', 'himalayanmart' ),
             'section'     => 'hm_futura_mega_section',
         ) )
     );
+
+    // ── Fallback: Per-type settings (kept for backward compat) ─────────────────
+    $_mega_terms = get_terms( array( 'taxonomy' => 'hhb_property_type', 'hide_empty' => false ) );
+    if ( $_mega_terms && ! is_wp_error( $_mega_terms ) ) {
+        foreach ( $_mega_terms as $_term ) {
+            $_tid = $_term->term_id;
+            $wp_customize->add_setting( "hm_futura_mega_item_{$_tid}_name", array(
+                'default' => '', 'sanitize_callback' => 'sanitize_text_field', 'transport' => 'refresh',
+            ) );
+            $wp_customize->add_setting( "hm_futura_mega_item_{$_tid}_link", array(
+                'default' => '', 'sanitize_callback' => 'esc_url_raw', 'transport' => 'refresh',
+            ) );
+        }
+    }
 
     // ==============================================
     // FUTURASTAYS NEWSLETTER FOOTER SETTINGS

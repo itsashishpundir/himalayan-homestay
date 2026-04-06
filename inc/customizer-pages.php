@@ -10,6 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /* ══════════════════════════════════════════════════════════════════
  * CUSTOMIZER PANELS & SETTINGS
  * ══════════════════════════════════════════════════════════════════ */
+require_once get_template_directory() . '/inc/customizer/class-faq-repeater-control.php';
+require_once get_template_directory() . '/inc/customizer/class-step-repeater-control.php';
+
 add_action( 'customize_register', function( $wp_customize ) {
 
     /* ── Panel: Front Page ──────────────────────────────────────── */
@@ -247,59 +250,193 @@ add_action( 'customize_register', function( $wp_customize ) {
         'panel' => 'hhb_contact_panel',
     ] );
 
+    /* ── Panel: Contact Page ────────────────────────────────────── */
+    // (Panel added earlier or use existing)
+    
+    // --- Banner ---
+    // (Banner settings already exist around 250, I'll update them to be cleaner)
     $wp_customize->add_setting( 'hhb_contact_banner_image', [ 'default' => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2940&auto=format&fit=crop', 'sanitize_callback' => 'esc_url_raw' ] );
-    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_contact_banner_image', [
-        'label'   => 'Banner Image',
-        'section' => 'hhb_contact_banner_section',
-    ] ) );
-
+    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_contact_banner_image', [ 'label' => 'Banner Image', 'section' => 'hhb_contact_banner_section' ] ) );
+    
     $wp_customize->add_setting( 'hhb_contact_heading', [ 'default' => 'Get in Touch', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_contact_heading', [ 'label' => 'Heading', 'section' => 'hhb_contact_banner_section', 'type' => 'text' ] );
-
+    
     $wp_customize->add_setting( 'hhb_contact_subheading', [ 'default' => "Have a question or need help planning your stay? We're here for you.", 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_contact_subheading', [ 'label' => 'Subheading', 'section' => 'hhb_contact_banner_section', 'type' => 'textarea' ] );
 
-    // --- Contact Info ---
-    $wp_customize->add_section( 'hhb_contact_info_section', [
-        'title' => 'Contact Details',
-        'panel' => 'hhb_contact_panel',
+    // --- Contact Details (Repeater) ---
+    $wp_customize->add_section( 'hhb_contact_info_section', [ 'title' => 'Contact Details', 'panel' => 'hhb_contact_panel' ] );
+    $wp_customize->add_setting( 'hhb_contact_cards', [ 'default' => '[]', 'sanitize_callback' => 'wp_kses_post' ] );
+    $wp_customize->add_control( new HM_FAQ_Repeater_Control( $wp_customize, 'hhb_contact_cards', [
+        'label'       => 'Contact Info (Q=Title, A=Value)',
+        'description' => 'Add as many contact methods as you want (Address, Phone, Email, etc.)',
+        'section'     => 'hhb_contact_info_section',
+    ] ) );
+
+    // --- Map ---
+    $wp_customize->add_section( 'hhb_contact_map_section', [ 'title' => 'Map Embed', 'panel' => 'hhb_contact_panel' ] );
+    $wp_customize->add_setting( 'hhb_contact_map_embed', [ 'default' => 'https://www.google.com/maps/embed?...', 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( 'hhb_contact_map_embed', [ 'label' => 'Google Maps Embed URL', 'section' => 'hhb_contact_map_section', 'type' => 'url' ] );
+
+    // --- Related FAQs (Repeater) ---
+    $wp_customize->add_section( 'hhb_contact_faq_section', [ 'title' => 'Related FAQs', 'panel' => 'hhb_contact_panel' ] );
+    $wp_customize->add_setting( 'hhb_contact_faq_items', [ 'default' => '[]', 'sanitize_callback' => 'wp_kses_post' ] );
+    $wp_customize->add_control( new HM_FAQ_Repeater_Control( $wp_customize, 'hhb_contact_faq_items', [
+        'label'   => 'FAQ Items',
+        'section' => 'hhb_contact_faq_section',
+    ] ) );
+
+    /* ── Panel: FAQ Page ────────────────────────────────────── */
+    $wp_customize->add_panel( 'hhb_faqpage_panel', [
+        'title'    => 'FAQ Page',
+        'priority' => 28,
     ] );
 
-    $info_fields = [
-        'hhb_contact_address'   => [ 'Address',         'Village Jibhi, Tirthan Valley, Banjar, Himachal Pradesh 175143, India' ],
-        'hhb_contact_phone_1'   => [ 'Phone 1',         '+91 98765 43210' ],
-        'hhb_contact_phone_2'   => [ 'Phone 2',         '' ],
-        'hhb_contact_email_1'   => [ 'Email 1',         'hello@himalayanhomestay.com' ],
-        'hhb_contact_email_2'   => [ 'Email 2',         'bookings@himalayanhomestay.com' ],
-        'hhb_contact_hours_1'   => [ 'Hours Line 1',    'Mon–Sat: 9:00 AM – 7:00 PM IST' ],
-        'hhb_contact_hours_2'   => [ 'Hours Line 2',    'Sunday: 10:00 AM – 5:00 PM IST' ],
-        'hhb_contact_whatsapp'  => [ 'WhatsApp Number',  '919876543210' ],
-        'hhb_contact_map_embed' => [ 'Google Maps Embed URL', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d54000!2d77.35!3d31.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sTirthan+Valley!5e0!3m2!1sen!2sin!4v1' ],
-    ];
-    foreach ( $info_fields as $key => $meta ) {
-        $wp_customize->add_setting( $key, [ 'default' => $meta[1], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( $key, [ 'label' => $meta[0], 'section' => 'hhb_contact_info_section', 'type' => 'text' ] );
-    }
+    // --- Banner ---
+    $wp_customize->add_section( 'hhb_faqpage_banner_section', [
+        'title' => 'Banner',
+        'panel' => 'hhb_faqpage_panel',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_faqpage_banner_image', [ 'default' => 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop', 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_faqpage_banner_image', [
+        'label'   => 'Banner Image',
+        'section' => 'hhb_faqpage_banner_section',
+    ] ) );
+
+    $wp_customize->add_setting( 'hhb_faqpage_heading', [ 'default' => 'Frequently Asked Questions', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_faqpage_heading', [ 'label' => 'Heading', 'section' => 'hhb_faqpage_banner_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_faqpage_subheading', [ 'default' => "Find quick answers to your most common questions before booking.", 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_faqpage_subheading', [ 'label' => 'Subheading', 'section' => 'hhb_faqpage_banner_section', 'type' => 'textarea' ] );
 
     // --- FAQs ---
-    $wp_customize->add_section( 'hhb_contact_faq_section', [
-        'title' => 'FAQ Section',
-        'panel' => 'hhb_contact_panel',
+    $wp_customize->add_section( 'hhb_faqpage_questions_section', [
+        'title'       => 'Questions & Answers',
+        'description' => 'Add as many FAQs as you want.',
+        'panel'       => 'hhb_faqpage_panel',
     ] );
 
-    $faq_defaults = [
-        1 => [ 'How do I book a homestay?',                      'Browse our listings, select your dates, and complete a quick booking request. Once the host confirms availability, you\'ll receive a secure payment link. Your booking is confirmed after payment.' ],
-        2 => [ 'What is the cancellation policy?',               'Free cancellation up to 7 days before check-in. For cancellations within 7 days, a 50% charge applies. No-shows are charged in full.' ],
-        3 => [ 'Do you offer airport or bus stand transfers?',   'Yes! Most of our homestays can arrange pickup from the nearest bus stand or airport. Contact us after booking to arrange transfers at a nominal additional cost.' ],
-        4 => [ 'Are your homestays pet-friendly?',               'Some of our properties welcome pets. Check individual property pages for pet-friendly badges, or contact us and we\'ll recommend the best options.' ],
-        5 => [ 'What payment methods do you accept?',            'We accept UPI, credit/debit cards, net banking via Razorpay, and international cards via Stripe. All payments are secured with bank-grade encryption.' ],
-    ];
-    foreach ( $faq_defaults as $n => $def ) {
-        $wp_customize->add_setting( "hhb_faq_{$n}_q", [ 'default' => $def[0], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( "hhb_faq_{$n}_q", [ 'label' => "FAQ {$n} Question", 'section' => 'hhb_contact_faq_section', 'type' => 'text' ] );
-        $wp_customize->add_setting( "hhb_faq_{$n}_a", [ 'default' => $def[1], 'sanitize_callback' => 'sanitize_textarea_field' ] );
-        $wp_customize->add_control( "hhb_faq_{$n}_a", [ 'label' => "FAQ {$n} Answer", 'section' => 'hhb_contact_faq_section', 'type' => 'textarea' ] );
-    }
+    $wp_customize->add_setting( 'hhb_faqpage_items', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_FAQ_Repeater_Control( $wp_customize, 'hhb_faqpage_items', [
+        'label'   => 'FAQ Items',
+        'section' => 'hhb_faqpage_questions_section',
+    ] ) );
+
+    /* ── Panel: How It Works Page ───────────────────────────────── */
+    $wp_customize->add_panel( 'hhb_howitworks_panel', [
+        'title'    => 'How It Works Page',
+        'priority' => 29,
+    ] );
+
+    // --- Banner ---
+    $wp_customize->add_section( 'hhb_howitworks_banner_section', [
+        'title' => 'Banner',
+        'panel' => 'hhb_howitworks_panel',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_howitworks_banner_image', [ 
+        'default' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2940&auto=format&fit=crop', 
+        'sanitize_callback' => 'esc_url_raw' 
+    ] );
+    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_howitworks_banner_image', [
+        'label'   => 'Banner Image',
+        'section' => 'hhb_howitworks_banner_section',
+    ] ) );
+
+    $wp_customize->add_setting( 'hhb_howitworks_heading', [ 'default' => 'How FuturaStays Works', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_howitworks_heading', [ 'label' => 'Heading', 'section' => 'hhb_howitworks_banner_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_howitworks_subheading', [ 'default' => "Your journey to the heart of the Himalayas begins with a single step. Here's how to find and book your perfect stay.", 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_howitworks_subheading', [ 'label' => 'Subheading', 'section' => 'hhb_howitworks_banner_section', 'type' => 'textarea' ] );
+
+    // --- Process Steps ---
+    $wp_customize->add_section( 'hhb_howitworks_steps_section', [
+        'title'       => 'Process Steps',
+        'description' => 'Add the steps of the booking journey.',
+        'panel'       => 'hhb_howitworks_panel',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_howitworks_steps', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_Step_Repeater_Control( $wp_customize, 'hhb_howitworks_steps', [
+        'label'   => 'Journey Steps',
+        'section' => 'hhb_howitworks_steps_section',
+    ] ) );
+
+    // --- Bottom CTA ---
+    $wp_customize->add_section( 'hhb_howitworks_cta_section', [
+        'title' => 'Call to Action',
+        'panel' => 'hhb_howitworks_panel',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_howitworks_cta_text', [ 'default' => 'Ready to start your mountain adventure?', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_howitworks_cta_text', [ 'label' => 'CTA Text', 'section' => 'hhb_howitworks_cta_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_howitworks_cta_btn', [ 'default' => 'Explore Stays', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_howitworks_cta_btn', [ 'label' => 'Button Text', 'section' => 'hhb_howitworks_cta_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_howitworks_cta_link', [ 'default' => home_url('/stays/'), 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( 'hhb_howitworks_cta_link', [ 'label' => 'Button Link', 'section' => 'hhb_howitworks_cta_section', 'type' => 'url' ] );
+
+    /* ── Panel: Become a Host Page ─────────────────────────────── */
+    $wp_customize->add_panel( 'hhb_hostpage_panel', [
+        'title'    => 'Become a Host Page',
+        'priority' => 30,
+    ] );
+
+    // --- Banner ---
+    $wp_customize->add_section( 'hhb_hostpage_banner_section', [ 'title' => 'Banner', 'panel' => 'hhb_hostpage_panel' ] );
+    
+    $wp_customize->add_setting( 'hhb_hostpage_banner_image', [ 'default' => 'https://images.unsplash.com/photo-1470770841497-7b3200e37531?q=80&w=1920&auto=format&fit=crop', 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_hostpage_banner_image', [ 'label' => 'Banner Image', 'section' => 'hhb_hostpage_banner_section' ] ) );
+    
+    $wp_customize->add_setting( 'hhb_hostpage_badge', [ 'default' => 'Host the Future', 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_hostpage_badge', [ 'label' => 'Badge', 'section' => 'hhb_hostpage_banner_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_hostpage_heading', [ 'default' => 'Share Your World.<br>Become a <span class="text-primary-light">Host.</span>', 'sanitize_callback' => 'wp_kses_post' ] );
+    $wp_customize->add_control( 'hhb_hostpage_heading', [ 'label' => 'Heading', 'section' => 'hhb_hostpage_banner_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_hostpage_subheading', [ 'default' => "Join our exclusive community of premium mountain retreats. List your sanctuary on the Himalayan region\'s leading hospitality platform.", 'sanitize_callback' => 'sanitize_text_field' ] );
+    $wp_customize->add_control( 'hhb_hostpage_subheading', [ 'label' => 'Subheading', 'section' => 'hhb_hostpage_banner_section', 'type' => 'textarea' ] );
+
+    // --- Curation Paths (Repeater) ---
+    $wp_customize->add_section( 'hhb_hostpage_steps_section', [
+        'title'       => 'Curation Path (Steps)',
+        'description' => 'Add the steps of the onboarding process.',
+        'panel'       => 'hhb_hostpage_panel',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_hostpage_steps', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_Step_Repeater_Control( $wp_customize, 'hhb_hostpage_steps', [
+        'label'   => 'Onboarding Steps',
+        'section' => 'hhb_hostpage_steps_section',
+    ] ) );
+
+    // --- Benefits (Repeater) ---
+    $wp_customize->add_section( 'hhb_hostpage_benefits_section', [
+        'title'       => 'Host Excellence (Perks)',
+        'description' => 'Add the perks of being a host.',
+        'panel'       => 'hhb_hostpage_panel',
+    ] );
+
+    $wp_customize->add_setting( 'hhb_hostpage_benefits', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_FAQ_Repeater_Control( $wp_customize, 'hhb_hostpage_benefits', [
+        'label'   => 'Host Benefits',
+        'section' => 'hhb_hostpage_benefits_section',
+    ] ) );
+
 } );
 
 /* ══════════════════════════════════════════════════════════════════
@@ -313,7 +450,7 @@ add_action( 'customize_register', function( $wp_customize ) {
     ] );
 
     // --- Hero Section ---
-    $wp_customize->add_section( 'hhb_about_hero_section', [ 'title' => 'Hero Banner', 'panel' => 'hhb_about_panel' ] );
+    $wp_customize->add_section( 'hhb_about_hero_section', [ 'title' => 'Hero Banner', 'panel' => 'hhb_about_panel' ] ) ;
     
     $wp_customize->add_setting( 'hhb_about_hero_img', [ 'default' => 'https://images.unsplash.com/photo-1544256718-3b61a34ca536?q=80&w=2940&auto=format&fit=crop', 'sanitize_callback' => 'esc_url_raw' ] );
     $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'hhb_about_hero_img', [ 'label' => 'Hero Image', 'section' => 'hhb_about_hero_section' ] ) );
@@ -324,82 +461,63 @@ add_action( 'customize_register', function( $wp_customize ) {
     $wp_customize->add_setting( 'hhb_about_hero_sub', [ 'default' => 'Connecting curious travelers with the heart of the mountains through local hospitality.', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_about_hero_sub', [ 'label' => 'Hero Subheading', 'section' => 'hhb_about_hero_section', 'type' => 'textarea' ] );
 
-    // --- Story Narrative Chapters ---
-    $wp_customize->add_section( 'hhb_about_story_section', [ 'title' => 'Story Timeline', 'panel' => 'hhb_about_panel' ] );
+    // --- Story Chapters (Repeater) ---
+    $wp_customize->add_section( 'hhb_about_story_section', [ 'title' => 'Story Chapters', 'panel' => 'hhb_about_panel' ] );
+    
     $wp_customize->add_setting( 'hhb_about_story_title', [ 'default' => 'Where Tradition Meets Travel', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_about_story_title', [ 'label' => 'Section Title', 'section' => 'hhb_about_story_section', 'type' => 'text' ] );
 
-    $chap_defaults = [
-        1 => [ 'The Spark', 'How It All Started', 'Founded in the heart of the peaks, Himalayan Homestay was born from a simple realization: the most beautiful parts of the mountains aren\'t the views, but the people who call them home.', 'https://images.unsplash.com/photo-1516575150278-77136aed6920?q=80&w=2940&auto=format&fit=crop' ],
-        2 => [ 'The Journey', 'Building the Bridge', 'We bridge the gap between remote village communities and global travelers, ensuring that every stay supports local livelihoods while offering an unparalleled glimpse into ancient cultures.', 'https://images.unsplash.com/photo-1533157497230-01dc481bb20f?q=80&w=2940&auto=format&fit=crop' ],
-        3 => [ 'Today', 'A Growing Community', 'Today, we work with over 500 hosts across 5 states, empowering local economies and providing travelers with unforgettable memories.', 'https://images.unsplash.com/photo-1513271169004-9497e7f6dff4?q=80&w=2940&auto=format&fit=crop' ]
-    ];
-    foreach ( $chap_defaults as $n => $def ) {
-        $wp_customize->add_setting( "hhb_about_chap_{$n}_sub", [ 'default' => $def[0], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( "hhb_about_chap_{$n}_sub", [ 'label' => "Chapter {$n} Subtitle", 'section' => 'hhb_about_story_section', 'type' => 'text' ] );
-        
-        $wp_customize->add_setting( "hhb_about_chap_{$n}_title", [ 'default' => $def[1], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( "hhb_about_chap_{$n}_title", [ 'label' => "Chapter {$n} Title", 'section' => 'hhb_about_story_section', 'type' => 'text' ] );
-        
-        $wp_customize->add_setting( "hhb_about_chap_{$n}_text", [ 'default' => $def[2], 'sanitize_callback' => 'wp_kses_post' ] );
-        $wp_customize->add_control( "hhb_about_chap_{$n}_text", [ 'label' => "Chapter {$n} Text", 'section' => 'hhb_about_story_section', 'type' => 'textarea' ] );
-        
-        $wp_customize->add_setting( "hhb_about_chap_{$n}_img", [ 'default' => $def[3], 'sanitize_callback' => 'esc_url_raw' ] );
-        $wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, "hhb_about_chap_{$n}_img", [ 'label' => "Chapter {$n} Image", 'section' => 'hhb_about_story_section' ] ) );
-    }
+    $wp_customize->add_setting( 'hhb_about_chapters', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_Step_Repeater_Control( $wp_customize, 'hhb_about_chapters', [
+        'label'   => 'Story Chapters',
+        'section' => 'hhb_about_story_section',
+    ] ) );
 
-    // --- Company Stats ---
-    $wp_customize->add_section( 'hhb_about_stats_section', [ 'title' => 'Company Stats', 'panel' => 'hhb_about_panel' ] );
-    
-    $wp_customize->add_setting( 'hhb_about_stat_1_num', [ 'default' => '500+', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_stat_1_num', [ 'label' => 'Stat 1 Number', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
-    $wp_customize->add_setting( 'hhb_about_stat_1_label', [ 'default' => 'Properties', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_stat_1_label', [ 'label' => 'Stat 1 Label', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+    // --- Stats (Repeater) ---
+    $wp_customize->add_section( 'hhb_about_stats_section', [ 'title' => 'Impact Stats', 'panel' => 'hhb_about_panel' ] );
 
-    $wp_customize->add_setting( 'hhb_about_stat_2_num', [ 'default' => '50k+', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_stat_2_num', [ 'label' => 'Stat 2 Number', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
-    $wp_customize->add_setting( 'hhb_about_stat_2_label', [ 'default' => 'Happy Guests', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_stat_2_label', [ 'label' => 'Stat 2 Label', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
+    $wp_customize->add_setting( 'hhb_about_stats', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_FAQ_Repeater_Control( $wp_customize, 'hhb_about_stats', [
+        'label'   => 'Stats (Q=Num, A=Label)',
+        'section' => 'hhb_about_stats_section',
+    ] ) );
 
-    $wp_customize->add_setting( 'hhb_about_stat_3_num', [ 'default' => '4.9/5', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_stat_3_num', [ 'label' => 'Stat 3 Number', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
-    $wp_customize->add_setting( 'hhb_about_stat_3_label', [ 'default' => 'Average Rating', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_stat_3_label', [ 'label' => 'Stat 3 Label', 'section' => 'hhb_about_stats_section', 'type' => 'text' ] );
-
-    // --- Core Values ---
+    // --- Core Values (Repeater) ---
     $wp_customize->add_section( 'hhb_about_values_section', [ 'title' => 'Core Values', 'panel' => 'hhb_about_panel' ] );
+    
     $wp_customize->add_setting( 'hhb_about_values_title', [ 'default' => 'Our Core Values', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_about_values_title', [ 'label' => 'Section Title', 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
+
     $wp_customize->add_setting( 'hhb_about_values_sub', [ 'default' => 'Guided by the spirit of the mountains', 'sanitize_callback' => 'sanitize_text_field' ] );
     $wp_customize->add_control( 'hhb_about_values_sub', [ 'label' => 'Section Subtitle', 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
 
-    $values_defaults = [
-        1 => [ 'verified_user', 'Authenticity', 'Real homes, real families, and real experiences. No staged performances, just genuine Himalayan life.' ],
-        2 => [ 'eco', 'Sustainability', 'Preserving the fragile mountain ecosystem and supporting slow travel that leaves a positive footprint.' ],
-        3 => [ 'groups', 'Community', 'Empowering local hosts through fair trade and direct economic opportunities for remote villages.' ]
-    ];
-    foreach ( $values_defaults as $n => $def ) {
-        $wp_customize->add_setting( "hhb_about_v{$n}_icon", [ 'default' => $def[0], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( "hhb_about_v{$n}_icon", [ 'label' => "Value {$n} Icon (Material Symbols)", 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
-        
-        $wp_customize->add_setting( "hhb_about_v{$n}_title", [ 'default' => $def[1], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( "hhb_about_v{$n}_title", [ 'label' => "Value {$n} Title", 'section' => 'hhb_about_values_section', 'type' => 'text' ] );
-        
-        $wp_customize->add_setting( "hhb_about_v{$n}_desc", [ 'default' => $def[2], 'sanitize_callback' => 'sanitize_text_field' ] );
-        $wp_customize->add_control( "hhb_about_v{$n}_desc", [ 'label' => "Value {$n} Description", 'section' => 'hhb_about_values_section', 'type' => 'textarea' ] );
-    }
+    $wp_customize->add_setting( 'hhb_about_values_list', [
+        'default'           => '[]',
+        'sanitize_callback' => 'wp_kses_post',
+    ] );
+    $wp_customize->add_control( new HM_FAQ_Repeater_Control( $wp_customize, 'hhb_about_values_list', [
+        'label'   => 'Values (Q=Label, A=Description)',
+        'section' => 'hhb_about_values_section',
+    ] ) );
 
-    // --- Bottom CTA ---
-    $wp_customize->add_section( 'hhb_about_cta_section', [ 'title' => 'Bottom CTA & Quote', 'panel' => 'hhb_about_panel' ] );
+    // --- Bottom Quote & CTA ---
+    $wp_customize->add_section( 'hhb_about_cta_section', [ 'title' => 'Quote & CTA', 'panel' => 'hhb_about_panel' ] );
+    
     $wp_customize->add_setting( 'hhb_about_quote', [ 'default' => '"Our mission is to ensure that the majesty of the Himalayas is preserved through the wisdom of its people."', 'sanitize_callback' => 'wp_kses_post' ] );
-    $wp_customize->add_control( 'hhb_about_quote', [ 'label' => 'Large Quote', 'section' => 'hhb_about_cta_section', 'type' => 'textarea' ] );
-    
+    $wp_customize->add_control( 'hhb_about_quote', [ 'label' => 'Mission Quote', 'section' => 'hhb_about_cta_section', 'type' => 'textarea' ] );
+
     $wp_customize->add_setting( 'hhb_about_cta_text', [ 'default' => 'Meet Our Hosts', 'sanitize_callback' => 'sanitize_text_field' ] );
-    $wp_customize->add_control( 'hhb_about_cta_text', [ 'label' => 'CTA Button Text', 'section' => 'hhb_about_cta_section', 'type' => 'text' ] );
-    
-    $wp_customize->add_setting( 'hhb_about_cta_link', [ 'default' => '/hosts', 'sanitize_callback' => 'esc_url_raw' ] );
-    $wp_customize->add_control( 'hhb_about_cta_link', [ 'label' => 'CTA Button Link', 'section' => 'hhb_about_cta_section', 'type' => 'url' ] );
-    
+    $wp_customize->add_control( 'hhb_about_cta_text', [ 'label' => 'Button Text', 'section' => 'hhb_about_cta_section', 'type' => 'text' ] );
+
+    $wp_customize->add_setting( 'hhb_about_cta_link', [ 'default' => home_url('/hosts/'), 'sanitize_callback' => 'esc_url_raw' ] );
+    $wp_customize->add_control( 'hhb_about_cta_link', [ 'label' => 'Button Link', 'section' => 'hhb_about_cta_section', 'type' => 'url' ] );
+
 } );
 
 

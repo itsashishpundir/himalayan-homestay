@@ -45,6 +45,9 @@ function himalayan_homestay_setup() {
             'flex-height' => true,
         )
     );
+
+    // Load custom editor styles into the Gutenberg canvas
+    add_editor_style( 'assets/css/editor-styles.css' );
 }
 add_action( 'after_setup_theme', 'himalayan_homestay_setup' );
 
@@ -286,6 +289,77 @@ function himalayan_homestay_enqueue_block_editor_assets() {
         array(),
         filemtime( get_template_directory() . '/assets/css/blocks/faq-block.css' )
     );
+
+    // 3. Inject editor typography directly — reliable for both classic & iframed editors
+    wp_enqueue_style(
+        'hm-editor-typography',
+        get_template_directory_uri() . '/assets/css/editor-styles.css',
+        array(),
+        filemtime( get_template_directory() . '/assets/css/editor-styles.css' )
+    );
+
+    // 4. Also add critical styles inline to guarantee they load regardless of iframe mode
+    $editor_inline_css = "
+        body, .editor-styles-wrapper {
+            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+            font-size: 17px !important;
+            line-height: 1.8 !important;
+            color: #1e293b !important;
+        }
+        .editor-styles-wrapper p,
+        .wp-block-paragraph p,
+        .wp-block[data-type='core/paragraph'] p {
+            font-size: 16px !important;
+            line-height: 1.85 !important;
+            color: #374151 !important;
+            margin-bottom: 1.25em !important;
+        }
+        .editor-styles-wrapper h1,
+        .editor-styles-wrapper h2,
+        .editor-styles-wrapper h3,
+        .editor-styles-wrapper h4,
+        h1.wp-block,
+        h2.wp-block,
+        .wp-block-heading h1,
+        .wp-block-heading h2,
+        .wp-block-heading h3,
+        .wp-block-heading h4 {
+            font-family: 'Playfair Display', Georgia, serif !important;
+            font-weight: 800 !important;
+            color: #0f172a !important;
+            line-height: 1.25 !important;
+            margin-top: 2em !important;
+            margin-bottom: 0.5em !important;
+        }
+        .wp-block-heading h2,
+        .editor-styles-wrapper h2 {
+            font-size: 2em !important;
+            border-bottom: 2px solid #f0f0f0 !important;
+            padding-bottom: 0.3em !important;
+        }
+        .wp-block-heading h3,
+        .editor-styles-wrapper h3 {
+            font-size: 1.5em !important;
+            color: #1e293b !important;
+        }
+        .wp-block-heading h4,
+        .editor-styles-wrapper h4 {
+            font-size: 1.2em !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 700 !important;
+            color: #334155 !important;
+        }
+        .wp-block-separator {
+            border: none !important;
+            border-top: 2px solid #e2e8f0 !important;
+            margin: 2.5em 0 !important;
+        }
+        .wp-block-list li, .editor-styles-wrapper li {
+            margin-bottom: 0.55em !important;
+            line-height: 1.75 !important;
+        }
+    ";
+    wp_add_inline_style( 'hm-editor-typography', $editor_inline_css );
 }
 add_action( 'enqueue_block_editor_assets', 'himalayan_homestay_enqueue_block_editor_assets' );
 

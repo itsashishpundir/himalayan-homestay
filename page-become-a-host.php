@@ -2,197 +2,342 @@
 /**
  * Template Name: Become a Host
  *
- * Premium host application page based on code.html design.
- * Hero image and text customizable via Customizer.
+ * Premium host application page with the "Mountain Ethereal" aesthetic.
+ * Glassmorphic form, editorial typography, and high-conversion flow.
  *
- * @package HimalayanMart
+ * @package HimalayanHomestay
  */
 
 get_header();
 
-// Customizer values
-$hero_image    = get_theme_mod( 'hm_host_hero_image', '' );
-$hero_badge    = get_theme_mod( 'hm_host_hero_badge', 'Host the Future' );
-$hero_title    = get_theme_mod( 'hm_host_hero_title', 'Share Your World.<br>Become a <span class="text-primary">Host.</span>' );
-$hero_subtitle = get_theme_mod( 'hm_host_hero_subtitle', 'Join our exclusive community of premium mountain retreats and unique homestays. List your property on the Himalayan region\'s leading hospitality platform.' );
+// ── Customizer Values ──────────────────────────────────────────────
+$hero_img      = get_theme_mod( 'hhb_hostpage_banner_image', 'https://images.unsplash.com/photo-1470770841497-7b3200e37531?w=1920&q=80' );
+$hero_badge    = get_theme_mod( 'hhb_hostpage_badge', 'Host the Future' );
+$hero_head     = get_theme_mod( 'hhb_hostpage_heading', 'Share Your World.<br>Become a <span class="text-primary-light">Host.</span>' );
+$hero_sub      = get_theme_mod( 'hhb_hostpage_subheading', 'Join our exclusive community of premium mountain retreats. List your sanctuary on the Himalayan region\'s leading hospitality platform.' );
 
-// Fallback hero image
-$hero_bg_url = $hero_image ? wp_get_attachment_url( $hero_image ) : 'https://images.unsplash.com/photo-1470770841497-7b3200e37531?w=1920&q=80';
+$hero_bg_url = is_numeric($hero_img) ? wp_get_attachment_url( $hero_img ) : $hero_img;
 
-// Process steps (customizable)
-$step1_title = get_theme_mod( 'hm_host_step1_title', 'Apply Online' );
-$step1_desc  = get_theme_mod( 'hm_host_step1_desc', 'Submit your property details and photos through this form.' );
-$step2_title = get_theme_mod( 'hm_host_step2_title', 'Manual Review' );
-$step2_desc  = get_theme_mod( 'hm_host_step2_desc', 'Our team reviews every application within 48 hours to ensure quality standards are met.' );
-$step3_title = get_theme_mod( 'hm_host_step3_title', 'Onboarding' );
-$step3_desc  = get_theme_mod( 'hm_host_step3_desc', 'Once approved, we help you set up your profile and get your listing live.' );
+// Repeaters
+$steps_json    = get_theme_mod( 'hhb_hostpage_steps', '[]' );
+$steps_data    = json_decode( $steps_json, true ) ?: [];
 
-// Benefits (customizable)
-$benefit1 = get_theme_mod( 'hm_host_benefit1', 'Reach thousands of verified travelers' );
-$benefit2 = get_theme_mod( 'hm_host_benefit2', 'Dedicated host support & assistance' );
-$benefit3 = get_theme_mod( 'hm_host_benefit3', '24/7 customer support for your guests' );
+$benefits_json = get_theme_mod( 'hhb_hostpage_benefits', '[]' );
+$benefits_data = json_decode( $benefits_json, true ) ?: [];
+
+// Fallback steps if empty
+if ( empty( $steps_data ) ) {
+    $steps_data = [
+        [ 'title' => 'Apply Online', 'desc' => 'Submit your property details and high-resolution photos.' ],
+        [ 'title' => 'Review & Verify', 'desc' => 'Our curation team reviews every sanctuary to ensure ethereal standards.' ],
+        [ 'title' => 'Live Your Dream', 'desc' => 'Go live, welcome travelers, and share the magic of the mountains.' ]
+    ];
+}
+
+// Fallback benefits if empty
+if ( empty( $benefits_data ) ) {
+    $benefits_data = [
+        [ 'q' => 'Global Reach', 'a' => 'Global Reach to Verified Travelers' ],
+        [ 'q' => 'Concierge Support', 'a' => 'Concierge Host Support' ],
+        [ 'q' => 'Ethereal Brand', 'a' => 'Ethereal Brand Authority' ]
+    ];
+}
 ?>
 
-<!-- Hero Section -->
-<section class="relative h-[60vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('<?php echo esc_url( $hero_bg_url ); ?>');">
-        <div class="absolute inset-0 bg-gradient-to-b from-background-dark/40 via-background-dark/20 to-background-light dark:to-background-dark"></div>
-    </div>
-    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <?php if ( $hero_badge ) : ?>
-        <span class="inline-block px-4 py-1.5 bg-primary/20 text-primary rounded-full text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-md border border-primary/30"><?php echo esc_html( $hero_badge ); ?></span>
-        <?php endif; ?>
-        <h1 class="text-5xl md:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
-            <?php echo wp_kses_post( $hero_title ); ?>
-        </h1>
-        <p class="text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto drop-shadow-md">
-            <?php echo esc_html( $hero_subtitle ); ?>
-        </p>
-    </div>
-</section>
+<style>
+/* ── Reset and Variables ────────────────────── */
+:root {
+    --primary-gradient: linear-gradient(135deg, #a93102 0%, #cb491c 100%);
+    --surface-glass: rgba(255, 255, 255, 0.8);
+    --surface-blur: blur(20px);
+}
 
-<!-- Main Content -->
-<section class="max-w-6xl mx-auto px-4 py-20 -mt-20 relative z-20">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+/* ── Hero Section ────────────────────── */
+.host-hero {
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: white;
+}
+.host-hero-bg {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.02);
+}
+.host-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(249,249,249,1) 100%);
+}
+.host-hero-content {
+    position: relative; z-index: 10;
+    max-width: 900px;
+    padding: 0 24px;
+    text-align: center;
+}
+.host-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: var(--surface-blur);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 32px;
+}
+.host-hero-title {
+    font-size: clamp(40px, 8vw, 84px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 32px;
+    color: #1a1c1c;
+}
+.host-hero-title span.text-primary-light { color: #e85e30; }
+.host-hero-sub {
+    font-size: 20px;
+    color: #59413a;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: 400;
+}
 
-        <!-- Form: 2/3 width -->
-        <div class="lg:col-span-2">
-            <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-8 md:p-12 border border-slate-100 dark:border-slate-800">
+/* ── Content Grid ────────────────────── */
+.host-main {
+    background: #f9f9f9;
+    padding-bottom: 120px;
+}
+.host-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 60px;
+    margin-top: -80px;
+    position: relative;
+    z-index: 20;
+}
+@media (max-width: 1024px) {
+    .host-grid { grid-template-columns: 1fr; gap: 40px; margin-top: -40px; }
+}
 
-                <!-- Form Header -->
-                <div class="flex items-center gap-4 mb-10">
-                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary">edit_document</span>
+/* ── Glassmorphic Form ────────────────────── */
+.host-form-container {
+    background: var(--surface-glass);
+    backdrop-filter: var(--surface-blur);
+    -webkit-backdrop-filter: var(--surface-blur);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 60px;
+    border-radius: 0; /* Design rule: border-radius 0 */
+    box-shadow: 0 40px 100px -20px rgba(0,0,0,0.06);
+}
+@media (max-width: 768px) { .host-form-container { padding: 32px; } }
+
+.host-form-title { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #1a1c1c; }
+.host-form-sub { font-size: 16px; color: #59413a; margin-bottom: 48px; }
+
+.host-input-group { margin-bottom: 32px; }
+.host-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #1a1c1c;
+    margin-bottom: 12px;
+}
+.host-input {
+    width: 100%;
+    background: #f3f3f3;
+    border: none; /* No borders for sectioning */
+    padding: 20px 24px;
+    font-size: 16px;
+    color: #1a1c1c;
+    transition: background 0.3s;
+}
+.host-input:focus { background: #e2e2e2; outline: none; }
+
+.host-btn-submit {
+    width: 100%;
+    padding: 20px;
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.host-btn-submit:hover { transform: scale(1.02); }
+
+/* ── Sidebar ────────────────────── */
+.host-sidebar-box {
+    background: white;
+    padding: 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+.sidebar-title { font-size: 20px; font-weight: 800; margin-bottom: 32px; color: #1a1c1c; }
+
+.process-step { display: flex; gap: 24px; margin-bottom: 40px; align-items: start; }
+.process-num {
+    size: 40px; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: #f3f3f3; color: #1a1c1c;
+    font-weight: 800; font-size: 14px; flex-shrink: 0;
+}
+.process-title { font-weight: 800; font-size: 16px; margin-bottom: 4px; }
+.process-desc { font-size: 14px; color: #59413a; line-height: 1.6; }
+
+.benefits-box {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+.benefits-box h4 { font-size: 24px; font-weight: 800; margin-bottom: 24px; position: relative; z-index: 2; }
+.benefit-item { display: flex; gap: 16px; align-items: center; margin-bottom: 16px; position: relative; z-index: 2; }
+.benefit-icon { color: rgba(255,255,255,0.7); font-size: 20px; }
+.benefit-text { font-size: 14px; font-weight: 600; opacity: 0.9; }
+
+.benefits-bg-icon {
+    position: absolute; right: -40px; bottom: -40px;
+    font-size: 200px; color: rgba(255,255,255,0.05); font-variation-settings: 'FILL' 1;
+}
+
+/* Success State */
+.host-success { text-align: center; display: none; padding: 100px 20px; }
+.host-success h3 { font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 24px; }
+</style>
+
+<main class="host-main">
+    <!-- Hero -->
+    <section class="host-hero">
+        <div class="host-hero-bg" style="background-image: url('<?php echo esc_url( $hero_bg_url ); ?>');"></div>
+        <div class="host-hero-overlay"></div>
+        <div class="host-hero-content">
+            <?php if ( $hero_badge ) : ?>
+            <span class="host-badge"><?php echo esc_html( $hero_badge ); ?></span>
+            <?php endif; ?>
+            <h1 class="host-hero-title"><?php echo wp_kses_post( $hero_head ); ?></h1>
+            <p class="host-hero-sub"><?php echo esc_html( $hero_sub ); ?></p>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-6">
+        <div class="host-grid">
+            
+            <!-- Application Zone -->
+            <div class="host-form-area">
+                <div class="host-form-container">
+                    <div id="application-form-wrap">
+                        <h2 class="host-form-title"><?php esc_html_e( 'Curation Application', 'himalayanmart' ); ?></h2>
+                        <p class="host-form-sub"><?php esc_html_e( 'Nominate your sanctuary for the Ethereal Collection.', 'himalayanmart' ); ?></p>
+
+                        <form id="hm-host-application-form" method="post" enctype="multipart/form-data">
+                            <?php wp_nonce_field( 'hm_host_application', 'hm_host_nonce' ); ?>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                                <div class="host-input-group">
+                                    <label class="host-label"><?php esc_html_e( 'Legal Full Name', 'himalayanmart' ); ?></label>
+                                    <input type="text" name="host_name" class="host-input" placeholder="e.g. Tenzing Norgay" required />
+                                </div>
+                                <div class="host-input-group">
+                                    <label class="host-label"><?php esc_html_e( 'Contact Email', 'himalayanmart' ); ?></label>
+                                    <input type="email" name="host_email" class="host-input" placeholder="you@resort.com" required />
+                                </div>
+                                <div class="host-input-group">
+                                    <label class="host-label"><?php esc_html_e( 'Phone (WhatsApp-linked)', 'himalayanmart' ); ?></label>
+                                    <input type="tel" name="host_phone" class="host-input" placeholder="+91 98XXX XXXXX" required />
+                                </div>
+                                <div class="host-input-group">
+                                    <label class="host-label"><?php esc_html_e( 'Property Category', 'himalayanmart' ); ?></label>
+                                    <select name="property_type" class="host-input">
+                                        <option value="cottage">Cottage</option>
+                                        <option value="villa">Luxury Villa</option>
+                                        <option value="eco">Eco-Stay</option>
+                                        <option value="homestay">Village Homestay</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="host-input-group">
+                                <label class="host-label"><?php esc_html_e( 'A Brief Vision of Your Space', 'himalayanmart' ); ?></label>
+                                <textarea name="host_vision" class="host-input" rows="4" placeholder="Tell us what makes your stay ethereal..."></textarea>
+                            </div>
+
+                            <button type="submit" class="host-btn-submit">
+                                <?php esc_html_e( 'Nominate Sanctuary', 'himalayanmart' ); ?>
+                            </button>
+                        </form>
                     </div>
-                    <div>
-                        <h3 class="text-2xl font-bold"><?php esc_html_e( 'Host Application', 'himalayanmart' ); ?></h3>
-                        <p class="text-slate-500 dark:text-slate-400"><?php esc_html_e( 'Tell us about your extraordinary space', 'himalayanmart' ); ?></p>
+
+                    <div id="hm-host-success" class="host-success">
+                        <span class="material-symbols-outlined text-primary text-8xl mb-6">verified_user</span>
+                        <h3><?php esc_html_e( 'Sanctuary Nominated', 'himalayanmart' ); ?></h3>
+                        <p class="text-xl text-slate-500"><?php esc_html_e( 'Our curation team will reach out to schedule a virtual tour within 48 hours.', 'himalayanmart' ); ?></p>
                     </div>
                 </div>
+            </div>
 
-                <!-- Application Form -->
-                <form class="space-y-8" method="post" enctype="multipart/form-data" id="hm-host-application-form">
-                    <?php wp_nonce_field( 'hm_host_application', 'hm_host_nonce' ); ?>
+            <!-- Perks / Process Sidebar -->
+            <div class="host-sidebar">
+                <div class="host-sidebar-box">
+                    <h4 class="sidebar-title"><?php esc_html_e( 'Our Curation Path', 'himalayanmart' ); ?></h4>
                     
-                    <!-- Honeypot Field -->
-                    <div style="position: absolute; left: -5000px;" aria-hidden="true">
-                        <input type="text" name="hhb_host_website" tabindex="-1" value="">
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1"><?php esc_html_e( 'Full Name', 'himalayanmart' ); ?> <span class="text-red-400">*</span></label>
-                            <input class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-14 px-4 focus:border-primary focus:ring-primary/20 transition-all outline-none" name="host_name" placeholder="<?php esc_attr_e( 'Your full name', 'himalayanmart' ); ?>" type="text" required />
+                    <?php if ( ! empty( $steps_data ) ) : 
+                        $i = 1;
+                        foreach ( $steps_data as $s ) : ?>
+                        <div class="process-step">
+                            <div class="process-num"><?php echo str_pad($i++, 2, '0', STR_PAD_LEFT); ?></div>
+                            <div>
+                                <p class="process-title"><?php echo esc_html( $s['title'] ?? '' ); ?></p>
+                                <p class="process-desc"><?php echo esc_html( $s['desc'] ?? '' ); ?></p>
+                            </div>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1"><?php esc_html_e( 'Email Address', 'himalayanmart' ); ?> <span class="text-red-400">*</span></label>
-                            <input class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-14 px-4 focus:border-primary focus:ring-primary/20 transition-all outline-none" name="host_email" placeholder="<?php esc_attr_e( 'you@example.com', 'himalayanmart' ); ?>" type="email" required />
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1"><?php esc_html_e( 'Phone Number', 'himalayanmart' ); ?> <span class="text-red-400">*</span></label>
-                            <input class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg h-14 px-4 focus:border-primary focus:ring-primary/20 transition-all outline-none" name="host_phone" placeholder="<?php esc_attr_e( '+91 98765 43210', 'himalayanmart' ); ?>" type="tel" required />
-                        </div>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="space-y-4">
-                        <label class="flex items-start gap-3 cursor-pointer group">
-                            <input type="checkbox" name="host_consent" required class="mt-1 w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20 transition-colors" />
-                            <span class="text-sm text-slate-600 dark:text-slate-400">
-                                <?php esc_html_e( 'I consent to the collection and processing of my personal data for the purpose of this application. I understand my data will be handled in accordance with the', 'himalayanmart' ); ?>
-                                <a href="<?php echo esc_url( get_privacy_policy_url() ); ?>" target="_blank" class="text-primary hover:underline font-semibold"><?php esc_html_e( 'Privacy Policy', 'himalayanmart' ); ?></a>.
-                            </span>
-                        </label>
-                        
-                        <button class="w-full bg-primary text-white h-14 rounded-lg font-extrabold text-lg shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer" type="submit">
-                            <?php esc_html_e( 'Submit Application', 'himalayanmart' ); ?>
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Success message (hidden by default) -->
-                <div id="hm-host-success" class="hidden text-center py-16">
-                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span class="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-2"><?php esc_html_e( 'Application Submitted!', 'himalayanmart' ); ?></h3>
-                    <p class="text-slate-500 max-w-md mx-auto"><?php esc_html_e( 'Thank you for your interest. Our team will review your application and get back to you within 48 hours.', 'himalayanmart' ); ?></p>
+                    <?php endforeach; endif; ?>
                 </div>
-            </div>
-        </div>
 
-        <!-- Sidebar: 1/3 width -->
-        <div class="space-y-8">
-
-            <!-- Our Process -->
-            <div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800">
-                <h4 class="text-xl font-bold mb-6"><?php esc_html_e( 'Our Process', 'himalayanmart' ); ?></h4>
-                <div class="space-y-8">
-                    <div class="flex gap-4">
-                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
-                        <div>
-                            <p class="font-bold text-slate-900 dark:text-slate-100"><?php echo esc_html( $step1_title ); ?></p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400"><?php echo esc_html( $step1_desc ); ?></p>
+                <div class="benefits-box">
+                    <span class="material-symbols-outlined benefits-bg-icon">mountain_flag</span>
+                    <h4><?php esc_html_e( 'Host Excellence', 'himalayanmart' ); ?></h4>
+                    
+                    <?php if ( ! empty( $benefits_data ) ) : 
+                        foreach ( $benefits_data as $b ) : ?>
+                        <div class="benefit-item">
+                            <span class="material-symbols-outlined benefit-icon">verified</span>
+                            <span class="benefit-text"><?php echo esc_html( $b['a'] ?? '' ); ?></span>
                         </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">2</div>
-                        <div>
-                            <p class="font-bold text-slate-900 dark:text-slate-100"><?php echo esc_html( $step2_title ); ?></p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400"><?php echo esc_html( $step2_desc ); ?></p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0">3</div>
-                        <div>
-                            <p class="font-bold text-slate-900 dark:text-slate-100"><?php echo esc_html( $step3_title ); ?></p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400"><?php echo esc_html( $step3_desc ); ?></p>
-                        </div>
-                    </div>
+                    <?php endforeach; endif; ?>
                 </div>
-            </div>
-
-            <!-- Why Host with Us? -->
-            <div class="bg-primary/10 p-8 rounded-xl border border-primary/20 relative overflow-hidden">
-                <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-primary/5 rotate-12">verified</span>
-                <h4 class="text-xl font-bold text-primary mb-4"><?php esc_html_e( 'Why Host with Us?', 'himalayanmart' ); ?></h4>
-                <ul class="space-y-4">
-                    <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300"><?php echo esc_html( $benefit1 ); ?></span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300"><?php echo esc_html( $benefit2 ); ?></span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300"><?php echo esc_html( $benefit3 ); ?></span>
-                    </li>
-                </ul>
             </div>
 
         </div>
     </div>
-</section>
+</main>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('hm-host-application-form');
     if (!form) return;
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        formData.append('action', 'hhb_host_application');
-
-        // Show loading state
         const btn = form.querySelector('button[type="submit"]');
         const originalText = btn.textContent;
-        btn.textContent = '<?php echo esc_js( __( 'Submitting...', 'himalayanmart' ) ); ?>';
+        btn.textContent = '<?php echo esc_js( __( 'Curating...', 'himalayanmart' ) ); ?>';
         btn.disabled = true;
-        btn.style.opacity = '0.7';
+
+        const formData = new FormData(form);
+        formData.append('action', 'hhb_host_application');
 
         fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
             method: 'POST',
@@ -201,25 +346,17 @@ $benefit3 = get_theme_mod( 'hm_host_benefit3', '24/7 customer support for your g
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                form.style.display = 'none';
-                document.getElementById('hm-host-success').classList.remove('hidden');
-                // Scroll to success message
-                document.getElementById('hm-host-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.getElementById('application-form-wrap').style.display = 'none';
+                document.getElementById('hm-host-success').style.display = 'block';
+                window.scrollTo({ top: document.querySelector('.host-form-container').offsetTop - 100, behavior: 'smooth' });
             } else {
-                alert(data.data || '<?php echo esc_js( __( 'Something went wrong. Please try again.', 'himalayanmart' ) ); ?>');
+                alert(data.data || 'Error');
                 btn.textContent = originalText;
                 btn.disabled = false;
-                btn.style.opacity = '1';
             }
-        })
-        .catch(() => {
-            alert('<?php echo esc_js( __( 'Network error. Please try again.', 'himalayanmart' ) ); ?>');
-            btn.textContent = originalText;
-            btn.disabled = false;
-            btn.style.opacity = '1';
         });
     });
-})();
+});
 </script>
 
 <?php get_footer(); ?>

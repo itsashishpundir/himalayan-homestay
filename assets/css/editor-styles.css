@@ -1,0 +1,115 @@
+/*
+ * Gutenberg / Block Editor — Typography & Spacing Styles
+ * Loaded via add_editor_style() so these apply INSIDE the editor canvas.
+ * Targets the .editor-styles-wrapper scope automatically.
+ */
+
+/* ─── Google Fonts ───────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ─── Base body in editor ─────────────────────────────────────────── */
+.editor-styles-wrapper {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #1e293b;
+    background: #fff;
+}
+
+/* ─── Paragraphs ──────────────────────────────────────────────────── */
+.editor-styles-wrapper p,
+.editor-styles-wrapper .wp-block-paragraph {
+    font-size: 16px;
+    line-height: 1.85;
+    color: #374151;
+    margin-top: 0;
+    margin-bottom: 1.25em;
+}
+
+/* ─── Heading Hierarchy ───────────────────────────────────────────── */
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4,
+.editor-styles-wrapper h5,
+.editor-styles-wrapper h6,
+.editor-styles-wrapper .wp-block-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.25;
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+}
+
+.editor-styles-wrapper h1 { font-size: 2.4em; }
+.editor-styles-wrapper h2 { font-size: 1.9em; color: #0f172a; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.3em; }
+.editor-styles-wrapper h3 { font-size: 1.45em; color: #1e293b; }
+.editor-styles-wrapper h4 { font-size: 1.2em;  color: #334155; font-family: 'Inter', sans-serif; font-weight: 700; }
+.editor-styles-wrapper h5 { font-size: 1.05em; color: #475569; font-family: 'Inter', sans-serif; font-weight: 600; }
+.editor-styles-wrapper h6 { font-size: 0.9em;  color: #64748b; font-family: 'Inter', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* First heading on page shouldn't have huge top margin */
+.editor-styles-wrapper .wp-block:first-child h1,
+.editor-styles-wrapper .wp-block:first-child h2 {
+    margin-top: 0.5em;
+}
+
+/* ─── Separator / HR ──────────────────────────────────────────────── */
+.editor-styles-wrapper hr,
+.editor-styles-wrapper .wp-block-separator {
+    border: none;
+    border-top: 2px solid #e2e8f0;
+    margin: 2.5em 0;
+}
+
+/* ─── Lists ───────────────────────────────────────────────────────── */
+.editor-styles-wrapper ul,
+.editor-styles-wrapper ol {
+    padding-left: 1.6em;
+    margin-bottom: 1.25em;
+}
+
+.editor-styles-wrapper li {
+    margin-bottom: 0.55em;
+    line-height: 1.75;
+    color: #374151;
+}
+
+/* ─── Links ───────────────────────────────────────────────────────── */
+.editor-styles-wrapper a {
+    color: #e85e30;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* ─── Blockquote ──────────────────────────────────────────────────── */
+.editor-styles-wrapper blockquote,
+.editor-styles-wrapper .wp-block-quote {
+    border-left: 4px solid #e85e30;
+    margin: 2em 0;
+    padding: 0.8em 1.4em;
+    background: #fef9f7;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #475569;
+}
+
+/* ─── Code ────────────────────────────────────────────────────────── */
+.editor-styles-wrapper code {
+    background: #f1f5f9;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #c0392b;
+}
+
+/* ─── Images ──────────────────────────────────────────────────────── */
+.editor-styles-wrapper figure.wp-block-image img {
+    border-radius: 10px;
+}
+
+/* ─── Spacing between blocks ──────────────────────────────────────── */
+.editor-styles-wrapper .wp-block {
+    margin-bottom: 0;
+}

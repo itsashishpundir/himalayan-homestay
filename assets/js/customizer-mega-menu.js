@@ -27,7 +27,10 @@
                 link:    $item.find( '.hm-item-link' ).val(),
                 order:   parseInt( $item.find( '.hm-item-order' ).val(), 10 ) || 0,
                 img_id:  parseInt( $item.find( '.hm-item-img-id' ).val(), 10 ) || 0,
-                img_url: $item.find( '.hm-item-img-preview' ).attr( 'src' ) || ''
+                img_url: $item.find( '.hm-item-img-preview' ).attr( 'src' ) || '',
+                hover_desc: $item.find( '.hm-item-hover-desc' ).val() || '',
+                hover_img_id: parseInt( $item.find( '.hm-item-hover-img-id' ).val(), 10 ) || 0,
+                hover_img_url: $item.find( '.hm-item-hover-img-preview' ).attr( 'src' ) || ''
             } );
         } );
 
@@ -47,6 +50,8 @@
     function buildItemRow( item ) {
         var imgSrc = item.img_url || '';
         var imgId  = item.img_id  || 0;
+        var hoverImgSrc = item.hover_img_url || '';
+        var hoverImgId  = item.hover_img_id  || 0;
 
         var $item = $(
             '<div class="hm-mega-item" style="' +
@@ -86,7 +91,7 @@
                 '</div>' +
 
                 // Image
-                '<p style="margin:0;">' +
+                '<p style="margin:0 0 6px;">' +
                     '<label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px;">Icon Image</label>' +
                     '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
                         '<img class="hm-item-img-preview" ' +
@@ -97,6 +102,29 @@
                         '<button type="button" class="button hm-item-img-select" style="font-size:11px;">Choose Image</button>' +
                         '<button type="button" class="button-link hm-item-img-remove" ' +
                             'style="color:#666;font-size:11px;' + ( imgId ? '' : 'display:none;' ) + '">Remove</button>' +
+                    '</div>' +
+                '</p>' +
+
+                // Hover Description
+                '<p style="margin:0 0 6px; border-top:1px dashed #ccc; padding-top:6px;">' +
+                    '<label style="font-size:11px;font-weight:600;display:block;margin-bottom:2px;">Hover Preview Description</label>' +
+                    '<input type="text" class="widefat hm-item-hover-desc" ' +
+                        'value="' + escAttr( item.hover_desc || '' ) + '" ' +
+                        'placeholder="Short description for preview panel" />' +
+                '</p>' +
+
+                // Hover Preview Image
+                '<p style="margin:0;">' +
+                    '<label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px;">Hover Preview Image</label>' +
+                    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+                        '<img class="hm-item-hover-img-preview" ' +
+                            'src="' + escAttr( hoverImgSrc ) + '" ' +
+                            'style="width:80px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #ddd;' +
+                                ( hoverImgSrc ? '' : 'display:none;' ) + '" />' +
+                        '<input type="hidden" class="hm-item-hover-img-id" value="' + escAttr( String( hoverImgId ) ) + '" />' +
+                        '<button type="button" class="button hm-item-hover-img-select" style="font-size:11px;">Choose Hover Image</button>' +
+                        '<button type="button" class="button-link hm-item-hover-img-remove" ' +
+                            'style="color:#666;font-size:11px;' + ( hoverImgId ? '' : 'display:none;' ) + '">Remove</button>' +
                     '</div>' +
                 '</p>' +
 
@@ -138,6 +166,38 @@
         $item.find( '.hm-item-img-remove' ).on( 'click', function () {
             $item.find( '.hm-item-img-id' ).val( 0 );
             $item.find( '.hm-item-img-preview' ).attr( 'src', '' ).hide();
+            $( this ).hide();
+            syncValue( $item.closest( '.hm-mega-repeater-wrap' ) );
+        } );
+
+        // ── Event: choose hover image (wp.media) ─────────────────────────────
+        $item.find( '.hm-item-hover-img-select' ).on( 'click', function () {
+            var frame = wp.media( {
+                title:    'Select Hover Preview Image',
+                button:   { text: 'Use this image' },
+                multiple: false,
+                library:  { type: 'image' }
+            } );
+
+            frame.on( 'select', function () {
+                var attachment = frame.state().get( 'selection' ).first().toJSON();
+                var thumb      = ( attachment.sizes && attachment.sizes.medium_large )
+                    ? attachment.sizes.medium_large.url
+                    : attachment.url;
+
+                $item.find( '.hm-item-hover-img-id' ).val( attachment.id );
+                $item.find( '.hm-item-hover-img-preview' ).attr( 'src', thumb ).show();
+                $item.find( '.hm-item-hover-img-remove' ).show();
+                syncValue( $item.closest( '.hm-mega-repeater-wrap' ) );
+            } );
+
+            frame.open();
+        } );
+
+        // ── Event: remove hover image ────────────────────────────────────────
+        $item.find( '.hm-item-hover-img-remove' ).on( 'click', function () {
+            $item.find( '.hm-item-hover-img-id' ).val( 0 );
+            $item.find( '.hm-item-hover-img-preview' ).attr( 'src', '' ).hide();
             $( this ).hide();
             syncValue( $item.closest( '.hm-mega-repeater-wrap' ) );
         } );
@@ -184,7 +244,7 @@
 
             // Add-item button
             $wrap.find( '.hm-mega-add-item' ).on( 'click', function () {
-                $items.append( buildItemRow( { name: '', link: '', img_id: 0, img_url: '' } ) );
+                $items.append( buildItemRow( { name: '', link: '', img_id: 0, img_url: '', hover_img_id: 0, hover_img_url: '', hover_desc: '' } ) );
                 syncValue( $wrap );
             } );
         } );

@@ -27,35 +27,39 @@ $glass_opacity     = get_theme_mod( 'hm_futura_header_glass_opacity', 70 );
 $nav_text_color    = get_theme_mod( 'hm_futura_header_nav_text_color', '#334155' );
 
 // Mega menu — customizer settings
-$mega_label  = get_theme_mod( 'hm_futura_mega_label', 'Stays' );
-$mega_cols   = max( 1, min( 4, intval( get_theme_mod( 'hm_futura_mega_cols', 2 ) ) ) );
-$mega_rows   = max( 1, min( 4, intval( get_theme_mod( 'hm_futura_mega_rows', 3 ) ) ) );
-$mega_limit  = $mega_cols * $mega_rows;
+$mega_label    = get_theme_mod( 'hm_futura_mega_label', 'Stays' );
+$mega_rows     = max( 1, min( 20, intval( get_theme_mod( 'hm_futura_mega_rows', 6 ) ) ) );
+$mega_compact  = (bool) get_theme_mod( 'hm_futura_mega_compact', false );
+$mega_half_w   = (bool) get_theme_mod( 'hm_futura_mega_half_width', false );
 
-// Dropdown width scales with column count
-$mega_widths = array( 1 => '300px', 2 => '500px', 3 => '680px', 4 => '860px' );
-$mega_width  = $mega_widths[ $mega_cols ];
-
-$mega_menu_default_icons = array(
-    'beach_access', 'landscape', 'location_city', 'eco', 'home_mini', 'domain',
-    'cottage', 'apartment', 'villa', 'cabin', 'hotel', 'house',
-);
-$property_types = get_terms( array(
-    'taxonomy'   => 'hhb_property_type',
-    'hide_empty' => false,
-    'number'     => $mega_limit,
-) );
-
-// Extra custom items from repeater (JSON)
-$mega_extra_raw   = get_theme_mod( 'hm_futura_mega_extra_items', '[]' );
-$mega_extra_items = json_decode( $mega_extra_raw, true );
-if ( ! is_array( $mega_extra_items ) ) {
-    $mega_extra_items = array();
-} else {
-    usort($mega_extra_items, function($a, $b) {
-        return (int)($a['order'] ?? 0) <=> (int)($b['order'] ?? 0);
-    });
+// 3-Column independent links
+$mega_col_links_raw = get_theme_mod( 'hm_futura_mega_col_links', '{"col1":[],"col2":[],"col3":[]}' );
+$mega_col_links     = json_decode( $mega_col_links_raw, true );
+if ( ! is_array( $mega_col_links ) ) {
+    $mega_col_links = array( 'col1' => array(), 'col2' => array(), 'col3' => array() );
 }
+
+// Ensure all 3 columns exist
+foreach ( array( 'col1', 'col2', 'col3' ) as $ck ) {
+    if ( ! isset( $mega_col_links[ $ck ] ) ) {
+        $mega_col_links[ $ck ] = array();
+    }
+}
+
+$mega_has_links = false;
+foreach ( $mega_col_links as $col_items ) {
+    if ( ! empty( $col_items ) ) { $mega_has_links = true; break; }
+}
+
+// Spotlight Settings (kept for future use but hidden in 3-col mode)
+$mega_show_spotlight = get_theme_mod( 'hm_futura_mega_show_spotlight', false );
+$mega_spotlight_img  = get_theme_mod( 'hm_futura_mega_spotlight_img', '' );
+$mega_spotlight_title    = get_theme_mod( 'hm_futura_mega_spotlight_title', 'Become a Host' );
+$mega_spotlight_desc     = get_theme_mod( 'hm_futura_mega_spotlight_desc', 'Earn extra income by opening your home to travelers.' );
+$mega_spotlight_btn_text = get_theme_mod( 'hm_futura_mega_spotlight_btn_text', 'Learn More' );
+$mega_spotlight_url      = get_theme_mod( 'hm_futura_mega_spotlight_url', home_url( '/become-a-host/' ) );
+
+$mega_show_taxonomies = false; // Using 3-col custom links now
 
 // Extra top-level custom links
 $header_links_raw = get_theme_mod( 'hm_futura_header_extra_links', '[]' );
@@ -121,67 +125,59 @@ if ( $current_user->ID ) {
 
                 <!-- Mega Menu -->
                 <?php ob_start(); ?>
-                <?php if ( ! empty( $property_types ) && ! is_wp_error( $property_types ) ) : ?>
-                <div class="relative group">
-                    <button class="flex items-center gap-1 font-semibold hover:text-primary transition-colors py-4" style="color:inherit;">
+                <?php if ( $mega_has_links ) : ?>
+                <div class="group static">
+                    <button class="flex items-center gap-1 font-semibold hover:text-primary transition-colors py-4 px-2" style="color:inherit;">
                         <?php echo esc_html( $mega_label ); ?>
-                        <span class="material-symbols-outlined text-base">expand_more</span>
                     </button>
-                    <!-- Mega Dropdown -->
-                    <div class="futura-mega-menu absolute top-[calc(100%-1rem)] left-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl shadow-2xl border border-primary/10 p-4 grid gap-2 z-50"
-                         style="width:<?php echo esc_attr( $mega_width ); ?>; grid-template-columns:repeat(<?php echo esc_attr( $mega_cols ); ?>,minmax(0,1fr));">
-                        <?php foreach ( $property_types as $idx => $type ) :
-                            $tid         = $type->term_id;
-                            $custom_name = get_theme_mod( "hm_futura_mega_item_{$tid}_name", '' );
-                            $custom_link = get_theme_mod( "hm_futura_mega_item_{$tid}_link", '' );
-                            $custom_icon = get_theme_mod( "hm_futura_mega_item_{$tid}_icon", '' );
-                            $img_id      = (int) get_theme_mod( "hm_futura_mega_item_{$tid}_img", 0 );
-                            $img_url     = $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '';
-                            $display     = $custom_name ?: $type->name;
-                            $icon        = $custom_icon ?: ( $mega_menu_default_icons[ $idx ] ?? 'home' );
-                            $desc        = $type->description ?: esc_html__( 'Explore this category', 'himalayanmart' );
-                            $link        = $custom_link ?: get_term_link( $type );
-                            if ( is_wp_error( $link ) ) $link = '#';
-                        ?>
-                        <a class="flex gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group/item" href="<?php echo esc_url( $link ); ?>">
-                            <div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover/item:bg-primary group-hover/item:text-white transition-colors shrink-0 overflow-hidden">
-                                <?php if ( $img_url ) : ?>
-                                    <img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $display ); ?>" class="w-full h-full object-cover" />
-                                <?php else : ?>
-                                    <span class="material-symbols-outlined"><?php echo esc_html( $icon ); ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="min-w-0">
-                                <h4 class="font-bold text-sm text-slate-900 dark:text-white"><?php echo esc_html( $display ); ?></h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate"><?php echo esc_html( $desc ); ?></p>
-                            </div>
-                        </a>
-                        <?php endforeach; ?>
+                    <!-- Mega Dropdown: 3-Column -->
+                    <div class="futura-mega-menu absolute top-full z-[100] transition-all duration-300 opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-b border-slate-200"
+                         style="<?php echo $mega_half_w ? 'left:auto; right:auto; width:52vw; max-width:820px;' : 'left:0; right:0;'; ?> border-radius:0;">
 
-                        <?php foreach ( $mega_extra_items as $extra ) :
-                            $extra_name = sanitize_text_field( $extra['name'] ?? '' );
-                            $extra_link = esc_url_raw( $extra['link'] ?? '#' );
-                            $extra_img_id  = (int) ( $extra['img_id'] ?? 0 );
-                            $extra_img_url = $extra_img_id
-                                ? wp_get_attachment_image_url( $extra_img_id, 'thumbnail' )
-                                : esc_url( $extra['img_url'] ?? '' );
-                            if ( ! $extra_name ) continue;
-                            if ( ! $extra_link ) $extra_link = '#';
-                        ?>
-                        <a class="flex gap-4 p-3 rounded-lg hover:bg-primary/5 transition-all group/item" href="<?php echo esc_url( $extra_link ); ?>">
-                            <div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover/item:bg-primary group-hover/item:text-white transition-colors shrink-0 overflow-hidden">
-                                <?php if ( $extra_img_url ) : ?>
-                                    <img src="<?php echo esc_url( $extra_img_url ); ?>" alt="<?php echo esc_attr( $extra_name ); ?>" class="w-full h-full object-cover" />
-                                <?php else : ?>
-                                    <span class="material-symbols-outlined">home</span>
-                                <?php endif; ?>
+                        <!-- Invisible bridge for mouse travel stability -->
+                        <div class="absolute -top-4 left-0 right-0 h-4"></div>
+
+                        <div class="container mx-auto <?php echo $mega_compact ? 'px-8 py-6' : 'px-8 md:px-16 py-10'; ?>">
+                            <div class="grid grid-cols-3 gap-x-10">
+                                <?php
+                                $col_keys = array( 'col1', 'col2', 'col3' );
+                                foreach ( $col_keys as $col_key ) :
+                                    $col_items = $mega_col_links[ $col_key ] ?? array();
+                                    $col_items = array_slice( $col_items, 0, $mega_rows );
+                                ?>
+                                <div class="mega-column">
+                                    <div class="flex flex-col gap-1">
+                                        <?php foreach ( $col_items as $item ) :
+                                            $display    = sanitize_text_field( $item['name'] ?? '' );
+                                            $link       = esc_url( $item['link'] ?? '#' );
+                                            $icon       = sanitize_text_field( $item['icon'] ?? '' );
+                                            $icon_color = $item['color'] ?? '';
+                                            // Validate & default color
+                                            if ( ! preg_match('/^#[0-9a-fA-F]{6}$/', $icon_color) ) {
+                                                $icon_color = '#e85e30';
+                                            }
+                                            // Convert hex to rgba for a subtle 10% tint background
+                                            $r = hexdec( substr( ltrim($icon_color,'#'), 0, 2 ) );
+                                            $g = hexdec( substr( ltrim($icon_color,'#'), 2, 2 ) );
+                                            $b = hexdec( substr( ltrim($icon_color,'#'), 4, 2 ) );
+                                            $icon_bg = "rgba($r,$g,$b,0.1)";
+                                            if ( empty( $display ) ) continue;
+                                        ?>
+                                            <a href="<?php echo $link; ?>" class="futura-mega-link">
+                                                <?php if ( $icon ) : ?>
+                                                <span class="futura-mega-icon"
+                                                      style="background:<?php echo esc_attr($icon_bg); ?>; color:<?php echo esc_attr($icon_color); ?>;">
+                                                    <span class="material-symbols-outlined"><?php echo esc_html($icon); ?></span>
+                                                </span>
+                                                <?php endif; ?>
+                                                <span class="futura-mega-link-label"><?php echo esc_html( $display ); ?></span>
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
                             </div>
-                            <div class="min-w-0">
-                                <h4 class="font-bold text-sm text-slate-900 dark:text-white"><?php echo esc_html( $extra_name ); ?></h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate"><?php esc_html_e( 'Explore this category', 'himalayanmart' ); ?></p>
-                            </div>
-                        </a>
-                        <?php endforeach; ?>
+                        </div>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -322,48 +318,31 @@ if ( $current_user->ID ) {
             <!-- Mobile Accordion Menu -->
             <div class="divide-y divide-slate-200 dark:divide-slate-700 overflow-y-auto flex-1">
 
-                <!-- Mobile Accordion (uses same label + per-term overrides) -->
+                <!-- Mobile Accordion — 3-column links flattened -->
                 <?php ob_start(); ?>
-                <?php if ( ! empty( $property_types ) && ! is_wp_error( $property_types ) ) : ?>
+                <?php
+                // Flatten all 3 columns into one list for mobile
+                $mobile_all_links = array();
+                foreach ( array( 'col1', 'col2', 'col3' ) as $ck ) {
+                    foreach ( $mega_col_links[ $ck ] ?? array() as $it ) {
+                        if ( ! empty( $it['name'] ) ) $mobile_all_links[] = $it;
+                    }
+                }
+                ?>
+                <?php if ( ! empty( $mobile_all_links ) ) : ?>
                 <details class="group p-4">
                     <summary class="list-none flex justify-between items-center cursor-pointer font-bold">
                         <?php echo esc_html( $mega_label ); ?>
                         <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
                     </summary>
                     <div class="mt-4 flex flex-col gap-4 pl-2 border-l-2 border-primary/20 ml-2">
-                        <?php foreach ( $property_types as $type ) :
-                            $tid         = $type->term_id;
-                            $custom_name = get_theme_mod( "hm_futura_mega_item_{$tid}_name", '' );
-                            $custom_link = get_theme_mod( "hm_futura_mega_item_{$tid}_link", '' );
-                            $img_id      = (int) get_theme_mod( "hm_futura_mega_item_{$tid}_img", 0 );
-                            $img_url     = $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '';
-                            $display     = $custom_name ?: $type->name;
-                            $link        = $custom_link ?: get_term_link( $type );
-                            if ( is_wp_error( $link ) ) $link = '#';
+                        <?php foreach ( $mobile_all_links as $item ) :
+                            $display = sanitize_text_field( $item['name'] ?? '' );
+                            $link    = esc_url( $item['link'] ?? '#' );
+                            if ( ! $display ) continue;
                         ?>
-                        <a class="flex items-center gap-3 text-sm font-medium hover:text-primary transition-colors" href="<?php echo esc_url( $link ); ?>">
-                            <?php if ( $img_url ) : ?>
-                                <img src="<?php echo esc_url( $img_url ); ?>" alt="" class="size-6 rounded object-cover shrink-0" />
-                            <?php endif; ?>
+                        <a class="text-sm font-medium hover:text-primary transition-colors" href="<?php echo $link; ?>" style="text-decoration:none;">
                             <?php echo esc_html( $display ); ?>
-                        </a>
-                        <?php endforeach; ?>
-
-                        <?php foreach ( $mega_extra_items as $extra ) :
-                            $extra_name    = sanitize_text_field( $extra['name'] ?? '' );
-                            $extra_link    = esc_url_raw( $extra['link'] ?? '#' );
-                            $extra_img_id  = (int) ( $extra['img_id'] ?? 0 );
-                            $extra_img_url = $extra_img_id
-                                ? wp_get_attachment_image_url( $extra_img_id, 'thumbnail' )
-                                : esc_url( $extra['img_url'] ?? '' );
-                            if ( ! $extra_name ) continue;
-                            if ( ! $extra_link ) $extra_link = '#';
-                        ?>
-                        <a class="flex items-center gap-3 text-sm font-medium hover:text-primary transition-colors" href="<?php echo esc_url( $extra_link ); ?>">
-                            <?php if ( $extra_img_url ) : ?>
-                                <img src="<?php echo esc_url( $extra_img_url ); ?>" alt="" class="size-6 rounded object-cover shrink-0" />
-                            <?php endif; ?>
-                            <?php echo esc_html( $extra_name ); ?>
                         </a>
                         <?php endforeach; ?>
                     </div>
@@ -411,7 +390,8 @@ if ( $current_user->ID ) {
                 if ( ! $has_mega_mobile && $primary_menu_mobile_html ) {
                     $items_array_mobile = explode('<li', $primary_menu_mobile_html);
                     if ( count($items_array_mobile) > 1 ) {
-                        $inject_index_mob = min( $mega_pos + 1, count($items_array_mobile) );
+                        $mega_pos_mob     = (int) get_theme_mod( 'hm_futura_mega_position', 0 );
+                        $inject_index_mob = min( $mega_pos_mob + 1, count($items_array_mobile) );
                         $mega_li_mob_html = ' class="menu-item list-none p-0 m-0 border-b border-slate-200 dark:border-slate-700">' . $futura_mega_menu_mobile_html . '</li>';
                         array_splice( $items_array_mobile, $inject_index_mob, 0, $mega_li_mob_html );
                         $primary_menu_mobile_html = implode( '<li', $items_array_mobile );
